@@ -730,6 +730,23 @@ button:active {
   stroke-linecap: round;
 }
 
+.visual-angle.blue {
+  stroke: var(--blue);
+}
+
+.visual-angle.green {
+  stroke: var(--green);
+}
+
+.visual-angle.coral {
+  stroke: var(--coral);
+}
+
+.visual-angle.dark {
+  stroke: var(--ink);
+  opacity: 0.78;
+}
+
 .visual-label,
 .visual-badge,
 .visual-node {
@@ -752,10 +769,13 @@ button:active {
 
 .visual-degree {
   fill: var(--ink);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
   text-anchor: middle;
   dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 5px;
 }
 
 .geogebra-card {

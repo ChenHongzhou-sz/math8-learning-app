@@ -2353,7 +2353,7 @@ function practiceVisualHtml(lesson, item, selected, checked) {
   `;
 }
 
-function visualAngleArc(vertex, p1, p2, radius, label = "", labelRadius = radius + 24) {
+function visualAngleArc(vertex, p1, p2, radius, label = "", labelRadius = radius + 24, cls = "visual-angle") {
   let start = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
   let end = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
   let delta = end - start;
@@ -2376,7 +2376,7 @@ function visualAngleArc(vertex, p1, p2, radius, label = "", labelRadius = radius
     y: round(vertex.y + Math.sin(mid) * labelRadius)
   };
   return `
-    <path d="M${from.x} ${from.y} A${radius} ${radius} 0 0 1 ${to.x} ${to.y}" fill="none" class="visual-angle"></path>
+    <path d="M${from.x} ${from.y} A${radius} ${radius} 0 0 1 ${to.x} ${to.y}" fill="none" class="${cls}"></path>
     ${label ? `<text x="${labelPoint.x}" y="${labelPoint.y}" class="visual-degree">${label}</text>` : ""}
   `;
 }
@@ -3033,20 +3033,26 @@ function updateExteriorSvg() {
   const { a, b } = uiMemory.exterior;
   const third = 180 - a - b;
   const exterior = a + b;
-  const A = { x: 98, y: 260 };
-  const C = { x: 386, y: 260 };
-  const B = { x: 230, y: 92 };
+  const A = { x: 110, y: 284 };
+  const C = { x: 330, y: 284 };
+  const base = C.x - A.x;
+  const ab = base * Math.sin(third * Math.PI / 180) / Math.sin(b * Math.PI / 180);
+  const B = {
+    x: A.x + Math.cos(a * Math.PI / 180) * ab,
+    y: A.y - Math.sin(a * Math.PI / 180) * ab
+  };
+  const extension = { x: 462, y: C.y };
   $("#exteriorSvg").innerHTML = `
-    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    <line x1="${C.x}" y1="${C.y}" x2="472" y2="${C.y}" stroke="#d94f45" stroke-width="4" stroke-linecap="round"></line>
-    <path d="M${C.x - 58} ${C.y - 5} q28 -36 75 -22" fill="none" stroke="#d94f45" stroke-width="4"></path>
+    <polygon points="${A.x},${A.y} ${round(B.x)},${round(B.y)} ${C.x},${C.y}" fill="#eef5f4" stroke="#324250" stroke-width="5" stroke-linejoin="round"></polygon>
+    <line x1="${C.x}" y1="${C.y}" x2="${extension.x}" y2="${extension.y}" stroke="#d94f45" stroke-width="6" stroke-linecap="round"></line>
+    ${visualAngleArc(A, C, B, 40, `${a}°`, 66, "visual-angle blue")}
+    ${visualAngleArc(B, A, C, 34, `${b}°`, 58, "visual-angle green")}
+    ${visualAngleArc(C, B, A, 36, `${third}°`, 60, "visual-angle dark")}
+    ${visualAngleArc(C, extension, B, 56, `${exterior}°`, 88, "visual-angle coral")}
     ${pointLabel(A, "A", -26, 30)}
-    ${pointLabel(B, "B", -4, -18)}
+    ${pointLabel(B, "B", -5, -18)}
     ${pointLabel(C, "C", 14, 30)}
-    <text x="90" y="232" fill="#2563a9" font-size="18" font-weight="800">${a}°</text>
-    <text x="240" y="120" fill="#16756f" font-size="18" font-weight="800">${b}°</text>
-    <text x="332" y="236" fill="#324250" font-size="18" font-weight="800">${third}°</text>
-    <text x="392" y="214" fill="#d94f45" font-size="18" font-weight="800">外角 ${exterior}°</text>
+    <text x="${C.x + 50}" y="${C.y - 46}" fill="#d94f45" font-size="18" font-weight="900">外角</text>
   `;
   $("#exteriorMetrics").innerHTML = `
     <div class="metric-row"><span>远内角和</span><strong>${a}+${b}=${exterior}°</strong></div>
