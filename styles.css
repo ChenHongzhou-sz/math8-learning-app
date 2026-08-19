@@ -238,6 +238,55 @@ button:active {
   gap: 8px;
 }
 
+.chapter-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 4px;
+  border-radius: var(--radius);
+  background: rgba(223, 244, 255, 0.72);
+}
+
+.chapter-tab {
+  min-height: 54px;
+  padding: 8px 10px;
+  display: grid;
+  gap: 2px;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: transparent;
+  text-align: center;
+}
+
+.chapter-tab span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chapter-tab strong {
+  color: inherit;
+  font-size: 12px;
+}
+
+.chapter-tab.active {
+  color: #fff;
+  background: linear-gradient(180deg, #35b6ec, #147cc2);
+  box-shadow: 0 8px 18px rgba(20, 124, 194, 0.16);
+}
+
+.rail-subtext {
+  margin: 10px 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.chapter-lesson-list {
+  display: grid;
+  gap: 8px;
+}
+
 .lesson-button {
   width: 100%;
   min-height: 70px;
@@ -527,6 +576,137 @@ button:active {
 
 .practice-hint strong {
   line-height: 1.5;
+}
+
+.practice-visual {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid #d7e8f4;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #ffffff 0%, #f3fbff 100%);
+}
+
+.practice-visual.selected {
+  border-color: #9bd7f4;
+}
+
+.practice-visual.good {
+  border-color: #78d9ba;
+  background: #f0fff9;
+}
+
+.practice-visual.bad {
+  border-color: #ffb4aa;
+  background: #fff7f5;
+}
+
+.practice-visual svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 280px;
+}
+
+.practice-visual figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.visual-mark {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.visual-mark.blue {
+  stroke: var(--blue);
+}
+
+.visual-mark.green {
+  stroke: var(--green);
+}
+
+.visual-mark.amber {
+  stroke: var(--amber);
+}
+
+.visual-mark.coral {
+  stroke: var(--coral);
+}
+
+.visual-angle {
+  stroke: var(--amber);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.visual-label,
+.visual-badge,
+.visual-node {
+  fill: var(--ink);
+  font-weight: 800;
+}
+
+.visual-label {
+  font-size: 18px;
+}
+
+.visual-badge {
+  font-size: 20px;
+}
+
+.visual-node {
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.geogebra-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #f7fcff;
+}
+
+.geogebra-card h4 {
+  margin: 2px 0 6px;
+  font-size: 18px;
+}
+
+.geogebra-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.geogebra-mount {
+  display: none;
+  grid-column: 1 / -1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.geogebra-mount.open {
+  display: block;
+  min-height: 420px;
+  border: 1px solid #d7e8f4;
+}
+
+.geo-loading {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .interaction-grid {
@@ -937,7 +1117,7 @@ input[type="range"] {
     max-height: none;
   }
 
-  .lesson-list {
+  .chapter-lesson-list {
     grid-auto-flow: column;
     grid-auto-columns: minmax(210px, 1fr);
     overflow-x: auto;
@@ -962,6 +1142,10 @@ input[type="range"] {
 
   .task-grid,
   .reasoning-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .geogebra-card {
     grid-template-columns: 1fr;
   }
 
@@ -996,7 +1180,7 @@ input[type="range"] {
     height: 48px;
   }
 
-  .lesson-list {
+  .chapter-lesson-list {
     grid-auto-columns: minmax(190px, 86vw);
   }
 }

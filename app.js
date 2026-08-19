@@ -5,6 +5,11 @@ const STEPS = [
   { id: "master", label: "通关" }
 ];
 
+const CHAPTERS = [
+  { id: "ch11", title: "第十一章 三角形", shortTitle: "三角形", range: "1-8" },
+  { id: "ch12", title: "第十二章 全等三角形", shortTitle: "全等三角形", range: "9-15" }
+];
+
 const LESSONS = [
   {
     id: "edges",
@@ -1135,6 +1140,10 @@ const LESSON_ENRICHMENT = {
       { title: "出口", text: "证明全等不是终点，终点是对应边或对应角相等。" }
     ],
     application: ["钢架稳定", "等腰三角形分成两个小三角形", "作一个角等于已知角的原理"],
+    geoGebra: {
+      title: "三边锁形实验",
+      text: "拖动顶点，观察三条边长一旦固定，三角形形状就被锁住。"
+    },
     extraPractices: [
       {
         prompt: "C 是 AB 的中点，能得到什么？",
@@ -1167,6 +1176,10 @@ const LESSON_ENRICHMENT = {
       { title: "应用", text: "够不到的线段，可以构造全等三角形把它转移到能量的位置。" }
     ],
     application: ["池塘测距", "对顶角证明", "辨认边边角反例"],
+    geoGebra: {
+      title: "SAS 夹角实验",
+      text: "保留两条边和夹角，再对比“角不在中间”时为什么可能失效。"
+    },
     extraPractices: [
       {
         prompt: "SAS 中的 A 必须是什么角？",
@@ -1263,6 +1276,10 @@ const LESSON_ENRICHMENT = {
       { title: "结论", text: "全等后得到 PD=PE，也就是到两边距离相等。" }
     ],
     application: ["尺规作角平分线", "点到边距离", "道路或市场选址"],
+    geoGebra: {
+      title: "角平分线距离实验",
+      text: "拖动角平分线上的点 P，观察到两边的垂直距离是否始终相等。"
+    },
     extraPractices: [
       {
         prompt: "证明点到角两边距离相等时，通常先作什么辅助线？",
@@ -1325,6 +1342,7 @@ const syncState = {
   session: loadSession(),
   busy: false
 };
+let geoGebraScriptPromise = null;
 const uiMemory = {
   triangle: { ab: 7, ac: 7, bc: 5 },
   lineType: "height",
@@ -1342,6 +1360,7 @@ const uiMemory = {
 
 function loadState() {
   const fallback = {
+    chapterId: "ch11",
     lessonId: "edges",
     stepId: "discover",
     progress: {},
@@ -1476,6 +1495,23 @@ function currentLesson() {
   return LESSONS.find((lesson) => lesson.id === appState.lessonId) || LESSONS[0];
 }
 
+function chapterForLesson(lesson) {
+  if (lesson?.chapter) {
+    return CHAPTERS.find((chapter) => chapter.title === lesson.chapter) || CHAPTERS[0];
+  }
+  return lesson?.no >= 9 ? CHAPTERS[1] : CHAPTERS[0];
+}
+
+function currentChapter() {
+  const lessonChapter = chapterForLesson(currentLesson());
+  const savedChapter = CHAPTERS.find((chapter) => chapter.id === appState.chapterId);
+  if (!savedChapter || savedChapter.id !== lessonChapter.id) {
+    appState.chapterId = lessonChapter.id;
+    return lessonChapter;
+  }
+  return savedChapter;
+}
+
 function currentStepIndex() {
   return Math.max(0, STEPS.findIndex((step) => step.id === appState.stepId));
 }
@@ -1489,11 +1525,30 @@ function render() {
 }
 
 function renderLessonList() {
-  const completed = LESSONS.filter((lesson) => appState.progress[lesson.id]?.mastered).length;
-  $("#progressText").textContent = `${completed}/${LESSONS.length}`;
-  $("#overallProgress").style.width = `${(completed / LESSONS.length) * 100}%`;
+  const chapter = currentChapter();
+  const visibleLessons = LESSONS.filter((lesson) => chapterForLesson(lesson).id === chapter.id);
+  const chapterDone = visibleLessons.filter((lesson) => appState.progress[lesson.id]?.mastered).length;
+  const totalDone = LESSONS.filter((lesson) => appState.progress[lesson.id]?.mastered).length;
+  $("#progressText").textContent = `${chapterDone}/${visibleLessons.length}`;
+  $("#overallProgress").style.width = `${(chapterDone / visibleLessons.length) * 100}%`;
 
-  $("#lessonList").innerHTML = LESSONS.map((lesson) => {
+  $("#lessonList").innerHTML = `
+    <div class="chapter-tabs" aria-label="章节选择">
+      ${CHAPTERS.map((item) => {
+        const active = item.id === chapter.id;
+        const lessons = LESSONS.filter((lesson) => chapterForLesson(lesson).id === item.id);
+        const done = lessons.filter((lesson) => appState.progress[lesson.id]?.mastered).length;
+        return `
+          <button class="chapter-tab ${active ? "active" : ""}" data-chapter="${item.id}" type="button">
+            <span>${item.shortTitle}</span>
+            <strong>${done}/${lessons.length}</strong>
+          </button>
+        `;
+      }).join("")}
+    </div>
+    <p class="rail-subtext">${chapter.title} · 第 ${chapter.range} 课 · 总进度 ${totalDone}/${LESSONS.length}</p>
+    <div class="chapter-lesson-list">
+      ${visibleLessons.map((lesson) => {
     const done = appState.progress[lesson.id]?.mastered;
     const active = lesson.id === appState.lessonId;
     return `
@@ -1506,11 +1561,26 @@ function renderLessonList() {
         <span class="lesson-check">${done ? "✓" : ""}</span>
       </button>
     `;
-  }).join("");
+      }).join("")}
+    </div>
+  `;
+
+  document.querySelectorAll("[data-chapter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.chapterId = button.dataset.chapter;
+      const firstLesson = LESSONS.find((lesson) => chapterForLesson(lesson).id === appState.chapterId);
+      if (firstLesson && chapterForLesson(currentLesson()).id !== appState.chapterId) {
+        appState.lessonId = firstLesson.id;
+        appState.stepId = "discover";
+      }
+      render();
+    });
+  });
 
   document.querySelectorAll("[data-lesson]").forEach((button) => {
     button.addEventListener("click", () => {
       appState.lessonId = button.dataset.lesson;
+      appState.chapterId = chapterForLesson(currentLesson()).id;
       appState.stepId = "discover";
       render();
     });
@@ -1534,7 +1604,9 @@ function renderStepTabs() {
 
 function renderStudyPanel() {
   const lesson = currentLesson();
-  $("#chapterTitle").textContent = lesson.chapter || "第十一章 三角形";
+  const chapter = chapterForLesson(lesson);
+  appState.chapterId = chapter.id;
+  $("#chapterTitle").textContent = chapter.title;
   $("#lessonKicker").textContent = `第 ${lesson.no} 课`;
   $("#lessonTitle").textContent = lesson.title;
   $("#lessonStatus").textContent = appState.progress[lesson.id]?.mastered ? "已通关" : "学习中";
@@ -1558,10 +1630,12 @@ function renderDiscover(lesson) {
       ${sceneHtml(lesson)}
       <div id="interactiveMount"></div>
       ${exploreTasksHtml(lesson)}
+      ${geoGebraHtml(lesson)}
       ${navigatorHtml()}
     </article>
   `;
   mountInteraction(lesson);
+  bindGeoGebra(lesson);
   bindNavigator();
 }
 
@@ -1599,16 +1673,18 @@ function renderPractice(lesson) {
   const item = practices[quiz.index];
   const checked = quiz.checked[quiz.index];
   const selected = quiz.selected[quiz.index];
+  const visual = practiceVisualHtml(lesson, item, selected, checked);
 
   $("#studyContent").innerHTML = `
     <article class="quiz-card">
       <div class="module-head">
         <div>
           <h3>第 ${quiz.index + 1} 题 / ${practices.length}</h3>
-          <p>${item.prompt}</p>
+          <p>${visual ? "先看图，再点一个答案。" : item.prompt}</p>
         </div>
         <span class="result-pill">即时反馈</span>
       </div>
+      ${visual}
       ${practiceHintHtml(item)}
       <div class="quiz-options">
         ${item.options.map((option, index) => {
@@ -1786,7 +1862,7 @@ function sceneSvg(id) {
       </svg>
     `;
   }
-  if (id === "polygon-basic") {
+  if (id === "polygon-basics") {
     return `
       <svg viewBox="0 0 220 150">
         <polygon points="110,20 178,58 162,124 58,124 42,58" fill="#f4f7fa" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
@@ -1923,6 +1999,120 @@ function applicationHtml(lesson) {
   `;
 }
 
+function geoGebraHtml(lesson) {
+  const geo = lessonDetail(lesson).geoGebra;
+  if (!geo) return "";
+  return `
+    <section class="geogebra-card">
+      <div>
+        <p class="eyebrow">GeoGebra 试验板</p>
+        <h4>${geo.title}</h4>
+        <p>${geo.text}</p>
+      </div>
+      <button class="ghost-button" id="loadGeoGebra" type="button">打开实验板</button>
+      <div class="geogebra-mount" id="geoGebraMount" aria-live="polite"></div>
+    </section>
+  `;
+}
+
+function bindGeoGebra(lesson) {
+  const button = $("#loadGeoGebra");
+  const mount = $("#geoGebraMount");
+  if (!button || !mount) return;
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    mount.classList.add("open");
+    mount.innerHTML = `<div class="geo-loading">正在加载 GeoGebra...</div>`;
+    try {
+      await loadGeoGebraScript();
+      const width = Math.min(720, Math.max(320, mount.clientWidth || 680));
+      const applet = new window.GGBApplet({
+        appName: "geometry",
+        width,
+        height: 420,
+        language: "zh-CN",
+        showToolBar: false,
+        showAlgebraInput: false,
+        showMenuBar: false,
+        showResetIcon: true,
+        enableRightClick: false,
+        enableShiftDragZoom: false,
+        appletOnLoad(api) {
+          geoGebraCommands(lesson.id).forEach((command) => api.evalCommand(command));
+        }
+      }, true);
+      mount.innerHTML = "";
+      applet.inject("geoGebraMount");
+    } catch (error) {
+      button.disabled = false;
+      mount.innerHTML = `
+        <p class="small-note">GeoGebra 暂时没有加载成功。上面的互动图仍可继续使用，稍后再试即可。</p>
+      `;
+    }
+  });
+}
+
+function loadGeoGebraScript() {
+  if (window.GGBApplet) return Promise.resolve();
+  if (!geoGebraScriptPromise) {
+    geoGebraScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://www.geogebra.org/apps/deployggb.js";
+      script.async = true;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+  return geoGebraScriptPromise;
+}
+
+function geoGebraCommands(id) {
+  if (id === "sss") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "c=Circle(A,3)",
+      "d=Circle(B,4)",
+      "C=Intersect(c,d,1)",
+      "Polygon(A,B,C)",
+      "Segment(A,B)",
+      "Segment(A,C)",
+      "Segment(B,C)"
+    ];
+  }
+  if (id === "sas") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "C=(2.2,3)",
+      "D=(0,-4)",
+      "E=(5,-4)",
+      "F=(2.2,-1)",
+      "Polygon(A,B,C)",
+      "Polygon(D,E,F)",
+      "Angle(B,A,C)",
+      "Angle(E,D,F)"
+    ];
+  }
+  if (id === "angle-bisector-property") {
+    return [
+      "O=(0,0)",
+      "A=(5,2)",
+      "B=(5,-2)",
+      "l=Ray(O,A)",
+      "m=Ray(O,B)",
+      "n=AngleBisector(A,O,B)",
+      "P=(3,0)",
+      "D=ClosestPoint(l,P)",
+      "E=ClosestPoint(m,P)",
+      "Segment(P,D)",
+      "Segment(P,E)"
+    ];
+  }
+  return [];
+}
+
 function practiceHintHtml(item) {
   if (!item.hint) return "";
   return `
@@ -1931,6 +2121,149 @@ function practiceHintHtml(item) {
       <strong>${item.hint}</strong>
     </div>
   `;
+}
+
+function practiceVisualHtml(lesson, item, selected, checked) {
+  const chapter = chapterForLesson(lesson);
+  if (chapter.id !== "ch12") return "";
+  const outcome = checked ? (selected === item.answer ? "good" : "bad") : selected !== undefined ? "selected" : "";
+  const caption = item.prompt;
+  const svg = practiceVisualSvg(lesson.id);
+  if (!svg) return "";
+  return `
+    <figure class="practice-visual ${outcome}">
+      ${svg}
+      <figcaption>${caption}</figcaption>
+    </figure>
+  `;
+}
+
+function practiceVisualSvg(id) {
+  if (id === "congruence-basic") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="两个全等三角形的对应关系">
+        <polygon points="78,196 164,58 246,196" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <polygon points="326,196 412,58 494,196" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="78" y1="196" x2="164" y2="58" class="visual-mark coral"></line>
+        <line x1="326" y1="196" x2="412" y2="58" class="visual-mark coral"></line>
+        <line x1="78" y1="196" x2="246" y2="196" class="visual-mark blue"></line>
+        <line x1="326" y1="196" x2="494" y2="196" class="visual-mark blue"></line>
+        <text x="56" y="222" class="visual-label">A</text><text x="156" y="44" class="visual-label">B</text><text x="250" y="222" class="visual-label">C</text>
+        <text x="306" y="222" class="visual-label">D</text><text x="404" y="44" class="visual-label">E</text><text x="498" y="222" class="visual-label">F</text>
+        <path d="M270 126 h34" stroke="#24a67a" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M294 112 l16 14 -16 14" fill="none" stroke="#24a67a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    `;
+  }
+  if (id === "sss") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="SSS 三组边相等">
+        <polygon points="84,198 180,52 276,198" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="84" y1="198" x2="180" y2="52" class="visual-mark blue"></line>
+        <line x1="180" y1="52" x2="276" y2="198" class="visual-mark green"></line>
+        <line x1="84" y1="198" x2="276" y2="198" class="visual-mark amber"></line>
+        <g transform="translate(286 0)">
+          <polygon points="84,198 180,52 276,198" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+          <line x1="84" y1="198" x2="180" y2="52" class="visual-mark blue"></line>
+          <line x1="180" y1="52" x2="276" y2="198" class="visual-mark green"></line>
+          <line x1="84" y1="198" x2="276" y2="198" class="visual-mark amber"></line>
+        </g>
+        <text x="232" y="236" class="visual-badge">三边</text>
+      </svg>
+    `;
+  }
+  if (id === "sas") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="SAS 两边和夹角">
+        <polygon points="86,198 194,64 282,198" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="86" y1="198" x2="194" y2="64" class="visual-mark blue"></line>
+        <line x1="194" y1="64" x2="282" y2="198" class="visual-mark green"></line>
+        <path d="M172 92 q24 20 46 0" fill="none" class="visual-angle"></path>
+        <g transform="translate(284 0)">
+          <polygon points="86,198 194,64 282,198" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+          <line x1="86" y1="198" x2="194" y2="64" class="visual-mark blue"></line>
+          <line x1="194" y1="64" x2="282" y2="198" class="visual-mark green"></line>
+          <path d="M172 92 q24 20 46 0" fill="none" class="visual-angle"></path>
+        </g>
+        <text x="218" y="236" class="visual-badge">边-夹角-边</text>
+      </svg>
+    `;
+  }
+  if (id === "asa-aas") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="两角一边确定三角形">
+        <line x1="88" y1="198" x2="270" y2="198" class="visual-mark blue"></line>
+        <line x1="88" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
+        <line x1="270" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
+        <path d="M114 198 q8 -26 34 -36" fill="none" class="visual-angle"></path>
+        <path d="M244 198 q-8 -26 -34 -36" fill="none" class="visual-angle"></path>
+        <g transform="translate(286 0)">
+          <line x1="88" y1="198" x2="270" y2="198" class="visual-mark blue"></line>
+          <line x1="88" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
+          <line x1="270" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
+          <path d="M114 198 q8 -26 34 -36" fill="none" class="visual-angle"></path>
+          <path d="M244 198 q-8 -26 -34 -36" fill="none" class="visual-angle"></path>
+        </g>
+        <text x="212" y="236" class="visual-badge">两角一边</text>
+      </svg>
+    `;
+  }
+  if (id === "hl") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="HL 直角三角形斜边和直角边">
+        <polygon points="92,204 268,204 268,62" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <path d="M240 204 v-28 h28" fill="none" stroke="#ef6b5b" stroke-width="5"></path>
+        <line x1="92" y1="204" x2="268" y2="62" class="visual-mark green"></line>
+        <line x1="268" y1="204" x2="268" y2="62" class="visual-mark blue"></line>
+        <g transform="translate(262 0)">
+          <polygon points="92,204 268,204 268,62" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+          <path d="M240 204 v-28 h28" fill="none" stroke="#ef6b5b" stroke-width="5"></path>
+          <line x1="92" y1="204" x2="268" y2="62" class="visual-mark green"></line>
+          <line x1="268" y1="204" x2="268" y2="62" class="visual-mark blue"></line>
+        </g>
+        <text x="218" y="238" class="visual-badge">斜边 + 直角边</text>
+      </svg>
+    `;
+  }
+  if (id === "angle-bisector-property") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="角平分线上点到两边距离相等">
+        <line x1="78" y1="132" x2="494" y2="38" stroke="#172033" stroke-width="6" stroke-linecap="round"></line>
+        <line x1="78" y1="132" x2="494" y2="226" stroke="#172033" stroke-width="6" stroke-linecap="round"></line>
+        <line x1="78" y1="132" x2="504" y2="132" class="visual-mark green" stroke-dasharray="12 10"></line>
+        <circle cx="314" cy="132" r="10" fill="#24a67a"></circle>
+        <line x1="314" y1="132" x2="292" y2="84" class="visual-mark blue"></line>
+        <line x1="314" y1="132" x2="292" y2="180" class="visual-mark blue"></line>
+        <path d="M280 88 l-18 8 8 18" fill="none" stroke="#ef6b5b" stroke-width="4"></path>
+        <path d="M280 176 l-18 -8 8 -18" fill="none" stroke="#ef6b5b" stroke-width="4"></path>
+        <text x="324" y="122" class="visual-label">P</text>
+        <text x="244" y="80" class="visual-label">D</text>
+        <text x="244" y="194" class="visual-label">E</text>
+        <text x="346" y="238" class="visual-badge">PD = PE</text>
+      </svg>
+    `;
+  }
+  if (id === "congruence-review") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="全等证明路线">
+        ${[
+          ["目标", 72, 90],
+          ["三角形", 176, 90],
+          ["条件", 296, 90],
+          ["判定", 408, 90],
+          ["结论", 488, 90]
+        ].map(([label, x, y], index) => `
+          <g>
+            <circle cx="${x}" cy="${y}" r="34" fill="${index === 2 ? "#fff4d9" : "#effaff"}" stroke="#172033" stroke-width="4"></circle>
+            <text x="${x}" y="${y + 7}" class="visual-node">${label}</text>
+          </g>
+        `).join("")}
+        <path d="M106 90 H142 M210 90 H262 M330 90 H374 M442 90 H454" fill="none" stroke="#24a67a" stroke-width="6" stroke-linecap="round"></path>
+        <text x="152" y="180" class="visual-badge">先找图，再选判定</text>
+      </svg>
+    `;
+  }
+  return "";
 }
 
 function navigatorHtml() {
@@ -1962,6 +2295,7 @@ function goNextLesson() {
   const index = LESSONS.findIndex((lesson) => lesson.id === appState.lessonId);
   const next = LESSONS[(index + 1) % LESSONS.length];
   appState.lessonId = next.id;
+  appState.chapterId = chapterForLesson(next).id;
   appState.stepId = "discover";
 }
 

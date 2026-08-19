@@ -82,6 +82,9 @@
 - 池塘测距、钢架、中点、公共边、对顶角、垂线等教材例题思想。
 - 角平分线作图、性质、逆命题和选址应用。
 - 证明题“目标 - 三角形 - 条件 - 判定 - 结论”路线卡。
+- 章节分组学习地图，第十一章和第十二章可单独点选。
+- 第十二章试点视觉优先练习：题目前先呈现几何图形，文字作为辅助。
+- SSS、SAS、角平分线性质提供可选 GeoGebra 实验板入口，点击后才加载外部脚本。
 
 最近重要提交：
 
@@ -89,6 +92,7 @@
 - `2a7080c Configure Supabase sync`
 - `865958c Support Supabase publishable key auth`
 - `eae6a63 Enrich chapter 11 visual learning content`
+- `056b980 Refresh app with summer sky style`
 
 ## 技术方案
 
@@ -115,6 +119,7 @@
   - `learning_progress`
   - `quiz_attempts`
 - 只使用公开前端 key；不要使用或要求用户提供 `service_role` key。
+- 课程内容、题目、图形互动、GeoGebra 入口和界面样式都在前端文件中；这些日常更新通常不需要修改 Supabase。
 
 ## Supabase 状态
 
