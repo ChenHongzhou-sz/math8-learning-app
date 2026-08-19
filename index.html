@@ -21,13 +21,14 @@
           </div>
         </div>
         <div class="top-actions">
-          <button class="text-button" id="syncButton" type="button">同步</button>
+          <button class="icon-button" id="toggleRail" type="button" title="展开学习地图" aria-label="展开学习地图">☰</button>
+          <button class="icon-button" id="syncButton" type="button" title="同步学习进度" aria-label="同步学习进度">⇄</button>
           <button class="icon-button" id="resetProgress" type="button" title="重置学习进度" aria-label="重置学习进度">↺</button>
-          <button class="text-button" id="toggleCoach" type="button">家长提示</button>
+          <button class="icon-button" id="toggleCoach" type="button" title="展开家长驾驶舱" aria-label="展开家长驾驶舱">?</button>
         </div>
       </header>
 
-      <main class="app-grid">
+      <main class="app-grid" id="appGrid">
         <nav class="lesson-rail" aria-label="课时导航">
           <div class="rail-header">
             <span>学习地图</span>

@@ -168,6 +168,18 @@ button:active {
   align-items: start;
 }
 
+.app-grid.rail-collapsed {
+  grid-template-columns: 72px minmax(0, 1fr) 320px;
+}
+
+.app-grid.coach-collapsed {
+  grid-template-columns: 280px minmax(0, 1fr) 72px;
+}
+
+.app-grid.rail-collapsed.coach-collapsed {
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
+}
+
 .lesson-rail,
 .study-panel,
 .coach-panel {
@@ -192,6 +204,11 @@ button:active {
   padding: 16px;
 }
 
+.rail-collapsed .lesson-rail,
+.coach-collapsed .coach-panel {
+  padding: 10px;
+}
+
 .rail-header,
 .coach-heading,
 .lesson-title-row,
@@ -208,6 +225,18 @@ button:active {
 
 .module-head {
   flex-wrap: wrap;
+}
+
+.rail-collapsed .rail-header {
+  justify-content: center;
+}
+
+.rail-collapsed .rail-header span,
+.rail-collapsed .rail-header strong,
+.rail-collapsed .progress-track,
+.coach-collapsed .coach-heading span,
+.coach-collapsed #coachContent {
+  display: none;
 }
 
 .rail-header span,
@@ -236,6 +265,50 @@ button:active {
 .lesson-list {
   display: grid;
   gap: 8px;
+}
+
+.map-mini {
+  display: none;
+}
+
+.rail-collapsed .map-mini {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.rail-collapsed .map-full {
+  display: none;
+}
+
+.mini-button {
+  width: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--teal-dark);
+  background: #eaf7ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mini-button.active {
+  color: #fff;
+  background: var(--blue);
+}
+
+.mini-button.done {
+  color: #fff;
+  background: var(--green);
+}
+
+.mini-divider {
+  width: 32px;
+  height: 1px;
+  margin: 2px 0;
+  background: var(--line);
 }
 
 .chapter-tabs {
@@ -375,10 +448,24 @@ button:active {
 .step-tab {
   min-height: 48px;
   padding: 8px;
+  display: grid;
+  grid-template-columns: 24px auto;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border-radius: var(--radius);
   color: var(--muted);
   background: #eaf6ff;
   font-weight: 700;
+}
+
+.step-tab span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.step-tab strong {
+  font-size: 14px;
 }
 
 .step-tab.active {
@@ -866,15 +953,41 @@ input[type="range"] {
 .option-button {
   min-height: 54px;
   padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
   border-radius: var(--radius);
   color: var(--ink);
   background: #edf7ff;
   text-align: left;
 }
 
+.option-key {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--blue);
+  background: #fff;
+  font-weight: 900;
+}
+
+.option-button strong {
+  min-width: 0;
+  line-height: 1.45;
+}
+
 .option-button.selected {
   color: #fff;
   background: var(--blue);
+}
+
+.option-button.selected .option-key,
+.option-button.correct .option-key,
+.option-button.wrong .option-key {
+  color: var(--ink);
 }
 
 .option-button.correct {
@@ -933,6 +1046,11 @@ input[type="range"] {
 
 .coach-panel {
   padding: 16px;
+}
+
+.coach-collapsed .coach-heading {
+  justify-content: center;
+  margin-bottom: 0;
 }
 
 .coach-heading {

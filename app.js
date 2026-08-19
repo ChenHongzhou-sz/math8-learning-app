@@ -1,8 +1,8 @@
 const STEPS = [
-  { id: "discover", label: "观察" },
-  { id: "understand", label: "领悟" },
-  { id: "practice", label: "练习" },
-  { id: "master", label: "通关" }
+  { id: "discover", label: "观察", icon: "◎" },
+  { id: "understand", label: "命名", icon: "◇" },
+  { id: "practice", label: "图题", icon: "✓" },
+  { id: "master", label: "通关", icon: "★" }
 ];
 
 const CHAPTERS = [
@@ -1365,7 +1365,8 @@ function loadState() {
     stepId: "discover",
     progress: {},
     quiz: {},
-    coachOpen: window.innerWidth > 1120
+    railOpen: false,
+    coachOpen: false
   };
   try {
     return { ...fallback, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
@@ -1517,11 +1518,26 @@ function currentStepIndex() {
 }
 
 function render() {
+  renderShell();
   renderLessonList();
   renderStepTabs();
   renderStudyPanel();
   renderCoach();
   saveState();
+}
+
+function renderShell() {
+  $("#appGrid").classList.toggle("rail-collapsed", !appState.railOpen);
+  $("#appGrid").classList.toggle("coach-collapsed", !appState.coachOpen);
+  $("#toggleRail").textContent = appState.railOpen ? "‹" : "☰";
+  $("#toggleRail").title = appState.railOpen ? "收起学习地图" : "展开学习地图";
+  $("#toggleRail").setAttribute("aria-label", appState.railOpen ? "收起学习地图" : "展开学习地图");
+  $("#toggleCoach").textContent = appState.coachOpen ? "›" : "?";
+  $("#toggleCoach").title = appState.coachOpen ? "收起家长驾驶舱" : "展开家长驾驶舱";
+  $("#toggleCoach").setAttribute("aria-label", appState.coachOpen ? "收起家长驾驶舱" : "展开家长驾驶舱");
+  $("#closeCoach").textContent = appState.coachOpen ? "×" : "?";
+  $("#closeCoach").title = appState.coachOpen ? "收起家长驾驶舱" : "展开家长驾驶舱";
+  $("#closeCoach").setAttribute("aria-label", appState.coachOpen ? "收起家长驾驶舱" : "展开家长驾驶舱");
 }
 
 function renderLessonList() {
@@ -1533,7 +1549,21 @@ function renderLessonList() {
   $("#overallProgress").style.width = `${(chapterDone / visibleLessons.length) * 100}%`;
 
   $("#lessonList").innerHTML = `
-    <div class="chapter-tabs" aria-label="章节选择">
+    <div class="map-mini" aria-label="精简学习地图">
+      ${CHAPTERS.map((item) => `
+        <button class="mini-button ${item.id === chapter.id ? "active" : ""}" data-chapter="${item.id}" type="button" title="${item.title}" aria-label="${item.title}">
+          ${item.id === "ch11" ? "11" : "12"}
+        </button>
+      `).join("")}
+      <div class="mini-divider"></div>
+      ${visibleLessons.map((lesson) => `
+        <button class="mini-button ${lesson.id === appState.lessonId ? "active" : ""} ${appState.progress[lesson.id]?.mastered ? "done" : ""}" data-lesson="${lesson.id}" type="button" title="${lesson.title}" aria-label="${lesson.title}">
+          ${lesson.no}
+        </button>
+      `).join("")}
+    </div>
+    <div class="map-full">
+      <div class="chapter-tabs" aria-label="章节选择">
       ${CHAPTERS.map((item) => {
         const active = item.id === chapter.id;
         const lessons = LESSONS.filter((lesson) => chapterForLesson(lesson).id === item.id);
@@ -1545,9 +1575,9 @@ function renderLessonList() {
           </button>
         `;
       }).join("")}
-    </div>
-    <p class="rail-subtext">${chapter.title} · 第 ${chapter.range} 课 · 总进度 ${totalDone}/${LESSONS.length}</p>
-    <div class="chapter-lesson-list">
+      </div>
+      <p class="rail-subtext">${chapter.title} · 第 ${chapter.range} 课 · 总进度 ${totalDone}/${LESSONS.length}</p>
+      <div class="chapter-lesson-list">
       ${visibleLessons.map((lesson) => {
     const done = appState.progress[lesson.id]?.mastered;
     const active = lesson.id === appState.lessonId;
@@ -1562,6 +1592,7 @@ function renderLessonList() {
       </button>
     `;
       }).join("")}
+      </div>
     </div>
   `;
 
@@ -1590,7 +1621,8 @@ function renderLessonList() {
 function renderStepTabs() {
   $("#stepTabs").innerHTML = STEPS.map((step) => `
     <button class="step-tab ${step.id === appState.stepId ? "active" : ""}" data-step="${step.id}" type="button" role="tab">
-      ${step.label}
+      <span aria-hidden="true">${step.icon}</span>
+      <strong>${step.label}</strong>
     </button>
   `).join("");
 
@@ -1644,8 +1676,8 @@ function renderUnderstand(lesson) {
     <article class="module">
       <div class="module-head">
         <div>
-          <h3>把发现变成数学语言</h3>
-          <p>${lesson.objective}</p>
+          <h3>看懂后再命名</h3>
+          <p>只抓关键词：图形、条件、结论。</p>
         </div>
         <span class="result-pill">原理</span>
       </div>
@@ -1655,8 +1687,8 @@ function renderUnderstand(lesson) {
     <article class="module">
       <div class="module-head">
         <div>
-          <h3>常见误区</h3>
-          <p>错题不只改答案，要知道自己错在哪一类。</p>
+          <h3>容易看错</h3>
+          <p>先看图，再排除。</p>
         </div>
       </div>
       <ul class="mistake-list">${lesson.mistakes.map((item) => `<li>${item}</li>`).join("")}</ul>
@@ -1679,8 +1711,8 @@ function renderPractice(lesson) {
     <article class="quiz-card">
       <div class="module-head">
         <div>
-          <h3>第 ${quiz.index + 1} 题 / ${practices.length}</h3>
-          <p>${visual ? "先看图，再点一个答案。" : item.prompt}</p>
+          <h3>图形题 ${quiz.index + 1}/${practices.length}</h3>
+          <p>${visual ? "看图，点答案。" : item.prompt}</p>
         </div>
         <span class="result-pill">即时反馈</span>
       </div>
@@ -1691,11 +1723,16 @@ function renderPractice(lesson) {
           let cls = selected === index ? "selected" : "";
           if (checked && index === item.answer) cls = "correct";
           if (checked && selected === index && index !== item.answer) cls = "wrong";
-          return `<button class="option-button ${cls}" data-option="${index}" type="button">${option}</button>`;
+          return `
+            <button class="option-button ${cls}" data-option="${index}" type="button">
+              <span class="option-key">${String.fromCharCode(65 + index)}</span>
+              <strong>${option}</strong>
+            </button>
+          `;
         }).join("")}
       </div>
       <div class="feedback ${checked ? (selected === item.answer ? "good" : "bad") : ""}">
-        ${checked ? item.feedback : "先选一个答案。做错也没关系，重点是看提示。"}
+        ${checked ? item.feedback : "先点一个答案。"}
       </div>
       <div class="quiz-actions">
         <button class="ghost-button" id="prevQuestion" type="button">上一题</button>
@@ -2000,19 +2037,25 @@ function applicationHtml(lesson) {
 }
 
 function geoGebraHtml(lesson) {
-  const geo = lessonDetail(lesson).geoGebra;
-  if (!geo) return "";
+  const geo = geoGebraConfig(lesson);
   return `
     <section class="geogebra-card">
       <div>
-        <p class="eyebrow">GeoGebra 试验板</p>
+        <p class="eyebrow">GeoGebra</p>
         <h4>${geo.title}</h4>
         <p>${geo.text}</p>
       </div>
-      <button class="ghost-button" id="loadGeoGebra" type="button">打开实验板</button>
+      <button class="icon-button" id="loadGeoGebra" type="button" title="打开 GeoGebra 实验板" aria-label="打开 GeoGebra 实验板">↗</button>
       <div class="geogebra-mount" id="geoGebraMount" aria-live="polite"></div>
     </section>
   `;
+}
+
+function geoGebraConfig(lesson) {
+  return lessonDetail(lesson).geoGebra || {
+    title: `${lesson.title}实验板`,
+    text: "打开后拖动点，观察图形里什么在变化、什么保持不变。"
+  };
 }
 
 function bindGeoGebra(lesson) {
@@ -2068,6 +2111,94 @@ function loadGeoGebraScript() {
 }
 
 function geoGebraCommands(id) {
+  if (id === "edges") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "c=Circle(A,3)",
+      "d=Circle(B,4)",
+      "C=Intersect(c,d,1)",
+      "Polygon(A,B,C)"
+    ];
+  }
+  if (id === "special-lines") {
+    return [
+      "A=(2,4)",
+      "B=(0,0)",
+      "C=(6,0)",
+      "Polygon(A,B,C)",
+      "M=Midpoint(B,C)",
+      "Segment(A,M)",
+      "h=PerpendicularLine(A,Line(B,C))"
+    ];
+  }
+  if (id === "stability") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "C=(6,3)",
+      "D=(1,3)",
+      "Polygon(A,B,C,D)",
+      "Segment(A,C)"
+    ];
+  }
+  if (id === "angle-sum") {
+    return [
+      "A=(2,4)",
+      "B=(0,0)",
+      "C=(6,0)",
+      "Polygon(A,B,C)",
+      "Angle(A,B,C)",
+      "Angle(B,C,A)",
+      "Angle(C,A,B)"
+    ];
+  }
+  if (id === "exterior") {
+    return [
+      "A=(2,4)",
+      "B=(0,0)",
+      "C=(5,0)",
+      "D=(7,0)",
+      "Polygon(A,B,C)",
+      "Ray(C,D)",
+      "Angle(A,C,D)"
+    ];
+  }
+  if (id === "polygon-basics") {
+    return [
+      "A=(1,4)",
+      "B=(5,4)",
+      "C=(6,1)",
+      "D=(3,-1)",
+      "E=(0,1)",
+      "Polygon(A,B,C,D,E)",
+      "Segment(A,C)",
+      "Segment(A,D)"
+    ];
+  }
+  if (id === "polygon-sum") {
+    return [
+      "A=(1,4)",
+      "B=(5,4)",
+      "C=(6,1)",
+      "D=(3,-1)",
+      "E=(0,1)",
+      "Polygon(A,B,C,D,E)",
+      "Segment(A,C)",
+      "Segment(A,D)"
+    ];
+  }
+  if (id === "review") {
+    return [
+      "A=(1,4)",
+      "B=(0,0)",
+      "C=(6,0)",
+      "Polygon(A,B,C)",
+      "D=Midpoint(B,C)",
+      "Segment(A,D)",
+      "Angle(A,B,C)"
+    ];
+  }
   if (id === "sss") {
     return [
       "A=(0,0)",
@@ -2110,6 +2241,61 @@ function geoGebraCommands(id) {
       "Segment(P,E)"
     ];
   }
+  if (id === "congruence-basic") {
+    return [
+      "A=(0,0)",
+      "B=(4,0)",
+      "C=(1,3)",
+      "D=(6,0)",
+      "E=(10,0)",
+      "F=(7,3)",
+      "Polygon(A,B,C)",
+      "Polygon(D,E,F)"
+    ];
+  }
+  if (id === "asa-aas") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "C=(2,3)",
+      "D=(7,0)",
+      "E=(12,0)",
+      "F=(9,3)",
+      "Polygon(A,B,C)",
+      "Polygon(D,E,F)",
+      "Angle(C,A,B)",
+      "Angle(A,B,C)"
+    ];
+  }
+  if (id === "hl") {
+    return [
+      "A=(0,0)",
+      "B=(5,0)",
+      "C=(5,3)",
+      "D=(7,0)",
+      "E=(12,0)",
+      "F=(12,3)",
+      "Polygon(A,B,C)",
+      "Polygon(D,E,F)",
+      "Angle(A,B,C)",
+      "Angle(D,E,F)"
+    ];
+  }
+  if (id === "congruence-review") {
+    return [
+      "A=(0,0)",
+      "B=(4,0)",
+      "C=(1,3)",
+      "D=(6,0)",
+      "E=(10,0)",
+      "F=(7,3)",
+      "Polygon(A,B,C)",
+      "Polygon(D,E,F)",
+      "Segment(A,D)",
+      "Segment(B,E)",
+      "Segment(C,F)"
+    ];
+  }
   return [];
 }
 
@@ -2124,8 +2310,6 @@ function practiceHintHtml(item) {
 }
 
 function practiceVisualHtml(lesson, item, selected, checked) {
-  const chapter = chapterForLesson(lesson);
-  if (chapter.id !== "ch12") return "";
   const outcome = checked ? (selected === item.answer ? "good" : "bad") : selected !== undefined ? "selected" : "";
   const caption = item.prompt;
   const svg = practiceVisualSvg(lesson.id);
@@ -2139,6 +2323,117 @@ function practiceVisualHtml(lesson, item, selected, checked) {
 }
 
 function practiceVisualSvg(id) {
+  if (id === "edges") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="三边关系图形题">
+        <line x1="74" y1="206" x2="246" y2="206" class="visual-mark blue"></line>
+        <line x1="74" y1="148" x2="190" y2="148" class="visual-mark green"></line>
+        <line x1="74" y1="90" x2="160" y2="90" class="visual-mark amber"></line>
+        <path d="M326 206 L410 74 L506 206 Z" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></path>
+        <path d="M74 44 h172" stroke="#ef6b5b" stroke-width="5" stroke-linecap="round"></path>
+        <text x="72" y="232" class="visual-label">最长边</text>
+        <text x="310" y="236" class="visual-badge">两短边和 > 最长边</text>
+      </svg>
+    `;
+  }
+  if (id === "special-lines") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="高中线角平分线图形题">
+        <polygon points="116,208 282,208 204,52" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="204" y1="52" x2="204" y2="208" class="visual-mark blue"></line>
+        <path d="M184 208 v-20 h20" fill="none" stroke="#ef6b5b" stroke-width="4"></path>
+        <line x1="204" y1="52" x2="282" y2="208" class="visual-mark green" stroke-dasharray="12 8"></line>
+        <path d="M182 92 q22 22 46 0" fill="none" class="visual-angle"></path>
+        <g transform="translate(244 0)">
+          <polygon points="116,208 282,208 204,52" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+          <line x1="204" y1="52" x2="199" y2="208" class="visual-mark amber"></line>
+          <circle cx="199" cy="208" r="7" fill="#d49a2a"></circle>
+        </g>
+        <text x="112" y="238" class="visual-badge">垂直 · 中点 · 等角</text>
+      </svg>
+    `;
+  }
+  if (id === "stability") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="三角形稳定性图形题">
+        <polygon points="72,70 224,86 244,206 52,190" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <path d="M72 70 L244 206" class="visual-mark coral"></path>
+        <polygon points="332,70 490,70 490,206 332,206" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="332" y1="70" x2="490" y2="206" class="visual-mark green"></line>
+        <text x="72" y="236" class="visual-badge">加斜撑 → 切成三角形</text>
+      </svg>
+    `;
+  }
+  if (id === "angle-sum") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="三角形内角和图形题">
+        <polygon points="104,204 272,204 190,58" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <path d="M126 204 q12 -34 46 -44" fill="none" class="visual-angle"></path>
+        <path d="M246 204 q-12 -34 -46 -44" fill="none" class="visual-angle"></path>
+        <path d="M172 88 q18 20 42 0" fill="none" class="visual-angle"></path>
+        <line x1="332" y1="132" x2="506" y2="132" class="visual-mark blue"></line>
+        <path d="M346 132 q38 -52 76 0 q38 52 76 0" fill="none" stroke="#d49a2a" stroke-width="7" stroke-linecap="round"></path>
+        <text x="348" y="176" class="visual-badge">180°</text>
+      </svg>
+    `;
+  }
+  if (id === "exterior") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="三角形外角图形题">
+        <polygon points="108,204 274,204 190,62" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="274" y1="204" x2="448" y2="204" class="visual-mark coral"></line>
+        <path d="M242 176 q72 -42 144 14" fill="none" class="visual-angle"></path>
+        <path d="M122 204 q14 -34 48 -46" fill="none" class="visual-mark green"></path>
+        <path d="M174 92 q18 18 40 0" fill="none" class="visual-mark blue"></path>
+        <text x="320" y="238" class="visual-badge">外角 = 两个远内角和</text>
+      </svg>
+    `;
+  }
+  if (id === "polygon-basics") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="多边形对角线图形题">
+        <polygon points="180,48 290,86 270,204 96,204 72,88" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <circle cx="180" cy="48" r="10" fill="#24a67a"></circle>
+        <line x1="180" y1="48" x2="270" y2="204" class="visual-mark blue"></line>
+        <line x1="180" y1="48" x2="96" y2="204" class="visual-mark blue"></line>
+        <line x1="180" y1="48" x2="290" y2="86" class="visual-mark amber"></line>
+        <text x="330" y="118" class="visual-badge">不相邻顶点</text>
+        <text x="330" y="154" class="visual-label">连起来才叫对角线</text>
+      </svg>
+    `;
+  }
+  if (id === "polygon-sum") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="多边形内角和图形题">
+        <polygon points="166,38 282,82 282,188 166,232 64,188 64,82" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
+        <line x1="166" y1="38" x2="282" y2="188" class="visual-mark green"></line>
+        <line x1="166" y1="38" x2="166" y2="232" class="visual-mark green"></line>
+        <line x1="166" y1="38" x2="64" y2="188" class="visual-mark green"></line>
+        <text x="332" y="118" class="visual-badge">n - 2 个三角形</text>
+        <text x="332" y="154" class="visual-label">再乘 180°</text>
+      </svg>
+    `;
+  }
+  if (id === "review") {
+    return `
+      <svg viewBox="0 0 560 260" role="img" aria-label="第十一章复习路线图形题">
+        ${[
+          ["边", 88, 102],
+          ["线", 190, 102],
+          ["角", 292, 102],
+          ["形", 394, 102],
+          ["证", 496, 102]
+        ].map(([label, x, y]) => `
+          <g>
+            <circle cx="${x}" cy="${y}" r="34" fill="#effaff" stroke="#172033" stroke-width="4"></circle>
+            <text x="${x}" y="${y + 8}" class="visual-node">${label}</text>
+          </g>
+        `).join("")}
+        <path d="M122 102 H156 M224 102 H258 M326 102 H360 M428 102 H462" stroke="#24a67a" stroke-width="6" stroke-linecap="round"></path>
+        <text x="166" y="188" class="visual-badge">先定位图形，再选定理</text>
+      </svg>
+    `;
+  }
   if (id === "congruence-basic") {
     return `
       <svg viewBox="0 0 560 260" role="img" aria-label="两个全等三角形的对应关系">
@@ -3203,7 +3498,12 @@ $("#toggleCoach").addEventListener("click", () => {
 });
 
 $("#closeCoach").addEventListener("click", () => {
-  appState.coachOpen = false;
+  appState.coachOpen = !appState.coachOpen;
+  render();
+});
+
+$("#toggleRail").addEventListener("click", () => {
+  appState.railOpen = !appState.railOpen;
   render();
 });
 
