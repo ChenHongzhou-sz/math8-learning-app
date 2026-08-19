@@ -443,6 +443,265 @@ const LESSONS = [
   }
 ];
 
+const LESSON_ENRICHMENT = {
+  edges: {
+    sceneTitle: "三根木条能不能搭成一个架子？",
+    sceneText: "把最长的那根想象成地面，另外两根要从两端伸出来并碰到同一个点。碰得到，才有三角形；刚好碰成一条直线，也不算。",
+    sceneBullets: ["先找最长边", "比较另外两边和", "相等时是压扁，不是三角形"],
+    exploreTasks: [
+      { label: "摆一摆", text: "先点 3,4,8，再点 5,6,10，对比为什么一个封不住，一个能封住。" },
+      { label: "说一说", text: "不用公式解释：为什么最长边不能太长？" },
+      { label: "换一换", text: "把 6,6,12 调成 6,6,11，观察从直线变成三角形的瞬间。" }
+    ],
+    reasoning: [
+      { title: "看见", text: "最长边固定后，另外两边像两只手臂，从两端往中间伸。" },
+      { title: "发现", text: "两只手臂合起来还够不到，图形就断开；刚好够到，只能躺成一条直线。" },
+      { title: "写成数学", text: "最长边 < 另外两边之和。只要检查最长边这一条最省力。" }
+    ],
+    application: ["判断三条线段能否围成三角形", "等腰三角形边长题要分类讨论", "求第三边范围时记住：两边差 < 第三边 < 两边和"],
+    extraPractices: [
+      {
+        prompt: "三角形两边长为 5 和 8，第三边 x 是整数。下面哪个 x 可以？",
+        options: ["3", "12", "13"],
+        answer: 1,
+        feedback: "第三边要大于 8-5=3，小于 8+5=13，所以 12 可以，3 和 13 都不行。",
+        hint: "先写范围：两边差 < 第三边 < 两边和。"
+      },
+      {
+        prompt: "等腰三角形周长 20，底边是 8，每条腰是多少？",
+        options: ["5", "6", "12"],
+        answer: 1,
+        feedback: "两条腰相等，(20-8)÷2=6。",
+        hint: "底边已确定，剩下两条就是相等的腰。"
+      }
+    ]
+  },
+  "special-lines": {
+    sceneTitle: "同一条线，凭什么叫不同名字？",
+    sceneText: "从顶点画到对边，看起来都是一条线。数学不按样子取名，而按它带来的证据取名：垂直、中点、等角。",
+    sceneBullets: ["高：证明垂直", "中线：证明中点", "角平分线：证明等角"],
+    exploreTasks: [
+      { label: "找证据", text: "每切换一条线，只说它带来的一个证据，不急着背定义。" },
+      { label: "反例眼", text: "问自己：中线一定垂直吗？角平分线一定平分对边吗？" },
+      { label: "画钝角", text: "想象三角形变钝时，高为什么可能落在外面。" }
+    ],
+    reasoning: [
+      { title: "高", text: "核心是 90°。它服务于面积、距离和垂直关系。" },
+      { title: "中线", text: "核心是中点。它把对边分成相等两段。" },
+      { title: "角平分线", text: "核心是等角。它把一个角分成两个相等的角。" }
+    ],
+    application: ["看到 90°，优先想到高", "看到 BD=DC，优先想到中线或中点", "看到两个小角相等，优先想到角平分线"],
+    extraPractices: [
+      {
+        prompt: "如果 AD 是 BC 边上的高，最直接能得到什么？",
+        options: ["AD⊥BC", "BD=DC", "∠BAD=∠CAD"],
+        answer: 0,
+        feedback: "高的关键词是垂直，所以 AD⊥BC。",
+        hint: "不要看线的位置，先问它的定义给了什么证据。"
+      },
+      {
+        prompt: "如果 ∠BAD=∠CAD，可以判断 AD 是什么？",
+        options: ["∠A 的角平分线", "BC 边上的中线", "BC 边上的高"],
+        answer: 0,
+        feedback: "把一个角分成两个相等的角，就是角平分线。",
+        hint: "等角对应角平分线。"
+      }
+    ]
+  },
+  stability: {
+    sceneTitle: "为什么门框要加斜撑？",
+    sceneText: "四边形像可以被推歪的框。加一条斜撑后，它被切成两个三角形，形状就被锁住了。",
+    sceneBullets: ["四边形边长不变，角可变", "一条对角线切成两个三角形", "n 边形至少加 n-3 根斜撑"],
+    exploreTasks: [
+      { label: "推一推", text: "先不加斜撑，拖动滑块，看框架怎样歪。" },
+      { label: "锁一锁", text: "打开斜撑，再拖动，观察为什么滑块失效。" },
+      { label: "数一数", text: "五边形、六边形分别需要几根斜撑才能全切成三角形？" }
+    ],
+    reasoning: [
+      { title: "不稳定", text: "四条边长度固定，角还可以变，所以四边形可以变形。" },
+      { title: "稳定", text: "三条边长度固定时，第三个顶点的位置也被固定。" },
+      { title: "会应用", text: "给多边形加斜撑，本质是把它分割成一个个三角形。" }
+    ],
+    application: ["桥梁桁架", "屋顶框架", "伸缩门利用四边形容易变形"],
+    extraPractices: [
+      {
+        prompt: "七边形木架至少加几根斜撑可以分成三角形？",
+        options: ["3 根", "4 根", "5 根"],
+        answer: 1,
+        feedback: "n 边形至少加 n-3 根斜撑，7-3=4。",
+        hint: "从一个顶点向不相邻顶点连线。"
+      },
+      {
+        prompt: "给四边形加一条对角线后，它被分成几个三角形？",
+        options: ["1 个", "2 个", "3 个"],
+        answer: 1,
+        feedback: "一条对角线把四边形切成两个三角形。",
+        hint: "画一条从一个顶点到对面顶点的线。"
+      }
+    ]
+  },
+  "angle-sum": {
+    sceneTitle: "把三个角撕下来，能拼成什么？",
+    sceneText: "量角器能发现三角形内角和接近 180°，但证明要说明所有三角形都这样。平行线的作用，就是把分散的角搬到一条直线上。",
+    sceneBullets: ["测量是发现", "剪拼是感受", "平行线证明是确认"],
+    exploreTasks: [
+      { label: "拖一拖", text: "拖动 A 点，看三个角改变时，总和是否仍然稳定。" },
+      { label: "开证明线", text: "打开证明线，找出被平行线搬过来的两个角。" },
+      { label: "讲四句", text: "用四句话复述证明：作平行线、角相等、拼平角、得 180°。" }
+    ],
+    reasoning: [
+      { title: "为什么要证明", text: "测量会有误差，而且不能测完所有三角形。" },
+      { title: "为什么作平行线", text: "平行线能制造相等角，把 B、C 两个角搬到 A 点附近。" },
+      { title: "为什么是 180°", text: "搬来的两个角和原来的 A 角排在一条直线上，组成平角。" }
+    ],
+    application: ["已知两角求第三角", "角平分线题先锁定所在三角形", "证明题要写理由，不只写算式"],
+    extraPractices: [
+      {
+        prompt: "一个三角形三个角的比是 2:3:4，最大的角是多少？",
+        options: ["60°", "80°", "100°"],
+        answer: 1,
+        feedback: "总份数 9，每份 20°，最大角 4 份是 80°。",
+        hint: "三角形三个内角一共 180°。"
+      },
+      {
+        prompt: "证明三角形内角和时，量 100 个三角形够不够？",
+        options: ["够，因为样本多", "不够，因为测量不能代替证明", "够，只要都接近 180°"],
+        answer: 1,
+        feedback: "测量只能帮助发现规律，证明才说明所有情况都成立。",
+        hint: "本章从直观走向证明，这是重点。"
+      }
+    ]
+  },
+  exterior: {
+    sceneTitle: "外角像一次转弯",
+    sceneText: "走到三角形的一个顶点，如果沿一边继续向外走，转出来的那个角就是外角。它同时和相邻内角互补，又等于两个远内角之和。",
+    sceneBullets: ["先找相邻内角", "再找两个远内角", "外角 = 远内角和"],
+    exploreTasks: [
+      { label: "调角度", text: "改变两个远内角，观察外角怎样跟着变。" },
+      { label: "找邻居", text: "指出外角旁边那个内角，它们加起来是多少？" },
+      { label: "一题两解", text: "同一个外角，试着用互补和远内角和分别求一次。" }
+    ],
+    reasoning: [
+      { title: "互补关系", text: "外角和相邻内角拼成一条直线，所以和为 180°。" },
+      { title: "远内角关系", text: "相邻内角 = 180° - 两个远内角，所以外角 = 两个远内角和。" },
+      { title: "大小判断", text: "外角等于两个正角的和，所以它大于任何一个远内角。" }
+    ],
+    application: ["一步求外角", "由外角反求远内角", "判断角度大小关系"],
+    extraPractices: [
+      {
+        prompt: "三角形一个外角是 120°，一个远内角是 45°，另一个远内角是多少？",
+        options: ["65°", "75°", "85°"],
+        answer: 1,
+        feedback: "外角等于两个远内角之和，120°-45°=75°。",
+        hint: "不要用相邻内角，先找不相邻的两个内角。"
+      },
+      {
+        prompt: "一个外角和它相邻的内角之和是多少？",
+        options: ["90°", "180°", "360°"],
+        answer: 1,
+        feedback: "外角和相邻内角组成平角，所以是 180°。",
+        hint: "它们在同一条直线上。"
+      }
+    ]
+  },
+  "polygon-basic": {
+    sceneTitle: "多边形不是只数边，还要看连接关系",
+    sceneText: "从一个顶点出发，不能连自己，也不能连相邻两个顶点。剩下能连的，才是对角线。",
+    sceneBullets: ["边连接相邻顶点", "对角线连接不相邻顶点", "正多边形要边等且角等"],
+    exploreTasks: [
+      { label: "数禁区", text: "从亮起来的顶点出发，先数不能连的 3 个点。" },
+      { label: "数能连", text: "把边数 n 调大，观察对角线条数为什么是 n-3。" },
+      { label: "辨正形", text: "只边相等还不够，还要每个角也相等。" }
+    ],
+    reasoning: [
+      { title: "边", text: "相邻顶点之间的线段是边，不叫对角线。" },
+      { title: "对角线", text: "连接不相邻两个顶点的线段才是对角线。" },
+      { title: "凸多边形", text: "本章讨论公式时默认凸多边形，凹进去的图形要先看清内角位置。" }
+    ],
+    application: ["从一个顶点数对角线", "判断边、对角线、外角", "辨认正多边形"],
+    extraPractices: [
+      {
+        prompt: "六边形一共有多少条对角线？",
+        options: ["6 条", "9 条", "12 条"],
+        answer: 1,
+        feedback: "每个顶点能画 3 条，共 18 次，但每条被数了两次，所以 18÷2=9。",
+        hint: "从一个顶点是 n-3 条，全图要除以 2。"
+      },
+      {
+        prompt: "只满足各边相等的多边形一定是正多边形吗？",
+        options: ["一定", "不一定，还要各角相等", "不一定，还要边数是偶数"],
+        answer: 1,
+        feedback: "正多边形要求各边相等、各角也相等。",
+        hint: "正多边形有两个条件。"
+      }
+    ]
+  },
+  "polygon-sum": {
+    sceneTitle: "公式里的 n-2 从哪里来？",
+    sceneText: "不是硬背公式。把 n 边形从一个顶点切开，会出现 n-2 个三角形，所以内角和就是 n-2 个 180°。",
+    sceneBullets: ["先切三角形", "再乘 180°", "外角和永远一圈 360°"],
+    exploreTasks: [
+      { label: "切一切", text: "拖动边数，看每多一条边，三角形数量怎样变化。" },
+      { label: "转一圈", text: "把外角想成沿多边形走一圈时每次转弯的角。" },
+      { label: "辨条件", text: "只有正多边形才能把内角和平均分到每个角。" }
+    ],
+    reasoning: [
+      { title: "内角和", text: "n 边形被分成 n-2 个三角形，所以是 (n-2)×180°。" },
+      { title: "外角和", text: "沿多边形绕一圈，方向总共转过 360°，与边数无关。" },
+      { title: "正多边形", text: "每个外角 = 360°÷n，每个内角 = 180° - 每个外角。" }
+    ],
+    application: ["由边数求内角和", "由内角和反求边数", "求正多边形每个内角和外角"],
+    extraPractices: [
+      {
+        prompt: "一个多边形内角和是 1260°，它是几边形？",
+        options: ["八边形", "九边形", "十边形"],
+        answer: 1,
+        feedback: "(n-2)×180°=1260°，n-2=7，所以 n=9。",
+        hint: "先把 1260° 除以 180°。"
+      },
+      {
+        prompt: "正十二边形每个外角是多少？",
+        options: ["30°", "60°", "150°"],
+        answer: 0,
+        feedback: "正 n 边形每个外角是 360°÷n，360°÷12=30°。",
+        hint: "外角比内角更容易先求。"
+      }
+    ]
+  },
+  review: {
+    sceneTitle: "把本章知识变成一张解题路线图",
+    sceneText: "第十一章不是很多零散公式，而是一条路线：边决定能否成形，线给出证据，角用三角形和外角，多边形最后仍回到三角形。",
+    sceneBullets: ["边：先最长边", "线：看证据", "角：找所在三角形", "多边形：切成三角形"],
+    exploreTasks: [
+      { label: "归类", text: "拿一道错题，先判断它主要错在边、线、角、形哪一类。" },
+      { label: "说理由", text: "每一步计算后补一句理由：定义、定理、已知还是等量代换。" },
+      { label: "反问", text: "把图形稍微改变，原结论是否还成立？" }
+    ],
+    reasoning: [
+      { title: "概念线", text: "三角形、多边形、边、角、对角线这些词要说准。" },
+      { title: "计算线", text: "内角和、外角、正多边形角度计算要熟。" },
+      { title: "证明线", text: "能解释为什么，不把测量当证明。" }
+    ],
+    application: ["章末复习", "错题整理", "家长口头追问"],
+    extraPractices: [
+      {
+        prompt: "角度综合题卡住时，第一件事通常是什么？",
+        options: ["找这个角在哪个三角形里", "直接套多边形公式", "先求周长"],
+        answer: 0,
+        feedback: "角度题先找所在三角形，再看内角和、外角或平行线。",
+        hint: "先定位图形，再选定理。"
+      },
+      {
+        prompt: "证明题里只写“所以相等”，最大的问题是什么？",
+        options: ["字太少", "没有写理由", "计算太慢"],
+        answer: 1,
+        feedback: "证明的核心是每一步都有依据：定义、已知、定理或等量代换。",
+        hint: "证明不是答案列表，是理由链。"
+      }
+    ]
+  }
+};
+
 const STORAGE_KEY = "math8_ch11_learning_state_v1";
 const SESSION_KEY = "math8_ch11_supabase_session_v1";
 
@@ -679,7 +938,9 @@ function renderDiscover(lesson) {
         </div>
         <span class="result-pill">动手发现</span>
       </div>
+      ${sceneHtml(lesson)}
       <div id="interactiveMount"></div>
+      ${exploreTasksHtml(lesson)}
       ${navigatorHtml()}
     </article>
   `;
@@ -699,6 +960,7 @@ function renderUnderstand(lesson) {
       </div>
       <ul class="principle-list">${lesson.principles.map((item) => `<li>${item}</li>`).join("")}</ul>
     </article>
+    ${reasoningHtml(lesson)}
     <article class="module">
       <div class="module-head">
         <div>
@@ -714,8 +976,10 @@ function renderUnderstand(lesson) {
 }
 
 function renderPractice(lesson) {
+  const practices = lessonPractices(lesson);
   const quiz = quizState(lesson);
-  const item = lesson.practices[quiz.index];
+  if (quiz.index >= practices.length) quiz.index = 0;
+  const item = practices[quiz.index];
   const checked = quiz.checked[quiz.index];
   const selected = quiz.selected[quiz.index];
 
@@ -723,11 +987,12 @@ function renderPractice(lesson) {
     <article class="quiz-card">
       <div class="module-head">
         <div>
-          <h3>第 ${quiz.index + 1} 题 / ${lesson.practices.length}</h3>
+          <h3>第 ${quiz.index + 1} 题 / ${practices.length}</h3>
           <p>${item.prompt}</p>
         </div>
         <span class="result-pill">即时反馈</span>
       </div>
+      ${practiceHintHtml(item)}
       <div class="quiz-options">
         ${item.options.map((option, index) => {
           let cls = selected === index ? "selected" : "";
@@ -772,12 +1037,12 @@ function renderPractice(lesson) {
   });
 
   $("#prevQuestion").addEventListener("click", () => {
-    quiz.index = (quiz.index - 1 + lesson.practices.length) % lesson.practices.length;
+    quiz.index = (quiz.index - 1 + practices.length) % practices.length;
     render();
   });
 
   $("#nextQuestion").addEventListener("click", () => {
-    quiz.index = (quiz.index + 1) % lesson.practices.length;
+    quiz.index = (quiz.index + 1) % practices.length;
     render();
   });
 
@@ -786,6 +1051,7 @@ function renderPractice(lesson) {
 
 function renderMaster(lesson) {
   const correct = countCorrect(lesson);
+  const practices = lessonPractices(lesson);
   $("#studyContent").innerHTML = `
     <article class="module">
       <div class="module-head">
@@ -793,8 +1059,9 @@ function renderMaster(lesson) {
           <h3>通关前，自己讲一遍</h3>
           <p>会做题还不够。能说出“为什么”，才是真的掌握。</p>
         </div>
-        <span class="result-pill">${correct}/${lesson.practices.length} 题正确</span>
+        <span class="result-pill">${correct}/${practices.length} 题正确</span>
       </div>
+      ${applicationHtml(lesson)}
       <div class="recap-box">
         ${lesson.mastery.map((item) => `<div class="recap-prompt">${item}</div>`).join("")}
         <textarea class="recap-input" id="recapInput" placeholder="把最重要的结论用自己的话写下来。可以很短，但要说清楚理由。">${appState.progress[lesson.id]?.recap || ""}</textarea>
@@ -823,6 +1090,176 @@ function renderMaster(lesson) {
   });
 
   bindNavigator();
+}
+
+function lessonDetail(lesson) {
+  return LESSON_ENRICHMENT[lesson.id] || {};
+}
+
+function lessonPractices(lesson) {
+  const detail = lessonDetail(lesson);
+  return [...lesson.practices, ...(detail.extraPractices || [])];
+}
+
+function sceneHtml(lesson) {
+  const detail = lessonDetail(lesson);
+  if (!detail.sceneTitle) return "";
+  return `
+    <section class="scene-card">
+      <div class="scene-art" aria-hidden="true">${sceneSvg(lesson.id)}</div>
+      <div class="scene-copy">
+        <p class="eyebrow">生活情境</p>
+        <h4>${detail.sceneTitle}</h4>
+        <p>${detail.sceneText}</p>
+        <div class="scene-bullets">
+          ${(detail.sceneBullets || []).map((item) => `<span>${item}</span>`).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function sceneSvg(id) {
+  if (id === "edges") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <path d="M35 118 L110 32 L185 118" fill="#e7f3f1" stroke="#324250" stroke-width="8" stroke-linejoin="round"></path>
+        <line x1="35" y1="118" x2="185" y2="118" stroke="#2563a9" stroke-width="8" stroke-linecap="round"></line>
+        <line x1="28" y1="132" x2="88" y2="132" stroke="#b35f12" stroke-width="6" stroke-linecap="round"></line>
+        <line x1="98" y1="132" x2="198" y2="132" stroke="#d94f45" stroke-width="6" stroke-linecap="round"></line>
+      </svg>
+    `;
+  }
+  if (id === "special-lines") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="110,24 38,124 184,124" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="110" y1="24" x2="110" y2="124" stroke="#16756f" stroke-width="6"></line>
+        <line x1="110" y1="24" x2="78" y2="124" stroke="#b35f12" stroke-width="5"></line>
+        <line x1="110" y1="24" x2="142" y2="124" stroke="#2563a9" stroke-width="5"></line>
+      </svg>
+    `;
+  }
+  if (id === "stability") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="52,32 172,40 188,122 36,116" fill="#f4f7fa" stroke="#324250" stroke-width="8" stroke-linejoin="round"></polygon>
+        <line x1="52" y1="32" x2="188" y2="122" stroke="#16756f" stroke-width="8" stroke-linecap="round"></line>
+        <text x="52" y="142" fill="#16756f" font-size="17" font-weight="800">切成三角形</text>
+      </svg>
+    `;
+  }
+  if (id === "angle-sum") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="108,30 42,120 184,120" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="30" y1="42" x2="190" y2="42" stroke="#b35f12" stroke-width="5" stroke-dasharray="8 7"></line>
+        <path d="M62 42 Q86 20 110 42 Q134 64 158 42" fill="none" stroke="#d94f45" stroke-width="5"></path>
+        <text x="71" y="141" fill="#324250" font-size="18" font-weight="800">拼成平角</text>
+      </svg>
+    `;
+  }
+  if (id === "exterior") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="44,120 108,34 164,120" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="164" y1="120" x2="204" y2="120" stroke="#d94f45" stroke-width="7" stroke-linecap="round"></line>
+        <path d="M144 102 Q174 86 199 112" fill="none" stroke="#d94f45" stroke-width="5"></path>
+        <text x="128" y="92" fill="#d94f45" font-size="18" font-weight="800">外角</text>
+      </svg>
+    `;
+  }
+  if (id === "polygon-basic") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="110,20 178,58 162,124 58,124 42,58" fill="#f4f7fa" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="110" y1="20" x2="162" y2="124" stroke="#16756f" stroke-width="5"></line>
+        <line x1="110" y1="20" x2="58" y2="124" stroke="#16756f" stroke-width="5"></line>
+        <circle cx="110" cy="20" r="9" fill="#16756f"></circle>
+      </svg>
+    `;
+  }
+  if (id === "polygon-sum") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="110,18 172,48 184,110 132,134 68,134 36,82" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="110" y1="18" x2="184" y2="110" stroke="#16756f" stroke-width="5"></line>
+        <line x1="110" y1="18" x2="132" y2="134" stroke="#16756f" stroke-width="5"></line>
+        <line x1="110" y1="18" x2="68" y2="134" stroke="#16756f" stroke-width="5"></line>
+      </svg>
+    `;
+  }
+  return `
+    <svg viewBox="0 0 220 150">
+      <path d="M30 112 C66 62 102 64 132 92 S178 122 198 48" fill="none" stroke="#16756f" stroke-width="8" stroke-linecap="round"></path>
+      <circle cx="48" cy="100" r="16" fill="#e7f3f1" stroke="#324250" stroke-width="5"></circle>
+      <circle cx="112" cy="82" r="16" fill="#fff7e8" stroke="#324250" stroke-width="5"></circle>
+      <circle cx="178" cy="60" r="16" fill="#eaf1fb" stroke="#324250" stroke-width="5"></circle>
+    </svg>
+  `;
+}
+
+function exploreTasksHtml(lesson) {
+  const tasks = lessonDetail(lesson).exploreTasks || [];
+  if (!tasks.length) return "";
+  return `
+    <section class="task-grid" aria-label="动手任务">
+      ${tasks.map((task) => `
+        <div class="task-card">
+          <strong>${task.label}</strong>
+          <p>${task.text}</p>
+        </div>
+      `).join("")}
+    </section>
+  `;
+}
+
+function reasoningHtml(lesson) {
+  const detail = lessonDetail(lesson);
+  const steps = detail.reasoning || [];
+  if (!steps.length) return "";
+  return `
+    <article class="module">
+      <div class="module-head">
+        <div>
+          <h3>从图形到原理</h3>
+          <p>先看到现象，再把它变成能做题的语言。</p>
+        </div>
+        <span class="result-pill">会解释</span>
+      </div>
+      <div class="reasoning-steps">
+        ${steps.map((step, index) => `
+          <div class="reason-step">
+            <span>${index + 1}</span>
+            <strong>${step.title}</strong>
+            <p>${step.text}</p>
+          </div>
+        `).join("")}
+      </div>
+      ${applicationHtml(lesson)}
+    </article>
+  `;
+}
+
+function applicationHtml(lesson) {
+  const items = lessonDetail(lesson).application || [];
+  if (!items.length) return "";
+  return `
+    <div class="application-strip">
+      <span>会用在</span>
+      ${items.map((item) => `<strong>${item}</strong>`).join("")}
+    </div>
+  `;
+}
+
+function practiceHintHtml(item) {
+  if (!item.hint) return "";
+  return `
+    <div class="practice-hint">
+      <span>解题抓手</span>
+      <strong>${item.hint}</strong>
+    </div>
+  `;
 }
 
 function navigatorHtml() {
@@ -866,13 +1303,14 @@ function quizState(lesson) {
 
 function countCorrect(lesson) {
   const quiz = quizState(lesson);
-  return lesson.practices.reduce((sum, item, index) => {
+  return lessonPractices(lesson).reduce((sum, item, index) => {
     return sum + (quiz.checked[index] && quiz.selected[index] === item.answer ? 1 : 0);
   }, 0);
 }
 
 function renderCoach() {
   const lesson = currentLesson();
+  const detail = lessonDetail(lesson);
   $("#coachPanel").classList.toggle("open", appState.coachOpen);
   $("#coachContent").innerHTML = `
     <div class="coach-content">
@@ -880,6 +1318,12 @@ function renderCoach() {
         <h3>本课目标</h3>
         <p>${lesson.objective}</p>
       </section>
+      ${detail.exploreTasks?.length ? `
+        <section class="coach-card">
+          <h3>观察孩子</h3>
+          <ul>${detail.exploreTasks.map((item) => `<li>${item.text}</li>`).join("")}</ul>
+        </section>
+      ` : ""}
       <section class="coach-card">
         <h3>今天重点看</h3>
         <ul>${lesson.parentFocus.map((item) => `<li>${item}</li>`).join("")}</ul>

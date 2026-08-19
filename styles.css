@@ -24,6 +24,7 @@
 html,
 body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -100,6 +101,7 @@ button {
 .top-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -156,6 +158,7 @@ button {
 .lesson-rail,
 .study-panel,
 .coach-panel {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(217, 224, 231, 0.92);
   border-radius: var(--radius);
@@ -186,6 +189,10 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.module-head {
+  flex-wrap: wrap;
 }
 
 .rail-header span,
@@ -321,6 +328,7 @@ button {
 }
 
 .module {
+  min-width: 0;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -329,6 +337,13 @@ button {
 
 .module-head {
   margin-bottom: 14px;
+}
+
+.module-head > div,
+.scene-copy,
+.control-panel,
+.visual-stage {
+  min-width: 0;
 }
 
 .module-head h3,
@@ -346,6 +361,157 @@ button {
   margin: 6px 0 0;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.scene-card {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: #f3f8f7;
+}
+
+.scene-art {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  background: #ffffff;
+}
+
+.scene-art svg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display: block;
+}
+
+.scene-copy h4 {
+  margin: 2px 0 8px;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.scene-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.eyebrow {
+  color: var(--teal-dark) !important;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.scene-bullets,
+.application-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.scene-bullets span,
+.application-strip strong {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--teal-dark);
+  background: #dff0ed;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.task-grid,
+.reasoning-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.task-card,
+.reason-step {
+  min-height: 112px;
+  padding: 13px;
+  border-radius: var(--radius);
+  background: #f6f9fb;
+  line-height: 1.55;
+}
+
+.task-card strong,
+.reason-step strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink);
+}
+
+.task-card p,
+.reason-step p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.reason-step {
+  position: relative;
+  padding-left: 50px;
+}
+
+.reason-step > span {
+  position: absolute;
+  left: 13px;
+  top: 13px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: #fff;
+  background: var(--blue);
+  font-weight: 900;
+}
+
+.application-strip {
+  align-items: center;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: #fff8ee;
+}
+
+.application-strip > span {
+  color: var(--amber);
+  font-weight: 900;
+}
+
+.application-strip strong {
+  color: #7a430d;
+  background: #f7dfbd;
+}
+
+.practice-hint {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: #eef5f4;
+}
+
+.practice-hint span {
+  color: var(--teal-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.practice-hint strong {
+  line-height: 1.5;
 }
 
 .interaction-grid {
@@ -489,6 +655,7 @@ input[type="range"] {
 }
 
 .quiz-card {
+  min-width: 0;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -733,6 +900,11 @@ input[type="range"] {
 
   .topbar {
     align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .top-actions {
+    margin-left: auto;
   }
 
   .brand h1,
@@ -765,6 +937,19 @@ input[type="range"] {
     grid-template-columns: 1fr;
   }
 
+  .scene-card {
+    grid-template-columns: 1fr;
+  }
+
+  .scene-art {
+    min-height: 120px;
+  }
+
+  .task-grid,
+  .reasoning-steps {
+    grid-template-columns: 1fr;
+  }
+
   .visual-stage {
     min-height: 340px;
   }
@@ -776,13 +961,19 @@ input[type="range"] {
 
 @media (max-width: 560px) {
   .topbar,
-  .lesson-title-row {
+  .lesson-title-row,
+  .module-head {
     flex-direction: column;
     align-items: stretch;
   }
 
+  .module-head .result-pill {
+    align-self: flex-start;
+  }
+
   .top-actions {
-    justify-content: flex-end;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .brand-mark {
