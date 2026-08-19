@@ -10,6 +10,14 @@ const CHAPTERS = [
   { id: "ch12", title: "第十二章 全等三角形", shortTitle: "全等三角形", range: "9-15" }
 ];
 
+const LAB_LESSONS = ["exterior", "sss", "sas", "angle-bisector-property"];
+
+const LAB_TASKS = [
+  { id: "play", label: "玩一玩", icon: "◎" },
+  { id: "find", label: "找一找", icon: "⌖" },
+  { id: "say", label: "说一说", icon: "✎" }
+];
+
 const LESSONS = [
   {
     id: "edges",
@@ -1355,7 +1363,13 @@ const uiMemory = {
   congruenceMode: "translate",
   conditionTrap: false,
   hlLeg: 120,
-  bisector: { distance: 155, inverse: false }
+  bisector: { distance: 155, inverse: false },
+  lab: {
+    task: {},
+    exterior: { a: 62, b: 48, selected: [] },
+    congruence: { mode: "sss", selected: [] },
+    bisector: { distance: 168, selected: [] }
+  }
 };
 
 function loadState() {
@@ -1517,6 +1531,27 @@ function currentStepIndex() {
   return Math.max(0, STEPS.findIndex((step) => step.id === appState.stepId));
 }
 
+function isLabLesson(lesson) {
+  return LAB_LESSONS.includes(lesson.id);
+}
+
+function labTaskIndex(lesson) {
+  return Math.max(0, LAB_TASKS.findIndex((task) => task.id === (uiMemory.lab.task[lesson.id] || "play")));
+}
+
+function labMemory(lesson) {
+  if (lesson.id === "exterior") return uiMemory.lab.exterior;
+  if (lesson.id === "sss" || lesson.id === "sas") return uiMemory.lab.congruence;
+  if (lesson.id === "angle-bisector-property") return uiMemory.lab.bisector;
+  return { selected: [], feedback: "" };
+}
+
+function resetLabLessonInteraction(lesson) {
+  const memory = labMemory(lesson);
+  memory.selected = [];
+  memory.feedback = "";
+}
+
 function render() {
   renderShell();
   renderLessonList();
@@ -1619,6 +1654,28 @@ function renderLessonList() {
 }
 
 function renderStepTabs() {
+  const lesson = currentLesson();
+  if (isLabLesson(lesson)) {
+    const activeTask = uiMemory.lab.task[lesson.id] || "play";
+    $("#stepTabs").innerHTML = LAB_TASKS.map((task) => `
+      <button class="step-tab ${task.id === activeTask ? "active" : ""}" data-lab-task="${task.id}" type="button" role="tab">
+        <span aria-hidden="true">${task.icon}</span>
+        <strong>${task.label}</strong>
+      </button>
+    `).join("");
+
+    document.querySelectorAll("[data-lab-task]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (activeTask !== button.dataset.labTask) {
+          uiMemory.lab.task[lesson.id] = button.dataset.labTask;
+          resetLabLessonInteraction(lesson);
+        }
+        render();
+      });
+    });
+    return;
+  }
+
   $("#stepTabs").innerHTML = STEPS.map((step) => `
     <button class="step-tab ${step.id === appState.stepId ? "active" : ""}" data-step="${step.id}" type="button" role="tab">
       <span aria-hidden="true">${step.icon}</span>
@@ -1643,10 +1700,391 @@ function renderStudyPanel() {
   $("#lessonTitle").textContent = lesson.title;
   $("#lessonStatus").textContent = appState.progress[lesson.id]?.mastered ? "已通关" : "学习中";
 
+  if (isLabLesson(lesson)) {
+    renderLabExperience(lesson);
+    return;
+  }
+
   if (appState.stepId === "discover") renderDiscover(lesson);
   if (appState.stepId === "understand") renderUnderstand(lesson);
   if (appState.stepId === "practice") renderPractice(lesson);
   if (appState.stepId === "master") renderMaster(lesson);
+}
+
+function renderLabExperience(lesson) {
+  const activeTask = uiMemory.lab.task[lesson.id] || "play";
+  const copy = labCopy(lesson);
+  const memory = labMemory(lesson);
+  $("#studyContent").innerHTML = `
+    <article class="lab-shell">
+      <header class="lab-hero">
+        <div>
+          <p class="eyebrow">数学实验室</p>
+          <h3>${copy.title}</h3>
+          <p>${copy.prompt}</p>
+        </div>
+        <button class="icon-button" id="loadGeoGebra" type="button" title="打开 GeoGebra 实验板" aria-label="打开 GeoGebra 实验板">↗</button>
+      </header>
+      <div class="lab-workspace">
+        <div class="lab-canvas" id="labCanvas"></div>
+        <aside class="lab-tools" id="labTools"></aside>
+      </div>
+      <div class="lab-feedback" id="labFeedback">${memory.feedback || copy.feedback}</div>
+      <div class="navigator-row">
+        <button class="ghost-button" id="prevLabTask" type="button">上一个任务</button>
+        <button class="primary-button" id="nextLabTask" type="button">下一个任务</button>
+      </div>
+    </article>
+  `;
+
+  if (lesson.id === "exterior") renderExteriorLab(activeTask);
+  if (lesson.id === "sss" || lesson.id === "sas") renderCongruenceLab(lesson, activeTask);
+  if (lesson.id === "angle-bisector-property") renderBisectorLab(activeTask);
+
+  $("#prevLabTask").addEventListener("click", () => {
+    const index = labTaskIndex(lesson);
+    uiMemory.lab.task[lesson.id] = LAB_TASKS[Math.max(0, index - 1)].id;
+    resetLabLessonInteraction(lesson);
+    render();
+  });
+  $("#nextLabTask").addEventListener("click", () => {
+    const index = labTaskIndex(lesson);
+    if (index < LAB_TASKS.length - 1) {
+      uiMemory.lab.task[lesson.id] = LAB_TASKS[index + 1].id;
+      resetLabLessonInteraction(lesson);
+    } else {
+      appState.progress[lesson.id] = {
+        ...appState.progress[lesson.id],
+        mastered: true,
+        masteredAt: new Date().toISOString()
+      };
+      showToast(`${lesson.title} 已完成`);
+    }
+    render();
+  });
+  bindGeoGebra(lesson);
+}
+
+function labCopy(lesson) {
+  const task = uiMemory.lab.task[lesson.id] || "play";
+  const copy = {
+    exterior: {
+      play: ["外角像一次转弯", "拖动两个远内角，看红色外角怎么跟着变。", "观察：红色外角总是等于蓝色和绿色两个远内角相加。"],
+      find: ["点亮两个远内角", "直接点图上的角，不看题干。", "目标：只点蓝色 62° 和绿色 48°。"],
+      say: ["用三个词说清楚", "把关键词点成一句话。", "外角 = 两个远内角相加。"]
+    },
+    sss: {
+      play: ["三边锁住形状", "切换 SSS / SAS，观察哪些条件真的能锁住三角形。", "三条边分别相等时，形状和大小都被锁住。"],
+      find: ["找出三组证据", "点亮两图中对应的三条边。", "目标：三种颜色都成对出现。"],
+      say: ["一句话命名", "点出判定法和关键条件。", "SSS：三边分别相等。"]
+    },
+    sas: {
+      play: ["夹角必须在中间", "切换 SAS 和边边角，观察角的位置为什么重要。", "SAS 的角必须夹在两条已知边中间。"],
+      find: ["点出夹角", "先点两条边，再点它们夹着的角。", "目标：边、夹角、边。"],
+      say: ["一句话命名", "点出判定法和关键条件。", "SAS：两边和夹角分别相等。"]
+    },
+    "angle-bisector-property": {
+      play: ["到两边一样近", "拖动 P 点，看两条垂线距离是否一起变化。", "P 在角平分线上时，到两边的垂直距离相等。"],
+      find: ["点出真正的距离", "点图中两条垂线段，不点斜着的连线。", "目标：PD 和 PE。"],
+      say: ["一句话命名", "点出点、角平分线、距离相等。", "角平分线上的点，到两边距离相等。"]
+    }
+  }[lesson.id]?.[task];
+  return {
+    title: copy?.[0] || lesson.title,
+    prompt: copy?.[1] || lesson.objective,
+    feedback: copy?.[2] || "先动手，再命名。"
+  };
+}
+
+function renderExteriorLab(task) {
+  const tools = $("#labTools");
+  const canvas = $("#labCanvas");
+  const s = uiMemory.lab.exterior;
+  if (task === "play") {
+    tools.innerHTML = `
+      ${rangeControl("远内角 A", "a", s.a, 20, 110)}
+      ${rangeControl("远内角 B", "b", s.b, 20, 110)}
+      <div class="lab-stat"><span>外角</span><strong>${s.a + s.b}°</strong></div>
+    `;
+    tools.querySelectorAll("input[type='range']").forEach((input) => {
+      input.addEventListener("input", () => {
+        s[input.dataset.key] = Number(input.value);
+        if (s.a + s.b >= 170) s[input.dataset.key] = Number(input.value) - 10;
+        renderExteriorLab(task);
+      });
+    });
+  } else if (task === "find") {
+    tools.innerHTML = labTargetPanel([
+      ["a", "远内角 A"],
+      ["b", "远内角 B"]
+    ], s.selected);
+  } else {
+    tools.innerHTML = labPhrasePanel(["外角", "两个远内角", "相加"], s.selected);
+  }
+  canvas.innerHTML = exteriorLabSvg(task, s);
+  bindLabTargets(s, task === "say" ? ["word-0", "word-1", "word-2"] : ["a", "b"], task === "find" ? "点对了，两个远内角会合成红色外角。" : "很好，这就是外角定理。");
+}
+
+function exteriorLabSvg(task, s) {
+  const a = s.a;
+  const b = s.b;
+  const third = 180 - a - b;
+  const exterior = a + b;
+  const A = { x: 160, y: 400 };
+  let base = 320;
+  let C = { x: A.x + base, y: A.y };
+  let ab = base * Math.sin(third * Math.PI / 180) / Math.sin(b * Math.PI / 180);
+  const height = Math.sin(a * Math.PI / 180) * ab;
+  if (height > A.y - 76) {
+    base *= (A.y - 76) / height;
+    C = { x: A.x + base, y: A.y };
+    ab = base * Math.sin(third * Math.PI / 180) / Math.sin(b * Math.PI / 180);
+  }
+  const B = {
+    x: A.x + Math.cos(a * Math.PI / 180) * ab,
+    y: A.y - Math.sin(a * Math.PI / 180) * ab
+  };
+  const extension = { x: 720, y: C.y };
+  return `
+    <svg class="lab-svg" viewBox="0 0 860 520" role="img" aria-label="外角实验图">
+      <polygon points="${A.x},${A.y} ${round(B.x)},${round(B.y)} ${C.x},${C.y}" fill="#f3fbff" stroke="#172033" stroke-width="8" stroke-linejoin="round"></polygon>
+      <line x1="${C.x}" y1="${C.y}" x2="${extension.x}" y2="${extension.y}" stroke="#ef6b5b" stroke-width="10" stroke-linecap="round"></line>
+      <g class="lab-target ${s.selected.includes("a") ? "selected" : ""}" data-target="a">
+        <circle class="lab-hit" cx="${A.x}" cy="${A.y}" r="112"></circle>
+        ${visualAngleArc(A, C, B, 64, `${a}°`, 102, "visual-angle blue")}
+      </g>
+      <g class="lab-target ${s.selected.includes("b") ? "selected" : ""}" data-target="b">
+        <circle class="lab-hit" cx="${B.x}" cy="${B.y}" r="100"></circle>
+        ${visualAngleArc(B, A, C, 54, `${b}°`, 88, "visual-angle green")}
+      </g>
+      <g class="lab-target" data-target="third">
+        <circle class="lab-hit" cx="${C.x}" cy="${C.y}" r="96"></circle>
+        ${visualAngleArc(C, B, A, 58, `${third}°`, 92, "visual-angle dark")}
+      </g>
+      <g class="lab-target ${s.selected.includes("exterior") ? "selected" : ""}" data-target="exterior">
+        <circle class="lab-hit" cx="${C.x}" cy="${C.y}" r="132"></circle>
+        ${visualAngleArc(C, extension, B, 92, `${exterior}°`, 140, "visual-angle coral")}
+      </g>
+      ${pointLabel(A, "A", -34, 46)}
+      ${pointLabel(B, "B", -7, -26)}
+      ${pointLabel(C, "C", 22, 46)}
+      <text x="606" y="330" fill="#ef6b5b" font-size="28" font-weight="900">外角</text>
+      <text x="120" y="482" class="lab-equation">外角 ${exterior}° = ${a}° + ${b}°</text>
+    </svg>
+    ${labHotspots([
+      { target: "a", label: "远内角 A", x: A.x - 72, y: A.y - 88, w: 158, h: 144 },
+      { target: "b", label: "远内角 B", x: B.x - 78, y: B.y - 70, w: 156, h: 140 },
+      { target: "third", label: "相邻内角", x: C.x - 108, y: C.y - 118, w: 138, h: 128 },
+      { target: "exterior", label: "外角", x: C.x - 16, y: C.y - 128, w: 188, h: 138 }
+    ])}
+  `;
+}
+
+function renderCongruenceLab(lesson, task) {
+  const tools = $("#labTools");
+  const canvas = $("#labCanvas");
+  const s = uiMemory.lab.congruence;
+  if (lesson.id === "sas" && s.mode === "sss") s.mode = "sas";
+  if (task === "play") {
+    tools.innerHTML = `
+      <div class="control-group">
+        <div class="control-label"><span>判定场景</span></div>
+        <div class="chip-row">
+          <button class="chip ${s.mode === "sss" ? "active" : ""}" data-mode="sss" type="button">SSS</button>
+          <button class="chip ${s.mode === "sas" ? "active" : ""}" data-mode="sas" type="button">SAS</button>
+          <button class="chip ${s.mode === "ssa" ? "active" : ""}" data-mode="ssa" type="button">边边角</button>
+        </div>
+      </div>
+      <div class="lab-stat"><span>结论</span><strong>${s.mode === "ssa" ? "不一定" : "能全等"}</strong></div>
+    `;
+    tools.querySelectorAll("[data-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        s.mode = button.dataset.mode;
+        renderCongruenceLab(lesson, task);
+      });
+    });
+  } else if (task === "find") {
+    tools.innerHTML = labTargetPanel(lesson.id === "sss" ? [
+      ["blue", "蓝边"],
+      ["green", "绿边"],
+      ["amber", "黄边"]
+    ] : [
+      ["blue", "蓝边"],
+      ["green", "绿边"],
+      ["angle", "夹角"]
+    ], s.selected);
+  } else {
+    tools.innerHTML = labPhrasePanel(lesson.id === "sss" ? ["SSS", "三边", "锁住"] : ["SAS", "两边", "夹角"], s.selected);
+  }
+  canvas.innerHTML = congruenceLabSvg(lesson, task, s);
+  bindLabTargets(s, task === "say" ? ["word-0", "word-1", "word-2"] : lesson.id === "sss" ? ["blue", "green", "amber"] : ["blue", "green", "angle"], task === "find" ? "证据齐了，可以判定全等。" : "这句话就够短，也够准。");
+}
+
+function congruenceLabSvg(lesson, task, s) {
+  const mode = task === "play" ? s.mode : lesson.id;
+  const trap = mode === "ssa";
+  return `
+    <svg class="lab-svg" viewBox="0 0 860 520" role="img" aria-label="全等判定实验图">
+      <text x="90" y="66" class="lab-equation">${trap ? "边边角：可能摆出两个形状" : mode.toUpperCase() + "：条件锁住形状"}</text>
+      <polygon points="130,390 330,390 228,130" fill="#f3fbff" stroke="#172033" stroke-width="8" stroke-linejoin="round"></polygon>
+      <polygon points="510,390 710,390 608,130" fill="#f9fdff" stroke="#172033" stroke-width="8" stroke-linejoin="round"></polygon>
+      <g class="lab-target ${s.selected.includes("blue") ? "selected" : ""}" data-target="blue">
+        <line x1="130" y1="390" x2="228" y2="130" class="lab-hit-line"></line>
+        <line x1="510" y1="390" x2="608" y2="130" class="lab-hit-line"></line>
+        <line x1="130" y1="390" x2="228" y2="130" class="visual-mark blue"></line>
+        <line x1="510" y1="390" x2="608" y2="130" class="visual-mark blue"></line>
+      </g>
+      <g class="lab-target ${s.selected.includes("green") ? "selected" : ""}" data-target="green">
+        <line x1="228" y1="130" x2="330" y2="390" class="lab-hit-line"></line>
+        <line x1="608" y1="130" x2="710" y2="390" class="lab-hit-line"></line>
+        <line x1="228" y1="130" x2="330" y2="390" class="visual-mark green"></line>
+        <line x1="608" y1="130" x2="710" y2="390" class="visual-mark green"></line>
+      </g>
+      ${mode === "sss" ? `
+        <g class="lab-target ${s.selected.includes("amber") ? "selected" : ""}" data-target="amber">
+          <line x1="130" y1="390" x2="330" y2="390" class="lab-hit-line"></line>
+          <line x1="510" y1="390" x2="710" y2="390" class="lab-hit-line"></line>
+          <line x1="130" y1="390" x2="330" y2="390" class="visual-mark amber"></line>
+          <line x1="510" y1="390" x2="710" y2="390" class="visual-mark amber"></line>
+        </g>
+      ` : `
+        <g class="lab-target ${s.selected.includes("angle") ? "selected" : ""}" data-target="angle">
+          <circle class="lab-hit" cx="228" cy="130" r="112"></circle>
+          <circle class="lab-hit" cx="608" cy="130" r="112"></circle>
+          ${visualAngleArc({ x: 228, y: 130 }, { x: 130, y: 390 }, { x: 330, y: 390 }, 56, trap ? "非夹角" : "夹角", 92)}
+          ${visualAngleArc({ x: 608, y: 130 }, { x: 510, y: 390 }, { x: 710, y: 390 }, 56, trap ? "非夹角" : "夹角", 92)}
+        </g>
+      `}
+      ${trap ? `<path d="M130 390 Q230 228 330 390" fill="none" stroke="#ef6b5b" stroke-width="8" stroke-dasharray="12 12"></path>` : ""}
+      <text x="150" y="468" class="lab-equation">${trap ? "角不在两边中间，不够锁形" : "对应条件成组出现"}</text>
+    </svg>
+    ${labHotspots(mode === "sss" ? [
+      { target: "blue", label: "蓝边 左图", x: 92, y: 142, w: 118, h: 220 },
+      { target: "blue", label: "蓝边 右图", x: 472, y: 142, w: 118, h: 220 },
+      { target: "green", label: "绿边 左图", x: 242, y: 142, w: 118, h: 220 },
+      { target: "green", label: "绿边 右图", x: 622, y: 142, w: 118, h: 220 },
+      { target: "amber", label: "黄边 左图", x: 118, y: 360, w: 224, h: 74 },
+      { target: "amber", label: "黄边 右图", x: 498, y: 360, w: 224, h: 74 }
+    ] : [
+      { target: "blue", label: "蓝边 左图", x: 92, y: 142, w: 118, h: 220 },
+      { target: "blue", label: "蓝边 右图", x: 472, y: 142, w: 118, h: 220 },
+      { target: "green", label: "绿边 左图", x: 242, y: 142, w: 118, h: 220 },
+      { target: "green", label: "绿边 右图", x: 622, y: 142, w: 118, h: 220 },
+      { target: "angle", label: "夹角 左图", x: 168, y: 76, w: 118, h: 130 },
+      { target: "angle", label: "夹角 右图", x: 548, y: 76, w: 118, h: 130 }
+    ])}
+  `;
+}
+
+function renderBisectorLab(task) {
+  const tools = $("#labTools");
+  const canvas = $("#labCanvas");
+  const s = uiMemory.lab.bisector;
+  if (task === "play") {
+    tools.innerHTML = `
+      ${rangeControl("P 点位置", "distance", s.distance, 98, 238)}
+      <div class="lab-stat"><span>结论</span><strong>PD = PE</strong></div>
+    `;
+    tools.querySelector("input[type='range']").addEventListener("input", (event) => {
+      s.distance = Number(event.target.value);
+      renderBisectorLab(task);
+    });
+  } else if (task === "find") {
+    tools.innerHTML = labTargetPanel([
+      ["pd", "PD"],
+      ["pe", "PE"]
+    ], s.selected);
+  } else {
+    tools.innerHTML = labPhrasePanel(["角平分线", "垂直距离", "相等"], s.selected);
+  }
+  canvas.innerHTML = bisectorLabSvg(task, s);
+  bindLabTargets(s, task === "say" ? ["word-0", "word-1", "word-2"] : ["pd", "pe"], task === "find" ? "点到边的距离，必须是垂线段。" : "这就是角平分线性质。");
+}
+
+function bisectorLabSvg(task, s) {
+  const theta = 28 * Math.PI / 180;
+  const O = { x: 120, y: 260 };
+  const p = { x: O.x + s.distance * 2, y: O.y };
+  const upperEnd = { x: 760, y: O.y - Math.tan(theta) * (760 - O.x) };
+  const lowerEnd = { x: 760, y: O.y + Math.tan(theta) * (760 - O.x) };
+  const d = footOnLine(p, O, upperEnd);
+  const e = footOnLine(p, O, lowerEnd);
+  const dist = round(distance(p, d));
+  return `
+    <svg class="lab-svg" viewBox="0 0 860 520" role="img" aria-label="角平分线实验图">
+      <line x1="${O.x}" y1="${O.y}" x2="${upperEnd.x}" y2="${upperEnd.y}" stroke="#172033" stroke-width="8" stroke-linecap="round"></line>
+      <line x1="${O.x}" y1="${O.y}" x2="${lowerEnd.x}" y2="${lowerEnd.y}" stroke="#172033" stroke-width="8" stroke-linecap="round"></line>
+      <line x1="${O.x}" y1="${O.y}" x2="790" y2="${O.y}" stroke="#24a67a" stroke-width="8" stroke-dasharray="14 12" stroke-linecap="round"></line>
+      <circle cx="${p.x}" cy="${p.y}" r="14" fill="#24a67a"></circle>
+      <g class="lab-target ${s.selected.includes("pd") ? "selected" : ""}" data-target="pd">
+        <line x1="${p.x}" y1="${p.y}" x2="${d.x}" y2="${d.y}" class="lab-hit-line"></line>
+        <line x1="${p.x}" y1="${p.y}" x2="${d.x}" y2="${d.y}" class="visual-mark blue"></line>
+      </g>
+      <g class="lab-target ${s.selected.includes("pe") ? "selected" : ""}" data-target="pe">
+        <line x1="${p.x}" y1="${p.y}" x2="${e.x}" y2="${e.y}" class="lab-hit-line"></line>
+        <line x1="${p.x}" y1="${p.y}" x2="${e.x}" y2="${e.y}" class="visual-mark blue"></line>
+      </g>
+      ${pointLabel(O, "O", -36, 10)}
+      ${pointLabel(p, "P", -6, -24)}
+      ${pointLabel(d, "D", 14, -12)}
+      ${pointLabel(e, "E", 14, 26)}
+      <text x="118" y="468" class="lab-equation">PD = PE = ${dist}</text>
+    </svg>
+    ${labHotspots([
+      { target: "pd", label: "PD", x: Math.min(p.x, d.x) - 38, y: Math.min(p.y, d.y) - 38, w: Math.abs(p.x - d.x) + 76, h: Math.abs(p.y - d.y) + 76 },
+      { target: "pe", label: "PE", x: Math.min(p.x, e.x) - 38, y: Math.min(p.y, e.y) - 38, w: Math.abs(p.x - e.x) + 76, h: Math.abs(p.y - e.y) + 76 }
+    ])}
+  `;
+}
+
+function labTargetPanel(targets, selected) {
+  return `
+    <div class="lab-panel-title">目标</div>
+    <div class="lab-token-list">
+      ${targets.map(([id, label]) => `<span class="${selected.includes(id) ? "active" : ""}">${label}</span>`).join("")}
+    </div>
+  `;
+}
+
+function labPhrasePanel(tokens, selected) {
+  return `
+    <div class="lab-panel-title">关键词</div>
+    <div class="lab-token-list">
+      ${tokens.map((token, index) => `<button class="lab-token ${selected.includes(`word-${index}`) ? "active" : ""}" data-target="word-${index}" type="button">${token}</button>`).join("")}
+    </div>
+  `;
+}
+
+function labHotspots(items) {
+  return `
+    <div class="lab-hotspots" aria-hidden="false">
+      ${items.map((item) => `
+        <button
+          class="lab-hotspot"
+          data-target="${item.target}"
+          type="button"
+          aria-label="${item.label}"
+          style="left:${round(item.x / 860 * 100)}%;top:${round(item.y / 520 * 100)}%;width:${round(item.w / 860 * 100)}%;height:${round(item.h / 520 * 100)}%;"
+        ></button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function bindLabTargets(memory, correctTargets, successText) {
+  document.querySelectorAll("[data-target]").forEach((target) => {
+    target.addEventListener("click", () => {
+      const value = target.dataset.target;
+      if (memory.selected.includes(value)) {
+        memory.selected = memory.selected.filter((item) => item !== value);
+      } else {
+        memory.selected = [...memory.selected, value];
+      }
+      const hit = correctTargets.every((item) => memory.selected.includes(item));
+      memory.feedback = hit ? successText : "继续点亮图里的关键证据。";
+      render();
+    });
+  });
 }
 
 function renderDiscover(lesson) {

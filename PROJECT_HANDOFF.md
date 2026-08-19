@@ -87,6 +87,8 @@
 - 第十一章和第十二章统一使用视觉优先练习：题目前先呈现几何图形，文字作为辅助。
 - 每节观察页提供可选 GeoGebra 实验板入口，点击后才加载外部脚本。
 - 练习配图里的角弧和度数标注应使用自动计算位置，度数放在角内；GeoGebra 以大浮层纯几何视图打开。
+- 新方向：核心几何内容优先做成“数学实验室”题型，结构为“玩一玩 - 找一找 - 说一说”。让学生先拖动或点亮图形证据，再用极短关键词命名定理，减少文字题干。
+- 当前实验室样板覆盖：三角形外角、SSS、SAS、角平分线性质。后续第 11、12 章应逐步把剩余单元也迁移到这种图形化结构。
 
 最近重要提交：
 
@@ -95,6 +97,7 @@
 - `865958c Support Supabase publishable key auth`
 - `eae6a63 Enrich chapter 11 visual learning content`
 - `056b980 Refresh app with summer sky style`
+- `2ae0158 Fix exterior angle diagram geometry`
 
 ## 技术方案
 
