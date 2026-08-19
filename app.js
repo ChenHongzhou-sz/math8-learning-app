@@ -440,6 +440,394 @@ const LESSONS = [
         feedback: "本章重点之一就是从观察走向证明。"
       }
     ]
+  },
+  {
+    id: "congruence-basic",
+    no: 9,
+    chapter: "第十二章 全等三角形",
+    title: "全等三角形",
+    subtitle: "能完全重合，字母也要对齐",
+    objective: "理解全等形和全等三角形的含义，会找对应顶点、对应边、对应角，并会用全等性质得到边角相等。",
+    interaction: "congruenceTransform",
+    discoverTitle: "移动、翻折、旋转后还一样吗？",
+    discoverPrompt: "切换变换方式，观察三角形的位置变了，但形状和大小没有变；再按字母顺序找对应关系。",
+    principles: [
+      "能够完全重合的两个图形叫做全等形；能够完全重合的两个三角形叫做全等三角形。",
+      "平移、翻折、旋转只改变位置，不改变形状和大小，所以变换前后的图形全等。",
+      "记全等三角形时，表示对应顶点的字母要写在对应位置上。",
+      "全等三角形的对应边相等，对应角相等。证明线段或角相等时，常把它们放进一对全等三角形里。"
+    ],
+    mistakes: [
+      "只看图形靠得近不近，忘记全等的关键是能完全重合。",
+      "写△ABC≌△DEF 时字母顺序乱写，导致对应边、对应角全乱。",
+      "看到全等后只说“相等”，没有说明是哪一组对应元素相等。"
+    ],
+    parentFocus: [
+      "让孩子把一个三角形沿桌面平移、翻面或转一转，再说哪里变了、哪里没变。",
+      "每写一个全等式，都追问：A 对谁？B 对谁？C 对谁？"
+    ],
+    parentQuestions: [
+      "全等和面积相等是一回事吗？",
+      "如果△ABC≌△DEF，那么 AB 对应哪条边，∠C 对应哪个角？"
+    ],
+    mastery: [
+      "能用“完全重合”解释全等。",
+      "能根据全等式说出全部对应边和对应角。",
+      "能由全等三角形推出指定线段或角相等。"
+    ],
+    practices: [
+      {
+        prompt: "△ABC≌△DEF，下面哪组边一定相等？",
+        options: ["AB=DE", "AB=EF", "AC=DE"],
+        answer: 0,
+        feedback: "字母顺序对应：A 对 D，B 对 E，C 对 F，所以 AB 对 DE。"
+      },
+      {
+        prompt: "一个三角形经过平移后，得到的新三角形与原三角形是什么关系？",
+        options: ["面积相等但不一定全等", "全等", "只有角相等"],
+        answer: 1,
+        feedback: "平移不改变形状和大小，前后图形可以完全重合。"
+      },
+      {
+        prompt: "△OCA≌△OBD，且 C 对 B，A 对 D。下面哪个角相等？",
+        options: ["∠OAC=∠ODB", "∠OCA=∠ODB", "∠CAO=∠OBD"],
+        answer: 0,
+        feedback: "A 对 D，C 对 B，O 对 O，所以∠OAC 对应∠ODB。"
+      }
+    ]
+  },
+  {
+    id: "sss",
+    no: 10,
+    chapter: "第十二章 全等三角形",
+    title: "边边边 SSS",
+    subtitle: "三条边锁住一个三角形",
+    objective: "理解三边分别相等可以判定三角形全等，会找公共边、中点带来的等边，并能用 SSS 写出证明。",
+    interaction: "conditionBuilder",
+    conditionMode: "sss",
+    discoverTitle: "只给三条边，三角形还会变吗？",
+    discoverPrompt: "观察三条边定下来后，顶点只能落在两个镜像位置上；翻过去仍然能完全重合。",
+    principles: [
+      "三边分别相等的两个三角形全等，简写为“边边边”或 SSS。",
+      "三条边的长度确定后，三角形的形状和大小就确定了，这和三角形稳定性相通。",
+      "证明 SSS 时常见第三条边是公共边，例如 AD=AD。",
+      "中点会带来两段相等，例如 D 是 BC 的中点，则 BD=CD。"
+    ],
+    mistakes: [
+      "找到了两组边相等就急着判定全等，SSS 必须三组边。",
+      "忘记公共边可以直接写相等。",
+      "把“看起来一样长”当作证明依据。"
+    ],
+    parentFocus: [
+      "让孩子先圈出三组边的来源：已知、中点、公共边。",
+      "证明时要求孩子按“在两个三角形中 - 三个条件 - 所以全等”的格式说完整。"
+    ],
+    parentQuestions: [
+      "公共边为什么可以作为一组相等边？",
+      "D 是 BC 的中点，能立刻得到哪一组线段相等？"
+    ],
+    mastery: [
+      "能说出 SSS 的条件。",
+      "能在等腰三角形带中点的图中证明两个小三角形全等。",
+      "能用全等推出对应角或对应边相等。"
+    ],
+    practices: [
+      {
+        prompt: "AB=AC，D 是 BC 的中点，要证△ABD≌△ACD，第三组相等边是什么？",
+        options: ["AD=AD", "BD=AD", "AB=BD"],
+        answer: 0,
+        feedback: "AD 是两个三角形的公共边，可以直接写 AD=AD。"
+      },
+      {
+        prompt: "三边分别相等的两个三角形全等，简写是什么？",
+        options: ["SAS", "SSS", "ASA"],
+        answer: 1,
+        feedback: "Side-Side-Side，对应“边边边”。"
+      },
+      {
+        prompt: "用 SSS 证明两个三角形全等后，能推出什么？",
+        options: ["只有周长相等", "对应边和对应角都相等", "只有面积相等"],
+        answer: 1,
+        feedback: "全等三角形的对应边相等、对应角相等。"
+      }
+    ]
+  },
+  {
+    id: "sas",
+    no: 11,
+    chapter: "第十二章 全等三角形",
+    title: "边角边 SAS",
+    subtitle: "夹角在中间才锁得住",
+    objective: "理解两边及夹角分别相等可以判定三角形全等，会辨认 SAS 和不能判定全等的边边角情况。",
+    interaction: "conditionBuilder",
+    conditionMode: "sas",
+    discoverTitle: "两根木棍夹住一个角",
+    discoverPrompt: "改变夹角，看第三边跟着确定；再切到“边边角陷阱”，观察为什么它可能摆出两个不同三角形。",
+    principles: [
+      "两边和它们的夹角分别相等的两个三角形全等，简写为“边角边”或 SAS。",
+      "“夹角”必须是这两条已知边中间的角。",
+      "两边和其中一边的对角分别相等，不能保证两个三角形全等，这就是边边角的陷阱。",
+      "池塘测距这类题常用 SAS：延长两条线段制造 CA=CD、CB=CE，再用对顶角相等。"
+    ],
+    mistakes: [
+      "看到两边一角就直接写 SAS，没有确认这个角是不是夹角。",
+      "忘记对顶角相等可以提供 SAS 中的夹角。",
+      "证明完全等后，没有写“对应边相等”来得到目标结论。"
+    ],
+    parentFocus: [
+      "让孩子用手指按住两条边，再指出中间夹着哪个角。",
+      "遇到两边一角时，先问：这个角夹在两条边之间吗？"
+    ],
+    parentQuestions: [
+      "为什么边边角不一定全等？",
+      "池塘测距中，∠1=∠2 的理由是什么？"
+    ],
+    mastery: [
+      "能区分 SAS 和边边角。",
+      "能在含对顶角的图中找出 SAS 条件。",
+      "能用“先证全等，再推对应边相等”解决测距问题。"
+    ],
+    practices: [
+      {
+        prompt: "AB=DE，AC=DF，∠A=∠D。若 ∠A 和 ∠D 都夹在两条已知边之间，可用什么判定？",
+        options: ["SSS", "SAS", "AAS"],
+        answer: 1,
+        feedback: "两边和夹角分别相等，是 SAS。"
+      },
+      {
+        prompt: "两边和其中一边的对角分别相等，能一定判定全等吗？",
+        options: ["能", "不能", "只要图看起来像就能"],
+        answer: 1,
+        feedback: "教材用转动木棍说明：边边角可能出现两个不同三角形。"
+      },
+      {
+        prompt: "两条直线相交时，SAS 证明里常用哪类角相等？",
+        options: ["对顶角相等", "邻补角相等", "任意角相等"],
+        answer: 0,
+        feedback: "相交线产生对顶角相等，常作为夹角条件。"
+      }
+    ]
+  },
+  {
+    id: "asa-aas",
+    no: 12,
+    chapter: "第十二章 全等三角形",
+    title: "角边角与角角边",
+    subtitle: "两个角加一条边，也能定位",
+    objective: "理解 ASA、AAS 的条件来源，会用三角形内角和把 AAS 转化为 ASA。",
+    interaction: "conditionBuilder",
+    conditionMode: "angles",
+    discoverTitle: "两束光线夹住一条边",
+    discoverPrompt: "固定一条边和两个角，观察两条射线只有一个交点；再看 AAS 为什么也能变成 ASA。",
+    principles: [
+      "两角和它们的夹边分别相等的两个三角形全等，简写为“角边角”或 ASA。",
+      "两角分别相等且其中一组等角的对边相等的两个三角形全等，简写为“角角边”或 AAS。",
+      "AAS 的理由来自三角形内角和：两个角相等，第三个角也相等，于是可以转化为 ASA。",
+      "三角分别相等只能说明形状相同，不一定全等，因为大小还可能缩放。"
+    ],
+    mistakes: [
+      "把 AAA 当成全等判定，忘记还需要一条边确定大小。",
+      "没有分清 ASA 的边是夹边，AAS 的边是一组等角的对边。",
+      "证明 AAS 时跳过“第三角相等”的理由。"
+    ],
+    parentFocus: [
+      "让孩子画两条射线，看固定夹边后交点为什么唯一。",
+      "追问 AAS 的关键转化：第三角为什么相等？"
+    ],
+    parentQuestions: [
+      "三个角都相等，为什么还不一定全等？",
+      "AAS 最终是怎么借 ASA 完成判定的？"
+    ],
+    mastery: [
+      "能准确说出 ASA 与 AAS 的区别。",
+      "能用三角形内角和解释 AAS。",
+      "能判断 AAA 不是全等判定方法。"
+    ],
+    practices: [
+      {
+        prompt: "∠A=∠D，AB=DE，∠B=∠E，这条边夹在两个角之间，可用什么判定？",
+        options: ["ASA", "SAS", "HL"],
+        answer: 0,
+        feedback: "两角和夹边分别相等，是 ASA。"
+      },
+      {
+        prompt: "两个三角形三角分别相等，一定全等吗？",
+        options: ["一定", "不一定，可能只是形状相同大小不同", "一定不全等"],
+        answer: 1,
+        feedback: "AAA 不能确定大小，所以不是全等判定。"
+      },
+      {
+        prompt: "AAS 能成立的重要理由是什么？",
+        options: ["三角形内角和", "外角和 360°", "边越长角越大"],
+        answer: 0,
+        feedback: "两个角相等时，第三个角也相等，再配合一条边判定全等。"
+      }
+    ]
+  },
+  {
+    id: "hl",
+    no: 13,
+    chapter: "第十二章 全等三角形",
+    title: "直角三角形 HL",
+    subtitle: "斜边和一条直角边够用了",
+    objective: "理解直角三角形全等的特殊判定 HL，会找斜边、直角边和公共斜边。",
+    interaction: "rightTriangleHL",
+    discoverTitle: "直角固定后，还需要什么？",
+    discoverPrompt: "拖动直角边长度，观察当斜边和一条直角边确定时，另一直角边也被确定。",
+    principles: [
+      "斜边和一条直角边分别相等的两个直角三角形全等，简写为“斜边、直角边”或 HL。",
+      "HL 只能用于直角三角形，先写出两个直角是必要步骤。",
+      "斜边是直角所对的边，不能把普通边误当斜边。",
+      "含两个垂直条件的题，常先证明两个三角形都是直角三角形，再找公共斜边或已知直角边。"
+    ],
+    mistakes: [
+      "没有说明三角形是直角三角形就直接写 HL。",
+      "把直角边和斜边配错。",
+      "看到一条边和一个直角就以为够了，HL 还需要斜边相等。"
+    ],
+    parentFocus: [
+      "让孩子先用手指出直角，再指出直角对面的斜边。",
+      "证明时检查格式：Rt△... 和 Rt△... 中，斜边相等，直角边相等。"
+    ],
+    parentQuestions: [
+      "HL 里的 H 指哪条边？L 指哪条边？",
+      "为什么普通三角形不能直接用 HL？"
+    ],
+    mastery: [
+      "能正确辨认斜边和直角边。",
+      "能判断何时可以使用 HL。",
+      "能用 HL 证明线段相等。"
+    ],
+    practices: [
+      {
+        prompt: "使用 HL 前，必须先确认什么？",
+        options: ["两个三角形都是直角三角形", "两个三角形都是等边三角形", "两个角都很小"],
+        answer: 0,
+        feedback: "HL 是直角三角形的特殊判定，先有直角三角形才谈 HL。"
+      },
+      {
+        prompt: "Rt△ABC 中 ∠C=90°，哪条边是斜边？",
+        options: ["AB", "AC", "BC"],
+        answer: 0,
+        feedback: "斜边是直角所对的边，∠C 对面是 AB。"
+      },
+      {
+        prompt: "两个直角三角形斜边相等、一条直角边相等，可以判定什么？",
+        options: ["全等", "只有面积相等", "只有一个锐角相等"],
+        answer: 0,
+        feedback: "这正是 HL 判定。"
+      }
+    ]
+  },
+  {
+    id: "angle-bisector-property",
+    no: 14,
+    chapter: "第十二章 全等三角形",
+    title: "角的平分线的性质",
+    subtitle: "到两边的距离相等",
+    objective: "会作角平分线，理解角平分线上的点到角两边距离相等及其逆命题，并能用全等三角形证明。",
+    interaction: "angleBisector",
+    discoverTitle: "点在角平分线上，会离两边一样远吗？",
+    discoverPrompt: "拖动角平分线上的点 P，观察到两边的垂线段 PD、PE 始终相等；再切换逆命题看点的位置。",
+    principles: [
+      "角的平分线上的点到角的两边的距离相等。",
+      "角内部到角的两边距离相等的点在角的平分线上。",
+      "距离指点到直线的垂线段长度，所以证明前要先作垂线。",
+      "证明几何命题的一般步骤是：明确已知和求证，画图并符号化，分析路径，写出证明。"
+    ],
+    mistakes: [
+      "把点到边上一点的斜线长度当成距离，忘记距离必须垂直。",
+      "只记性质，不会说它来自两个直角三角形全等。",
+      "使用逆命题时忘记点必须在角的内部。"
+    ],
+    parentFocus: [
+      "让孩子先画 PD⊥OA、PE⊥OB，再说 PD 和 PE 为什么叫距离。",
+      "追问证明中两个直角三角形用的是 AAS、HL 还是别的判定。"
+    ],
+    parentQuestions: [
+      "点到角两边的距离，为什么要画垂线？",
+      "角平分线性质和它的逆命题分别怎么说？"
+    ],
+    mastery: [
+      "能按尺规作图步骤作出角平分线。",
+      "能证明角平分线上的点到两边距离相等。",
+      "能用逆命题解决选址问题。"
+    ],
+    practices: [
+      {
+        prompt: "P 在∠AOB 的平分线上，PD⊥OA，PE⊥OB，可以得到什么？",
+        options: ["PD=PE", "OD=OE", "OP=PD"],
+        answer: 0,
+        feedback: "角平分线上的点到角两边的距离相等，距离就是垂线段 PD、PE。"
+      },
+      {
+        prompt: "点到直线的距离指什么？",
+        options: ["任意连线长度", "垂线段长度", "沿直线走的长度"],
+        answer: 1,
+        feedback: "点到直线的距离必须沿垂直方向量。"
+      },
+      {
+        prompt: "一个点在角内部，且到角两边距离相等，它在哪里？",
+        options: ["角平分线上", "任意一边上", "角外部"],
+        answer: 0,
+        feedback: "这是角平分线性质的逆命题。"
+      }
+    ]
+  },
+  {
+    id: "congruence-review",
+    no: 15,
+    chapter: "第十二章 全等三角形",
+    title: "全等证明综合",
+    subtitle: "先找三角形，再选判定",
+    objective: "能综合使用全等性质、SSS、SAS、ASA、AAS、HL 和角平分线性质解决证明与应用题。",
+    interaction: "proofRoute",
+    discoverTitle: "把证明拆成四步",
+    discoverPrompt: "跟着路线卡，把“目标 - 三角形 - 条件 - 判定 - 结论”连起来，形成证明题的稳定方法。",
+    principles: [
+      "证明线段或角相等，常先寻找它们所在的两个三角形。",
+      "全等判定要从已知、公共边或公共角、对顶角、平行线角、中点、垂直这些证据中拼出条件。",
+      "证明格式要写清楚：在两个三角形中，列条件，写判定方法，最后用对应边或对应角相等得到结论。",
+      "角平分线选址问题本质是到两条边或三条边距离相等，常落在角平分线或三角形角平分线交点上。"
+    ],
+    mistakes: [
+      "拿到题就选判定方法，没有先确定要证明哪两个三角形全等。",
+      "条件够了但对应顺序写错，导致最后推出错的边角。",
+      "证明到三角形全等就停下，没有回到原题的求证。"
+    ],
+    parentFocus: [
+      "让孩子每道证明题先说目标：我要证明哪条边或哪个角相等。",
+      "再问：这两个目标分别在哪两个三角形里？三个条件分别从哪里来？"
+    ],
+    parentQuestions: [
+      "这道题最终要证明什么？",
+      "你选的判定方法是哪一个，三个条件分别是什么依据？"
+    ],
+    mastery: [
+      "能背出并区分 SSS、SAS、ASA、AAS、HL。",
+      "能独立写出一段完整全等证明。",
+      "能用角平分线性质解释到三条道路距离相等的选址问题。"
+    ],
+    practices: [
+      {
+        prompt: "证明 AB=DE，最常见的思路是什么？",
+        options: ["先证明它们是两个全等三角形的对应边", "直接量长度", "只看图形是否对称"],
+        answer: 0,
+        feedback: "全等证明的核心用途就是推出对应边或对应角相等。"
+      },
+      {
+        prompt: "全等证明中，“公共角”属于哪类证据？",
+        options: ["可直接使用的相等角", "不能使用", "只能用于 HL"],
+        answer: 0,
+        feedback: "同一个角当然等于它自己，可以作为一组相等角。"
+      },
+      {
+        prompt: "到三条公路距离都相等的点，通常在哪里找？",
+        options: ["三角形三条角平分线的交点", "任意一条边的中点", "最长边上"],
+        answer: 0,
+        feedback: "到两边距离相等的点在角平分线上；到三边距离相等，要找三条角平分线的交点。"
+      }
+    ]
   }
 ];
 
@@ -604,7 +992,7 @@ const LESSON_ENRICHMENT = {
       }
     ]
   },
-  "polygon-basic": {
+  "polygon-basics": {
     sceneTitle: "多边形不是只数边，还要看连接关系",
     sceneText: "从一个顶点出发，不能连自己，也不能连相邻两个顶点。剩下能连的，才是对角线。",
     sceneBullets: ["边连接相邻顶点", "对角线连接不相邻顶点", "正多边形要边等且角等"],
@@ -699,11 +1087,235 @@ const LESSON_ENRICHMENT = {
         hint: "证明不是答案列表，是理由链。"
       }
     ]
+  },
+  "congruence-basic": {
+    sceneTitle: "两张同尺寸照片可以完全盖住",
+    sceneText: "全等不是“差不多像”，而是可以一点不差地叠在一起。三角形被平移、翻折、旋转后，位置变了，对应边和对应角没有变。",
+    sceneBullets: ["完全重合", "对应字母对齐", "对应边角相等"],
+    exploreTasks: [
+      { label: "换变换", text: "依次点平移、翻折、旋转，观察三角形是否仍能盖回原图。" },
+      { label: "读字母", text: "看全等式时从左到右配对：第 1 个字母对第 1 个字母。" },
+      { label: "推相等", text: "由△ABC≌△DEF，说出 AB、BC、AC 分别对应哪条边。" }
+    ],
+    reasoning: [
+      { title: "看见", text: "形状和大小完全一样的图形，叠上去能一一重合。" },
+      { title: "命名", text: "重合的顶点、边、角分别叫对应顶点、对应边、对应角。" },
+      { title: "会用", text: "先写正确全等式，再用对应边相等、对应角相等推出结论。" }
+    ],
+    application: ["读全等式", "找对应关系", "由全等推出边角相等"],
+    extraPractices: [
+      {
+        prompt: "△ABC≌△DCE，A 对 D，B 对 C，C 对 E。∠B 对应哪个角？",
+        options: ["∠D", "∠C", "∠E"],
+        answer: 1,
+        feedback: "第二个字母 B 对第二个字母 C，所以∠B 对应∠C。",
+        hint: "按全等式中的字母位置配对。"
+      },
+      {
+        prompt: "两个图形面积相等，就一定全等吗？",
+        options: ["一定", "不一定", "只要都是三角形就一定"],
+        answer: 1,
+        feedback: "面积相等不代表形状、大小完全相同。",
+        hint: "全等要求能完全重合。"
+      }
+    ]
+  },
+  sss: {
+    sceneTitle: "三根钢条钉好后，架子就不会变形",
+    sceneText: "三边长度确定后，第三个顶点的位置也被锁住。教材里的三角形钢架例题，就是用 AB=AC、中点带来的 BD=CD、公共边 AD=AD 拼出 SSS。",
+    sceneBullets: ["三边确定", "公共边可用", "中点给等边"],
+    exploreTasks: [
+      { label: "圈三边", text: "在图中找三组相等边：已知一组，中点一组，公共边一组。" },
+      { label: "补理由", text: "每写一组边相等，都说它来自已知、中点还是公共边。" },
+      { label: "推结论", text: "全等后再说能推出哪一组对应角相等。" }
+    ],
+    reasoning: [
+      { title: "条件", text: "SSS 要三组对应边分别相等。" },
+      { title: "来源", text: "题目常把条件藏在中点、等腰、公共边里。" },
+      { title: "出口", text: "证明全等不是终点，终点是对应边或对应角相等。" }
+    ],
+    application: ["钢架稳定", "等腰三角形分成两个小三角形", "作一个角等于已知角的原理"],
+    extraPractices: [
+      {
+        prompt: "C 是 AB 的中点，能得到什么？",
+        options: ["AC=CB", "AC=AB", "∠A=∠B"],
+        answer: 0,
+        feedback: "中点把线段分成相等两段。",
+        hint: "中点只直接给线段相等。"
+      },
+      {
+        prompt: "SSS 证明中，AD 是两个三角形共同的边，应该写成什么？",
+        options: ["AD=AD", "AD=AB", "AD=CD"],
+        answer: 0,
+        feedback: "公共边等于它自己。",
+        hint: "同一条线段在两个三角形中同时出现。"
+      }
+    ]
+  },
+  sas: {
+    sceneTitle: "池塘测距：把够不到的 AB 复制到 DE",
+    sceneText: "从 C 出发把 CA、CB 分别延长同样长，利用 CA=CD、CB=CE 和对顶角相等，可以用 SAS 证明两个三角形全等，再量 DE 得 AB。",
+    sceneBullets: ["两边", "夹角", "对顶角"],
+    exploreTasks: [
+      { label: "找夹角", text: "指出两条已知边夹着的角，确认它不是旁边随便一个角。" },
+      { label: "看反例", text: "切换边边角，观察短木棍转动时会出现两个不同三角形。" },
+      { label: "说测距", text: "用一句话解释为什么 DE 的长度就是池塘两端 AB 的距离。" }
+    ],
+    reasoning: [
+      { title: "SAS", text: "两边和中间夹角分别相等，三角形被唯一确定。" },
+      { title: "陷阱", text: "如果角不是夹角，短边可能摆在不同位置，不一定全等。" },
+      { title: "应用", text: "够不到的线段，可以构造全等三角形把它转移到能量的位置。" }
+    ],
+    application: ["池塘测距", "对顶角证明", "辨认边边角反例"],
+    extraPractices: [
+      {
+        prompt: "SAS 中的 A 必须是什么角？",
+        options: ["任意一个角", "两条已知边的夹角", "最长边的对角"],
+        answer: 1,
+        feedback: "SAS 的角必须夹在两条已知边之间。",
+        hint: "边-角-边，角在中间。"
+      },
+      {
+        prompt: "CA=CD，CB=CE，∠ACB=∠DCE，可判定哪两个三角形全等？",
+        options: ["△ABC 和 △DEC", "△ACD 和 △BCE", "△ABE 和 △DCE"],
+        answer: 0,
+        feedback: "两组边都围绕点 C，夹角也是 C 处的对顶角。",
+        hint: "按 C 两侧的两条线段配对。"
+      }
+    ]
+  },
+  "asa-aas": {
+    sceneTitle: "两束射线相交，第三个顶点就出现了",
+    sceneText: "固定一条边，再固定两端的角，两条射线只能相交在一个点。AAS 看起来不是夹边，但可先用内角和补出第三角，再回到 ASA。",
+    sceneBullets: ["ASA：夹边", "AAS：补第三角", "AAA：只能定形"],
+    exploreTasks: [
+      { label: "夹边定位", text: "把底边固定，再看两个端点射线的交点为什么唯一。" },
+      { label: "补角", text: "给两个角相等时，口算第三个角为什么也相等。" },
+      { label: "缩放反例", text: "观察 AAA 时，三角形可以放大缩小，所以不一定全等。" }
+    ],
+    reasoning: [
+      { title: "ASA", text: "两个角和它们中间的边确定一个三角形。" },
+      { title: "AAS", text: "两个角相等推出第三角相等，再配合一条边判定。" },
+      { title: "AAA", text: "三个角只确定形状，不能确定大小。" }
+    ],
+    application: ["公共角证明", "平行线角证明", "用内角和补条件"],
+    extraPractices: [
+      {
+        prompt: "已知两个角分别相等，还能推出第三个角相等，依据是什么？",
+        options: ["三角形内角和", "全等定义", "外角和"],
+        answer: 0,
+        feedback: "第三角都等于 180° 减去另外两个角。",
+        hint: "三角形三个内角和为 180°。"
+      },
+      {
+        prompt: "ASA 与 AAS 的共同点是什么？",
+        options: ["都有两组角和一组边", "都有三组边", "都只能用于直角三角形"],
+        answer: 0,
+        feedback: "它们都使用两角一边，只是这条边的位置不同。",
+        hint: "看字母：A 和 S 各出现几次。"
+      }
+    ]
+  },
+  hl: {
+    sceneTitle: "直角三角形多了一个固定条件",
+    sceneText: "直角已经把一个角固定为 90°。当斜边和一条直角边也相等时，另一直角边被迫确定，两个直角三角形全等。",
+    sceneBullets: ["先确认直角", "找斜边", "找一条直角边"],
+    exploreTasks: [
+      { label: "认斜边", text: "先找 90°，再找它对面的边，这条才是斜边。" },
+      { label: "拖直角边", text: "改变一条直角边，观察斜边固定时另一个顶点的位置。" },
+      { label: "写 Rt", text: "证明里把两个三角形写成 Rt△，提醒自己正在用 HL。" }
+    ],
+    reasoning: [
+      { title: "限制", text: "HL 只属于直角三角形，普通三角形不能直接用。" },
+      { title: "条件", text: "一组斜边相等，一组直角边相等。" },
+      { title: "结论", text: "全等后继续推出目标边或目标角相等。" }
+    ],
+    application: ["垂直条件题", "公共斜边题", "距离相等证明"],
+    extraPractices: [
+      {
+        prompt: "两个直角三角形只有一条直角边相等，够用 HL 吗？",
+        options: ["够", "不够，还要斜边相等", "不够，还要三个角相等"],
+        answer: 1,
+        feedback: "HL 需要斜边和一条直角边分别相等。",
+        hint: "H 是斜边，L 是直角边。"
+      },
+      {
+        prompt: "∠C=∠D=90°，AB=BA，AC=BD，可用 HL 证明哪两个三角形全等？",
+        options: ["Rt△ABC 和 Rt△BAD", "△ACD 和 △BCD", "△ABC 和 △ABD 但不能用 HL"],
+        answer: 0,
+        feedback: "AB 和 BA 是公共斜边，AC、BD 是一组直角边。",
+        hint: "先找直角，再找直角对面的斜边。"
+      }
+    ]
+  },
+  "angle-bisector-property": {
+    sceneTitle: "市场选址：离两条路一样近",
+    sceneText: "如果一个点到角两边的距离相等，它就落在角平分线上。三条公路围成区域时，到三条公路距离都相等的位置，就是三条角平分线的交点。",
+    sceneBullets: ["距离要垂直", "性质和逆命题", "选址应用"],
+    exploreTasks: [
+      { label: "拖 P 点", text: "移动角平分线上的 P，比较 PD 和 PE 是否始终相等。" },
+      { label: "画垂线", text: "指出 PD、PE 为什么是距离，而不是随便连的线。" },
+      { label: "反过来", text: "想象一个点到两边距离相等，它应该落在哪条线上。" }
+    ],
+    reasoning: [
+      { title: "已知", text: "P 在角平分线上，且 PD、PE 分别垂直两边。" },
+      { title: "判定", text: "两个小直角三角形有一组直角、一组角平分线角和公共边 OP，可用 AAS。" },
+      { title: "结论", text: "全等后得到 PD=PE，也就是到两边距离相等。" }
+    ],
+    application: ["尺规作角平分线", "点到边距离", "道路或市场选址"],
+    extraPractices: [
+      {
+        prompt: "证明点到角两边距离相等时，通常先作什么辅助线？",
+        options: ["过点向两边作垂线", "连接两边任意点", "画中线"],
+        answer: 0,
+        feedback: "距离必须用垂线段表示。",
+        hint: "点到直线的距离是垂线段。"
+      },
+      {
+        prompt: "到三角形三边距离相等的点，是哪三条线的交点？",
+        options: ["三条中线", "三条高", "三条角平分线"],
+        answer: 2,
+        feedback: "到两边距离相等在角平分线上，到三边都相等就是三条角平分线交点。",
+        hint: "用角平分线性质的逆命题。"
+      }
+    ]
+  },
+  "congruence-review": {
+    sceneTitle: "证明题不是猜判定，是搭证据链",
+    sceneText: "先看目标边角分别在哪两个三角形里，再从图中收集证据，最后选择 SSS、SAS、ASA、AAS 或 HL。全等只是桥，目标结论才是终点。",
+    sceneBullets: ["目标", "三角形", "条件", "判定", "结论"],
+    exploreTasks: [
+      { label: "定目标", text: "先把题目要求证明的边或角圈出来。" },
+      { label: "找载体", text: "再找它们分别属于哪两个三角形。" },
+      { label: "拼条件", text: "从已知、公共量、对顶角、平行线、中点、垂直里收集三组条件。" }
+    ],
+    reasoning: [
+      { title: "找对象", text: "目标边角必须成为两个三角形中的对应元素。" },
+      { title: "选判定", text: "根据手上的证据决定用 SSS、SAS、ASA、AAS 或 HL。" },
+      { title: "回题目", text: "写出三角形全等后，还要补一句对应边或对应角相等。" }
+    ],
+    application: ["章末复习题", "证明题书写", "几何应用题"],
+    extraPractices: [
+      {
+        prompt: "证明题中，写完△ABC≌△DEF 后，下一步通常是什么？",
+        options: ["回到求证，写对应边或对应角相等", "立刻结束", "重新画图"],
+        answer: 0,
+        feedback: "全等是为了推出目标结论，不能停在全等本身。",
+        hint: "问自己：题目原来要证什么？"
+      },
+      {
+        prompt: "下面哪一个不是三角形全等判定？",
+        options: ["SAS", "AAA", "HL"],
+        answer: 1,
+        feedback: "AAA 只能确定形状，不能确定大小。",
+        hint: "全等要形状和大小都确定。"
+      }
+    ]
   }
 };
 
-const STORAGE_KEY = "math8_ch11_learning_state_v1";
-const SESSION_KEY = "math8_ch11_supabase_session_v1";
+const STORAGE_KEY = "math8_learning_state_v3";
+const SESSION_KEY = "math8_supabase_session_v1";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -721,7 +1333,11 @@ const uiMemory = {
   angleProof: false,
   exterior: { a: 62, b: 48 },
   polygonN: 5,
-  formulaN: 8
+  formulaN: 8,
+  congruenceMode: "translate",
+  conditionTrap: false,
+  hlLeg: 120,
+  bisector: { distance: 155, inverse: false }
 };
 
 function loadState() {
@@ -918,6 +1534,7 @@ function renderStepTabs() {
 
 function renderStudyPanel() {
   const lesson = currentLesson();
+  $("#chapterTitle").textContent = lesson.chapter || "第十一章 三角形";
   $("#lessonKicker").textContent = `第 ${lesson.no} 课`;
   $("#lessonTitle").textContent = lesson.title;
   $("#lessonStatus").textContent = appState.progress[lesson.id]?.mastered ? "已通关" : "学习中";
@@ -1189,6 +1806,60 @@ function sceneSvg(id) {
       </svg>
     `;
   }
+  if (id === "congruence-basic") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="34,118 90,28 142,118" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <polygon points="78,118 134,28 186,118" fill="#fff8ee" stroke="#16756f" stroke-width="6" stroke-linejoin="round" opacity="0.86"></polygon>
+        <path d="M64 132 H164" stroke="#b35f12" stroke-width="5" stroke-dasharray="8 7"></path>
+      </svg>
+    `;
+  }
+  if (id === "sss" || id === "sas" || id === "asa-aas") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="48,122 116,24 180,122" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <line x1="48" y1="122" x2="116" y2="24" stroke="#16756f" stroke-width="6"></line>
+        <line x1="116" y1="24" x2="180" y2="122" stroke="#2563a9" stroke-width="6"></line>
+        <path d="M94 56 q22 22 44 0" fill="none" stroke="#b35f12" stroke-width="5"></path>
+        <text x="64" y="142" fill="#324250" font-size="17" font-weight="800">${id === "sss" ? "SSS" : id === "sas" ? "SAS" : "ASA / AAS"}</text>
+      </svg>
+    `;
+  }
+  if (id === "hl") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <polygon points="42,124 178,124 178,34" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
+        <path d="M154 124 v-24 h24" fill="none" stroke="#b35f12" stroke-width="5"></path>
+        <line x1="42" y1="124" x2="178" y2="34" stroke="#16756f" stroke-width="7"></line>
+        <text x="72" y="144" fill="#324250" font-size="17" font-weight="800">HL</text>
+      </svg>
+    `;
+  }
+  if (id === "angle-bisector-property") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <line x1="34" y1="76" x2="188" y2="28" stroke="#324250" stroke-width="7" stroke-linecap="round"></line>
+        <line x1="34" y1="76" x2="188" y2="124" stroke="#324250" stroke-width="7" stroke-linecap="round"></line>
+        <line x1="34" y1="76" x2="192" y2="76" stroke="#16756f" stroke-width="6" stroke-dasharray="8 7"></line>
+        <circle cx="128" cy="76" r="9" fill="#16756f"></circle>
+        <line x1="128" y1="76" x2="116" y2="40" stroke="#2563a9" stroke-width="5"></line>
+        <line x1="128" y1="76" x2="116" y2="112" stroke="#2563a9" stroke-width="5"></line>
+      </svg>
+    `;
+  }
+  if (id === "congruence-review") {
+    return `
+      <svg viewBox="0 0 220 150">
+        <rect x="28" y="28" width="164" height="94" rx="8" fill="#f4f7fa" stroke="#324250" stroke-width="5"></rect>
+        <path d="M52 58 H88 H124 H168" stroke="#16756f" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M52 92 H96 H142 H168" stroke="#b35f12" stroke-width="6" stroke-linecap="round"></path>
+        <circle cx="52" cy="58" r="7" fill="#16756f"></circle>
+        <circle cx="168" cy="92" r="7" fill="#b35f12"></circle>
+        <text x="54" y="142" fill="#324250" font-size="16" font-weight="800">证明路线</text>
+      </svg>
+    `;
+  }
   return `
     <svg viewBox="0 0 220 150">
       <path d="M30 112 C66 62 102 64 132 92 S178 122 198 48" fill="none" stroke="#16756f" stroke-width="8" stroke-linecap="round"></path>
@@ -1350,6 +2021,11 @@ function mountInteraction(lesson) {
   if (lesson.interaction === "polygonBasics") renderPolygonBasics(mount);
   if (lesson.interaction === "polygonFormula") renderPolygonFormula(mount);
   if (lesson.interaction === "reviewMap") renderReviewMap(mount);
+  if (lesson.interaction === "congruenceTransform") renderCongruenceTransform(mount);
+  if (lesson.interaction === "conditionBuilder") renderConditionBuilder(mount, lesson.conditionMode);
+  if (lesson.interaction === "rightTriangleHL") renderRightTriangleHL(mount);
+  if (lesson.interaction === "angleBisector") renderAngleBisector(mount);
+  if (lesson.interaction === "proofRoute") renderProofRoute(mount);
 }
 
 function renderTriangleInequality(mount) {
@@ -1791,6 +2467,289 @@ function renderReviewMap(mount) {
   `;
 }
 
+function renderCongruenceTransform(mount) {
+  const modes = {
+    translate: { label: "平移", note: "所有点朝同一方向移动，大小和形状不变。" },
+    flip: { label: "翻折", note: "像把纸片翻到另一边，对应点隔着折痕重合。" },
+    rotate: { label: "旋转", note: "绕一个点转动，边长和角度都不改变。" }
+  };
+  mount.innerHTML = `
+    <div class="interaction-grid">
+      <div class="visual-stage"><svg id="congruenceSvg" viewBox="0 0 520 340" aria-label="全等变换互动图"></svg></div>
+      <div class="control-panel">
+        <div class="control-group">
+          <div class="control-label"><span>变换方式</span></div>
+          <div class="chip-row">
+            ${Object.entries(modes).map(([key, item]) => `<button class="chip ${uiMemory.congruenceMode === key ? "active" : ""}" data-congruence="${key}" type="button">${item.label}</button>`).join("")}
+          </div>
+        </div>
+        <div class="control-group" id="congruenceExplain"></div>
+      </div>
+    </div>
+  `;
+  mount.querySelectorAll("[data-congruence]").forEach((button) => {
+    button.addEventListener("click", () => {
+      uiMemory.congruenceMode = button.dataset.congruence;
+      renderCongruenceTransform(mount);
+    });
+  });
+  updateCongruenceSvg(modes);
+}
+
+function updateCongruenceSvg(modes) {
+  const base = [{ x: 118, y: 238, label: "A" }, { x: 230, y: 238, label: "B" }, { x: 162, y: 112, label: "C" }];
+  let next = base.map((p) => ({ ...p, x: p.x + 190, label: { A: "D", B: "E", C: "F" }[p.label] }));
+  let guide = `<path d="M248 176 h72" stroke="#b35f12" stroke-width="4" stroke-dasharray="8 8"></path>`;
+  if (uiMemory.congruenceMode === "flip") {
+    next = [{ x: 410, y: 238, label: "D" }, { x: 298, y: 238, label: "E" }, { x: 366, y: 112, label: "F" }];
+    guide = `<line x1="264" y1="70" x2="264" y2="286" stroke="#b35f12" stroke-width="4" stroke-dasharray="8 8"></line>`;
+  }
+  if (uiMemory.congruenceMode === "rotate") {
+    next = [{ x: 330, y: 250, label: "D" }, { x: 426, y: 192, label: "E" }, { x: 306, y: 116, label: "F" }];
+    guide = `<path d="M270 238 q70 -98 158 -54" fill="none" stroke="#b35f12" stroke-width="4" stroke-dasharray="8 8"></path>`;
+  }
+  const polygon = (pts, fill) => `<polygon points="${pts.map((p) => `${p.x},${p.y}`).join(" ")}" fill="${fill}" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>`;
+  const labels = [...base, ...next].map((p) => pointLabel(p, p.label, -5, -14)).join("");
+  $("#congruenceSvg").innerHTML = `
+    ${guide}
+    ${polygon(base, "#eef5f4")}
+    ${polygon(next, "#fff8ee")}
+    ${labels}
+    <text x="68" y="306" fill="#324250" font-size="18" font-weight="800">△ABC≌△DEF：A↔D，B↔E，C↔F</text>
+  `;
+  const item = modes[uiMemory.congruenceMode];
+  $("#congruenceExplain").innerHTML = `
+    <div class="metric-row"><span>当前</span><strong>${item.label}</strong></div>
+    <p class="small-note">${item.note}</p>
+    <p class="small-note">对应边：AB=DE，BC=EF，AC=DF。对应角：∠A=∠D，∠B=∠E，∠C=∠F。</p>
+  `;
+}
+
+function renderConditionBuilder(mount, mode) {
+  const copy = {
+    sss: {
+      title: "SSS：三边分别相等",
+      result: "能判定全等",
+      note: "三条边的长度固定，三角形的形状和大小被锁住。",
+      formula: "AB=DE，BC=EF，AC=DF"
+    },
+    sas: {
+      title: uiMemory.conditionTrap ? "边边角：不一定全等" : "SAS：两边和夹角",
+      result: uiMemory.conditionTrap ? "不能判定" : "能判定全等",
+      note: uiMemory.conditionTrap ? "角不在两条已知边中间时，短边可以摆出另一个位置。" : "夹角在两条已知边中间，第三边也随之确定。",
+      formula: uiMemory.conditionTrap ? "AB=AB，AC=AD，∠B=∠B" : "CA=CD，CB=CE，∠ACB=∠DCE"
+    },
+    angles: {
+      title: "ASA / AAS：两角一边",
+      result: "能判定全等",
+      note: "ASA 用夹边；AAS 可先用内角和补出第三角，再转成 ASA。",
+      formula: "∠A=∠D，∠B=∠E，再配一组对应边"
+    }
+  }[mode];
+  mount.innerHTML = `
+    <div class="interaction-grid">
+      <div class="visual-stage"><svg id="conditionSvg" viewBox="0 0 520 340" aria-label="三角形全等判定互动图"></svg></div>
+      <div class="control-panel">
+        ${mode === "sas" ? `
+          <div class="control-group">
+            <button class="primary-button" id="toggleTrap" type="button">${uiMemory.conditionTrap ? "切回 SAS" : "查看边边角陷阱"}</button>
+            <p class="small-note">教材用转动木棍说明：两边和其中一边的对角不一定全等。</p>
+          </div>
+        ` : ""}
+        <div class="control-group" id="conditionExplain"></div>
+      </div>
+    </div>
+  `;
+  if (mode === "sas") {
+    $("#toggleTrap").addEventListener("click", () => {
+      uiMemory.conditionTrap = !uiMemory.conditionTrap;
+      renderConditionBuilder(mount, mode);
+    });
+  }
+  updateConditionSvg(mode, copy);
+}
+
+function updateConditionSvg(mode, copy) {
+  const svg = $("#conditionSvg");
+  const explain = $("#conditionExplain");
+  if (mode === "sss") {
+    svg.innerHTML = `
+      <polygon points="116,252 246,252 176,96" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+      <polygon points="306,252 436,252 366,96" fill="#fff8ee" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+      <line x1="116" y1="252" x2="246" y2="252" stroke="#2563a9" stroke-width="7"></line>
+      <line x1="116" y1="252" x2="176" y2="96" stroke="#16756f" stroke-width="7"></line>
+      <line x1="246" y1="252" x2="176" y2="96" stroke="#b35f12" stroke-width="7"></line>
+      <line x1="306" y1="252" x2="436" y2="252" stroke="#2563a9" stroke-width="7"></line>
+      <line x1="306" y1="252" x2="366" y2="96" stroke="#16756f" stroke-width="7"></line>
+      <line x1="436" y1="252" x2="366" y2="96" stroke="#b35f12" stroke-width="7"></line>
+      <text x="72" y="312" fill="#324250" font-size="18" font-weight="800">三组边对应相等，两个三角形全等。</text>
+    `;
+  } else if (mode === "sas" && uiMemory.conditionTrap) {
+    svg.innerHTML = `
+      <line x1="86" y1="258" x2="430" y2="258" stroke="#324250" stroke-width="4"></line>
+      <line x1="130" y1="258" x2="280" y2="92" stroke="#16756f" stroke-width="7" stroke-linecap="round"></line>
+      <line x1="130" y1="258" x2="280" y2="258" stroke="#2563a9" stroke-width="7" stroke-linecap="round"></line>
+      <line x1="130" y1="258" x2="278" y2="172" stroke="#d94f45" stroke-width="7" stroke-linecap="round"></line>
+      <polygon points="130,258 280,92 280,258" fill="rgba(22,117,111,0.14)" stroke="#324250" stroke-width="3"></polygon>
+      <polygon points="130,258 278,172 280,258" fill="rgba(217,79,69,0.12)" stroke="#d94f45" stroke-width="3"></polygon>
+      <text x="74" y="314" fill="#d94f45" font-size="18" font-weight="800">同样两边和一个对角，可能有两个不同三角形。</text>
+    `;
+  } else if (mode === "sas") {
+    svg.innerHTML = `
+      <polygon points="104,254 248,254 168,94" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+      <polygon points="284,254 430,254 366,94" fill="#fff8ee" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+      <line x1="168" y1="94" x2="104" y2="254" stroke="#16756f" stroke-width="7"></line>
+      <line x1="168" y1="94" x2="248" y2="254" stroke="#2563a9" stroke-width="7"></line>
+      <path d="M150 132 q18 20 42 2" fill="none" stroke="#b35f12" stroke-width="5"></path>
+      <line x1="366" y1="94" x2="284" y2="254" stroke="#16756f" stroke-width="7"></line>
+      <line x1="366" y1="94" x2="430" y2="254" stroke="#2563a9" stroke-width="7"></line>
+      <path d="M344 132 q18 20 42 2" fill="none" stroke="#b35f12" stroke-width="5"></path>
+      <text x="72" y="314" fill="#324250" font-size="18" font-weight="800">两边和夹角对应相等，第三边被确定。</text>
+    `;
+  } else {
+    svg.innerHTML = `
+      <line x1="102" y1="258" x2="250" y2="258" stroke="#2563a9" stroke-width="7" stroke-linecap="round"></line>
+      <path d="M102 258 L178 96 L250 258 Z" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></path>
+      <line x1="290" y1="258" x2="438" y2="258" stroke="#2563a9" stroke-width="7" stroke-linecap="round"></line>
+      <path d="M290 258 L366 96 L438 258 Z" fill="#fff8ee" stroke="#324250" stroke-width="4" stroke-linejoin="round"></path>
+      <path d="M122 258 q18 -24 42 -22" fill="none" stroke="#16756f" stroke-width="5"></path>
+      <path d="M208 236 q24 -2 42 22" fill="none" stroke="#b35f12" stroke-width="5"></path>
+      <path d="M310 258 q18 -24 42 -22" fill="none" stroke="#16756f" stroke-width="5"></path>
+      <path d="M396 236 q24 -2 42 22" fill="none" stroke="#b35f12" stroke-width="5"></path>
+      <text x="66" y="314" fill="#324250" font-size="18" font-weight="800">两端角固定后，两条射线交出唯一顶点。</text>
+    `;
+  }
+  explain.innerHTML = `
+    <div class="metric-row"><span>条件</span><strong>${copy.title}</strong></div>
+    <div class="metric-row"><span>结论</span><span class="result-pill ${copy.result === "不能判定" ? "warn" : ""}">${copy.result}</span></div>
+    <p class="small-note">${copy.formula}</p>
+    <p class="small-note">${copy.note}</p>
+  `;
+}
+
+function renderRightTriangleHL(mount) {
+  const s = uiMemory;
+  mount.innerHTML = `
+    <div class="interaction-grid">
+      <div class="visual-stage"><svg id="hlSvg" viewBox="0 0 520 340" aria-label="直角三角形 HL 互动图"></svg></div>
+      <div class="control-panel">
+        <div class="control-group">
+          <label>一条直角边 <span>${s.hlLeg}</span></label>
+          <input id="hlLeg" type="range" min="78" max="154" value="${s.hlLeg}">
+        </div>
+        <div class="control-group" id="hlExplain"></div>
+      </div>
+    </div>
+  `;
+  $("#hlLeg").addEventListener("input", (event) => {
+    s.hlLeg = Number(event.target.value);
+    renderRightTriangleHL(mount);
+  });
+  updateRightTriangleHL();
+}
+
+function updateRightTriangleHL() {
+  const hyp = 184;
+  const leg = uiMemory.hlLeg;
+  const other = Math.sqrt(hyp * hyp - leg * leg);
+  const left = { x: 102, y: 260 };
+  const right = { x: 342, y: 260 };
+  $("#hlSvg").innerHTML = `
+    <polygon points="${left.x},${left.y} ${left.x + leg},${left.y} ${left.x + leg},${left.y - other}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+    <polygon points="${right.x},${right.y} ${right.x + leg},${right.y} ${right.x + leg},${right.y - other}" fill="#fff8ee" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
+    <path d="M${left.x + leg - 22} ${left.y} v-22 h22" fill="none" stroke="#b35f12" stroke-width="4"></path>
+    <path d="M${right.x + leg - 22} ${right.y} v-22 h22" fill="none" stroke="#b35f12" stroke-width="4"></path>
+    <line x1="${left.x}" y1="${left.y}" x2="${left.x + leg}" y2="${left.y - other}" stroke="#16756f" stroke-width="7"></line>
+    <line x1="${right.x}" y1="${right.y}" x2="${right.x + leg}" y2="${right.y - other}" stroke="#16756f" stroke-width="7"></line>
+    <line x1="${left.x + leg}" y1="${left.y}" x2="${left.x + leg}" y2="${left.y - other}" stroke="#2563a9" stroke-width="7"></line>
+    <line x1="${right.x + leg}" y1="${right.y}" x2="${right.x + leg}" y2="${right.y - other}" stroke="#2563a9" stroke-width="7"></line>
+    <text x="66" y="316" fill="#324250" font-size="18" font-weight="800">斜边相等，一条直角边相等，两个直角三角形全等。</text>
+  `;
+  $("#hlExplain").innerHTML = `
+    <div class="metric-row"><span>斜边 H</span><strong>${hyp}</strong></div>
+    <div class="metric-row"><span>直角边 L</span><strong>${leg}</strong></div>
+    <div class="metric-row"><span>另一直角边</span><strong>${round(other)}</strong></div>
+    <p class="small-note">先确认两个三角形都是直角三角形，再用 HL。</p>
+  `;
+}
+
+function renderAngleBisector(mount) {
+  const s = uiMemory.bisector;
+  mount.innerHTML = `
+    <div class="interaction-grid">
+      <div class="visual-stage"><svg id="bisectorSvg" viewBox="0 0 520 340" aria-label="角平分线性质互动图"></svg></div>
+      <div class="control-panel">
+        <div class="control-group">
+          <label>P 点位置 <span>${s.distance}</span></label>
+          <input id="bisectorDistance" type="range" min="92" max="218" value="${s.distance}">
+        </div>
+        <div class="control-group">
+          <button class="primary-button" id="toggleInverse" type="button">${s.inverse ? "看性质" : "看逆命题"}</button>
+          <p class="small-note">${s.inverse ? "到两边距离相等的角内点，落在角平分线上。" : "角平分线上的点，到两边距离相等。"}</p>
+        </div>
+        <div class="control-group" id="bisectorExplain"></div>
+      </div>
+    </div>
+  `;
+  $("#bisectorDistance").addEventListener("input", (event) => {
+    s.distance = Number(event.target.value);
+    renderAngleBisector(mount);
+  });
+  $("#toggleInverse").addEventListener("click", () => {
+    s.inverse = !s.inverse;
+    renderAngleBisector(mount);
+  });
+  updateAngleBisector();
+}
+
+function updateAngleBisector() {
+  const theta = 32 * Math.PI / 180;
+  const O = { x: 96, y: 176 };
+  const p = { x: O.x + uiMemory.bisector.distance, y: O.y };
+  const upperEnd = { x: 458, y: O.y - Math.tan(theta) * (458 - O.x) };
+  const lowerEnd = { x: 458, y: O.y + Math.tan(theta) * (458 - O.x) };
+  const d = footOnLine(p, O, upperEnd);
+  const e = footOnLine(p, O, lowerEnd);
+  const dist = distance(p, d);
+  $("#bisectorSvg").innerHTML = `
+    <line x1="${O.x}" y1="${O.y}" x2="${upperEnd.x}" y2="${upperEnd.y}" stroke="#324250" stroke-width="5" stroke-linecap="round"></line>
+    <line x1="${O.x}" y1="${O.y}" x2="${lowerEnd.x}" y2="${lowerEnd.y}" stroke="#324250" stroke-width="5" stroke-linecap="round"></line>
+    <line x1="${O.x}" y1="${O.y}" x2="462" y2="${O.y}" stroke="#16756f" stroke-width="5" stroke-dasharray="9 8"></line>
+    <line x1="${p.x}" y1="${p.y}" x2="${d.x}" y2="${d.y}" stroke="#2563a9" stroke-width="5"></line>
+    <line x1="${p.x}" y1="${p.y}" x2="${e.x}" y2="${e.y}" stroke="#2563a9" stroke-width="5"></line>
+    ${pointLabel(O, "O", -28, 6)}
+    ${pointLabel(p, "P", -5, -16)}
+    ${pointLabel(d, "D", 10, -8)}
+    ${pointLabel(e, "E", 10, 20)}
+    <text x="62" y="314" fill="#324250" font-size="18" font-weight="800">PD⊥OA，PE⊥OB，所以 PD、PE 才是点到两边的距离。</text>
+  `;
+  $("#bisectorExplain").innerHTML = `
+    <div class="metric-row"><span>PD</span><strong>${round(dist)}</strong></div>
+    <div class="metric-row"><span>PE</span><strong>${round(distance(p, e))}</strong></div>
+    <div class="metric-row"><span>结论</span><span class="result-pill">PD=PE</span></div>
+    <p class="small-note">${uiMemory.bisector.inverse ? "逆命题用于选址：到两边距离相等，就找角平分线。" : "性质用于证明距离相等：点在角平分线上，就有 PD=PE。"}</p>
+  `;
+}
+
+function renderProofRoute(mount) {
+  mount.innerHTML = `
+    <div class="visual-stage">
+      <svg viewBox="0 0 760 360" aria-label="全等证明路线图">
+        ${roadNode(92, 84, "目标", "证边或角")}
+        ${roadNode(240, 84, "三角形", "找对应")}
+        ${roadNode(388, 84, "条件", "拼三组")}
+        ${roadNode(536, 84, "判定", "SSS/SAS/ASA/AAS/HL")}
+        ${roadNode(684, 84, "结论", "对应相等")}
+        <path d="M160 84 H172 M308 84 H320 M456 84 H468 M604 84 H616" stroke="#16756f" stroke-width="6" stroke-linecap="round"></path>
+        <rect x="52" y="188" width="656" height="86" rx="8" fill="#eef5f4" stroke="#d9e0e7" stroke-width="2"></rect>
+        <text x="78" y="224" fill="#16756f" font-size="22" font-weight="900">证 AB=DE：</text>
+        <text x="78" y="258" fill="#324250" font-size="20" font-weight="800">先证△ABC≌△DEF，再写 AB、DE 是对应边，所以 AB=DE。</text>
+        <text x="72" y="326" fill="#687381" font-size="18" font-weight="800">检查口令：目标有没有回收？对应顺序有没有对齐？每个条件有没有理由？</text>
+      </svg>
+    </div>
+  `;
+}
+
 function rangeControl(label, key, value, min, max) {
   return `
     <div class="control-group">
@@ -1825,6 +2784,16 @@ function regularPolygon(n, cx, cy, radius) {
     });
   }
   return points;
+}
+
+function footOnLine(point, a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy);
+  return {
+    x: a.x + t * dx,
+    y: a.y + t * dy
+  };
 }
 
 function distance(a, b) {
