@@ -504,15 +504,17 @@ function supabaseEnabled() {
 
 async function supabaseFetch(path, options = {}) {
   if (!supabaseEnabled()) throw new Error("还没有配置 Supabase URL 和 anon key。");
-  const token = syncState.session?.access_token || appConfig.supabaseAnonKey;
+  const headers = {
+    apikey: appConfig.supabaseAnonKey,
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+  if (syncState.session?.access_token) {
+    headers.Authorization = `Bearer ${syncState.session.access_token}`;
+  }
   const response = await fetch(`${appConfig.supabaseUrl}${path}`, {
     ...options,
-    headers: {
-      apikey: appConfig.supabaseAnonKey,
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    }
+    headers
   });
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
