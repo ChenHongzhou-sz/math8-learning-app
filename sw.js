@@ -1,4 +1,4 @@
-const CACHE = "math8-learning-app-v6";
+const CACHE = "math8-learning-app-v7";
 const ASSETS = [
   "./",
   "./index.html",

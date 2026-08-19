@@ -750,6 +750,14 @@ button:active {
   text-anchor: middle;
 }
 
+.visual-degree {
+  fill: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
 .geogebra-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -775,21 +783,59 @@ button:active {
 
 .geogebra-mount {
   display: none;
-  grid-column: 1 / -1;
-  min-height: 0;
+  position: fixed;
+  inset: 18px;
+  z-index: 20;
+  padding: 18px;
   overflow: hidden;
-  border-radius: var(--radius);
-  background: #fff;
+  border-radius: calc(var(--radius) + 4px);
+  background: rgba(222, 243, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .geogebra-mount.open {
-  display: block;
-  min-height: 420px;
-  border: 1px solid #d7e8f4;
+  display: grid;
+  place-items: center;
+}
+
+.geo-shell {
+  width: min(1180px, 100%);
+  max-height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(45, 107, 150, 0.22);
+}
+
+.geo-top {
+  min-height: 58px;
+  padding: 10px 12px 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  background: #f7fcff;
+}
+
+.geo-body {
+  min-height: min(720px, calc(100vh - 150px));
+  display: grid;
+  place-items: stretch;
+  overflow: hidden;
+}
+
+.geo-body > div:not(.geo-loading) {
+  width: 100%;
+  height: 100%;
 }
 
 .geo-loading {
-  min-height: 420px;
+  min-height: min(720px, calc(100vh - 150px));
   display: grid;
   place-items: center;
   color: var(--muted);

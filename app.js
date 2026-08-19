@@ -2046,7 +2046,6 @@ function geoGebraHtml(lesson) {
         <p>${geo.text}</p>
       </div>
       <button class="icon-button" id="loadGeoGebra" type="button" title="打开 GeoGebra 实验板" aria-label="打开 GeoGebra 实验板">↗</button>
-      <div class="geogebra-mount" id="geoGebraMount" aria-live="polite"></div>
     </section>
   `;
 }
@@ -2060,21 +2059,38 @@ function geoGebraConfig(lesson) {
 
 function bindGeoGebra(lesson) {
   const button = $("#loadGeoGebra");
-  const mount = $("#geoGebraMount");
-  if (!button || !mount) return;
+  if (!button) return;
   button.addEventListener("click", async () => {
+    const mount = ensureGeoGebraOverlay();
     button.disabled = true;
     mount.classList.add("open");
-    mount.innerHTML = `<div class="geo-loading">正在加载 GeoGebra...</div>`;
+    mount.innerHTML = `
+      <div class="geo-shell">
+        <div class="geo-top">
+          <strong>${geoGebraConfig(lesson).title}</strong>
+          <button class="icon-button compact" id="closeGeoGebra" type="button" title="关闭 GeoGebra" aria-label="关闭 GeoGebra">×</button>
+        </div>
+        <div class="geo-body" id="geoGebraApplet"><div class="geo-loading">正在加载 GeoGebra...</div></div>
+      </div>
+    `;
+    $("#closeGeoGebra").addEventListener("click", () => {
+      mount.classList.remove("open");
+      mount.innerHTML = "";
+      button.disabled = false;
+    });
     try {
       await loadGeoGebraScript();
-      const width = Math.min(720, Math.max(320, mount.clientWidth || 680));
+      const appletMount = $("#geoGebraApplet");
+      const width = Math.min(1120, Math.max(360, appletMount.clientWidth || window.innerWidth - 80));
+      const height = Math.min(720, Math.max(460, window.innerHeight - 150));
       const applet = new window.GGBApplet({
         appName: "geometry",
         width,
-        height: 420,
+        height,
         language: "zh-CN",
+        perspective: "G",
         showToolBar: false,
+        showAlgebraView: false,
         showAlgebraInput: false,
         showMenuBar: false,
         showResetIcon: true,
@@ -2084,15 +2100,30 @@ function bindGeoGebra(lesson) {
           geoGebraCommands(lesson.id).forEach((command) => api.evalCommand(command));
         }
       }, true);
-      mount.innerHTML = "";
-      applet.inject("geoGebraMount");
+      appletMount.innerHTML = "";
+      applet.inject("geoGebraApplet");
     } catch (error) {
       button.disabled = false;
-      mount.innerHTML = `
-        <p class="small-note">GeoGebra 暂时没有加载成功。上面的互动图仍可继续使用，稍后再试即可。</p>
-      `;
+      const appletMount = $("#geoGebraApplet");
+      if (appletMount) {
+        appletMount.innerHTML = `
+          <p class="small-note">GeoGebra 暂时没有加载成功。上面的互动图仍可继续使用，稍后再试即可。</p>
+        `;
+      }
     }
   });
+}
+
+function ensureGeoGebraOverlay() {
+  let overlay = document.querySelector("#geoGebraOverlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = "geoGebraOverlay";
+    overlay.className = "geogebra-mount";
+    overlay.setAttribute("aria-live", "polite");
+    document.body.appendChild(overlay);
+  }
+  return overlay;
 }
 
 function loadGeoGebraScript() {
@@ -2322,6 +2353,34 @@ function practiceVisualHtml(lesson, item, selected, checked) {
   `;
 }
 
+function visualAngleArc(vertex, p1, p2, radius, label = "", labelRadius = radius + 24) {
+  let start = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+  let end = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+  let delta = end - start;
+  while (delta < 0) delta += Math.PI * 2;
+  if (delta > Math.PI) {
+    [start, end] = [end, start];
+    delta = Math.PI * 2 - delta;
+  }
+  const from = {
+    x: round(vertex.x + Math.cos(start) * radius),
+    y: round(vertex.y + Math.sin(start) * radius)
+  };
+  const to = {
+    x: round(vertex.x + Math.cos(start + delta) * radius),
+    y: round(vertex.y + Math.sin(start + delta) * radius)
+  };
+  const mid = start + delta / 2;
+  const labelPoint = {
+    x: round(vertex.x + Math.cos(mid) * labelRadius),
+    y: round(vertex.y + Math.sin(mid) * labelRadius)
+  };
+  return `
+    <path d="M${from.x} ${from.y} A${radius} ${radius} 0 0 1 ${to.x} ${to.y}" fill="none" class="visual-angle"></path>
+    ${label ? `<text x="${labelPoint.x}" y="${labelPoint.y}" class="visual-degree">${label}</text>` : ""}
+  `;
+}
+
 function practiceVisualSvg(id) {
   if (id === "edges") {
     return `
@@ -2343,7 +2402,7 @@ function practiceVisualSvg(id) {
         <line x1="204" y1="52" x2="204" y2="208" class="visual-mark blue"></line>
         <path d="M184 208 v-20 h20" fill="none" stroke="#ef6b5b" stroke-width="4"></path>
         <line x1="204" y1="52" x2="282" y2="208" class="visual-mark green" stroke-dasharray="12 8"></line>
-        <path d="M182 92 q22 22 46 0" fill="none" class="visual-angle"></path>
+        ${visualAngleArc({ x: 204, y: 52 }, { x: 116, y: 208 }, { x: 282, y: 208 }, 36, "等角", 58)}
         <g transform="translate(244 0)">
           <polygon points="116,208 282,208 204,52" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
           <line x1="204" y1="52" x2="199" y2="208" class="visual-mark amber"></line>
@@ -2368,9 +2427,9 @@ function practiceVisualSvg(id) {
     return `
       <svg viewBox="0 0 560 260" role="img" aria-label="三角形内角和图形题">
         <polygon points="104,204 272,204 190,58" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
-        <path d="M126 204 q12 -34 46 -44" fill="none" class="visual-angle"></path>
-        <path d="M246 204 q-12 -34 -46 -44" fill="none" class="visual-angle"></path>
-        <path d="M172 88 q18 20 42 0" fill="none" class="visual-angle"></path>
+        ${visualAngleArc({ x: 104, y: 204 }, { x: 272, y: 204 }, { x: 190, y: 58 }, 42, "52°", 68)}
+        ${visualAngleArc({ x: 272, y: 204 }, { x: 190, y: 58 }, { x: 104, y: 204 }, 42, "68°", 68)}
+        ${visualAngleArc({ x: 190, y: 58 }, { x: 104, y: 204 }, { x: 272, y: 204 }, 36, "60°", 60)}
         <line x1="332" y1="132" x2="506" y2="132" class="visual-mark blue"></line>
         <path d="M346 132 q38 -52 76 0 q38 52 76 0" fill="none" stroke="#d49a2a" stroke-width="7" stroke-linecap="round"></path>
         <text x="348" y="176" class="visual-badge">180°</text>
@@ -2382,9 +2441,9 @@ function practiceVisualSvg(id) {
       <svg viewBox="0 0 560 260" role="img" aria-label="三角形外角图形题">
         <polygon points="108,204 274,204 190,62" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
         <line x1="274" y1="204" x2="448" y2="204" class="visual-mark coral"></line>
-        <path d="M242 176 q72 -42 144 14" fill="none" class="visual-angle"></path>
-        <path d="M122 204 q14 -34 48 -46" fill="none" class="visual-mark green"></path>
-        <path d="M174 92 q18 18 40 0" fill="none" class="visual-mark blue"></path>
+        ${visualAngleArc({ x: 274, y: 204 }, { x: 190, y: 62 }, { x: 448, y: 204 }, 48, "125°", 78)}
+        ${visualAngleArc({ x: 108, y: 204 }, { x: 274, y: 204 }, { x: 190, y: 62 }, 34, "45°", 58)}
+        ${visualAngleArc({ x: 190, y: 62 }, { x: 108, y: 204 }, { x: 274, y: 204 }, 34, "80°", 58)}
         <text x="320" y="238" class="visual-badge">外角 = 两个远内角和</text>
       </svg>
     `;
@@ -2473,12 +2532,12 @@ function practiceVisualSvg(id) {
         <polygon points="86,198 194,64 282,198" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
         <line x1="86" y1="198" x2="194" y2="64" class="visual-mark blue"></line>
         <line x1="194" y1="64" x2="282" y2="198" class="visual-mark green"></line>
-        <path d="M172 92 q24 20 46 0" fill="none" class="visual-angle"></path>
+        ${visualAngleArc({ x: 194, y: 64 }, { x: 86, y: 198 }, { x: 282, y: 198 }, 34, "夹角", 58)}
         <g transform="translate(284 0)">
           <polygon points="86,198 194,64 282,198" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
           <line x1="86" y1="198" x2="194" y2="64" class="visual-mark blue"></line>
           <line x1="194" y1="64" x2="282" y2="198" class="visual-mark green"></line>
-          <path d="M172 92 q24 20 46 0" fill="none" class="visual-angle"></path>
+          ${visualAngleArc({ x: 194, y: 64 }, { x: 86, y: 198 }, { x: 282, y: 198 }, 34, "夹角", 58)}
         </g>
         <text x="218" y="236" class="visual-badge">边-夹角-边</text>
       </svg>
@@ -2490,14 +2549,14 @@ function practiceVisualSvg(id) {
         <line x1="88" y1="198" x2="270" y2="198" class="visual-mark blue"></line>
         <line x1="88" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
         <line x1="270" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
-        <path d="M114 198 q8 -26 34 -36" fill="none" class="visual-angle"></path>
-        <path d="M244 198 q-8 -26 -34 -36" fill="none" class="visual-angle"></path>
+        ${visualAngleArc({ x: 88, y: 198 }, { x: 270, y: 198 }, { x: 178, y: 62 }, 36, "50°", 62)}
+        ${visualAngleArc({ x: 270, y: 198 }, { x: 178, y: 62 }, { x: 88, y: 198 }, 36, "65°", 62)}
         <g transform="translate(286 0)">
           <line x1="88" y1="198" x2="270" y2="198" class="visual-mark blue"></line>
           <line x1="88" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
           <line x1="270" y1="198" x2="178" y2="62" stroke="#172033" stroke-width="5" stroke-linecap="round"></line>
-          <path d="M114 198 q8 -26 34 -36" fill="none" class="visual-angle"></path>
-          <path d="M244 198 q-8 -26 -34 -36" fill="none" class="visual-angle"></path>
+          ${visualAngleArc({ x: 88, y: 198 }, { x: 270, y: 198 }, { x: 178, y: 62 }, 36, "50°", 62)}
+          ${visualAngleArc({ x: 270, y: 198 }, { x: 178, y: 62 }, { x: 88, y: 198 }, 36, "65°", 62)}
         </g>
         <text x="212" y="236" class="visual-badge">两角一边</text>
       </svg>
@@ -2508,11 +2567,13 @@ function practiceVisualSvg(id) {
       <svg viewBox="0 0 560 260" role="img" aria-label="HL 直角三角形斜边和直角边">
         <polygon points="92,204 268,204 268,62" fill="#effaff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
         <path d="M240 204 v-28 h28" fill="none" stroke="#ef6b5b" stroke-width="5"></path>
+        <text x="238" y="170" class="visual-degree">90°</text>
         <line x1="92" y1="204" x2="268" y2="62" class="visual-mark green"></line>
         <line x1="268" y1="204" x2="268" y2="62" class="visual-mark blue"></line>
         <g transform="translate(262 0)">
           <polygon points="92,204 268,204 268,62" fill="#f8fcff" stroke="#172033" stroke-width="5" stroke-linejoin="round"></polygon>
           <path d="M240 204 v-28 h28" fill="none" stroke="#ef6b5b" stroke-width="5"></path>
+          <text x="238" y="170" class="visual-degree">90°</text>
           <line x1="92" y1="204" x2="268" y2="62" class="visual-mark green"></line>
           <line x1="268" y1="204" x2="268" y2="62" class="visual-mark blue"></line>
         </g>
