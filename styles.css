@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  --bg: #f6f8fb;
+  --bg: #edf8ff;
   --surface: #ffffff;
-  --surface-soft: #eef5f4;
-  --ink: #1f2933;
-  --muted: #687381;
-  --line: #d9e0e7;
-  --teal: #16756f;
-  --teal-dark: #0f5d58;
-  --amber: #b35f12;
-  --coral: #d94f45;
-  --blue: #2563a9;
-  --green: #2f855a;
-  --shadow: 0 18px 50px rgba(35, 48, 65, 0.12);
+  --surface-soft: #f3fbff;
+  --ink: #172033;
+  --muted: #627084;
+  --line: #d7e8f4;
+  --teal: #0f8fb8;
+  --teal-dark: #0a6f9a;
+  --amber: #d49a2a;
+  --coral: #ef6b5b;
+  --blue: #147cc2;
+  --green: #24a67a;
+  --shadow: 0 12px 34px rgba(45, 107, 150, 0.10);
   --radius: 8px;
   --tap: 48px;
 }
@@ -29,11 +29,7 @@ body {
 
 body {
   margin: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(246, 248, 251, 0.92)),
-    radial-gradient(circle at 18% 8%, rgba(47, 133, 90, 0.10), transparent 28%),
-    radial-gradient(circle at 88% 10%, rgba(179, 95, 18, 0.10), transparent 25%),
-    var(--bg);
+  background: linear-gradient(180deg, #dff4ff 0%, #f7fcff 46%, #eef9ff 100%);
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Microsoft YaHei", sans-serif;
   letter-spacing: 0;
@@ -49,6 +45,11 @@ button {
   min-height: var(--tap);
   border: 0;
   cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 .app-shell {
@@ -77,11 +78,11 @@ button {
   display: grid;
   place-items: center;
   color: #fff;
-  background: linear-gradient(135deg, var(--teal), #2f855a);
+  background: linear-gradient(180deg, #36b7ec, #147cc2);
   border-radius: var(--radius);
   font-size: 32px;
   font-weight: 800;
-  box-shadow: 0 12px 24px rgba(22, 117, 111, 0.24);
+  box-shadow: 0 10px 22px rgba(20, 124, 194, 0.18);
 }
 
 .brand p,
@@ -111,8 +112,20 @@ button {
   padding: 0;
   border-radius: var(--radius);
   color: var(--ink);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.82);
   box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.icon-button:hover,
+.text-button:hover,
+.ghost-button:hover,
+.chip:hover,
+.option-button:hover {
+  background: #dff2ff;
+}
+
+.primary-button:hover {
+  background: #0e6fb1;
 }
 
 .icon-button.compact {
@@ -131,19 +144,19 @@ button {
 
 .text-button {
   color: var(--teal-dark);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.82);
   box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .primary-button {
   color: #fff;
-  background: var(--teal);
+  background: var(--blue);
   font-weight: 700;
 }
 
 .ghost-button {
   color: var(--ink);
-  background: #eef2f6;
+  background: #eaf6ff;
 }
 
 .app-grid {
@@ -159,10 +172,12 @@ button {
 .study-panel,
 .coach-panel {
   min-width: 0;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(217, 224, 231, 0.92);
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(215, 232, 244, 0.92);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .lesson-rail,
@@ -205,7 +220,7 @@ button {
   height: 8px;
   margin: 14px 0 16px;
   overflow: hidden;
-  background: #e5ebf1;
+  background: #dbeefb;
   border-radius: 999px;
 }
 
@@ -213,7 +228,7 @@ button {
   display: block;
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, var(--teal), var(--amber));
+  background: linear-gradient(90deg, #36b7ec, #66d1b4, #ffd36a);
   border-radius: inherit;
   transition: width 220ms ease;
 }
@@ -239,7 +254,7 @@ button {
 
 .lesson-button:hover,
 .lesson-button.active {
-  background: #eef5f4;
+  background: #eaf7ff;
 }
 
 .lesson-number {
@@ -249,7 +264,7 @@ button {
   place-items: center;
   border-radius: var(--radius);
   color: var(--teal-dark);
-  background: #dff0ed;
+  background: #dff4ff;
   font-weight: 800;
 }
 
@@ -295,7 +310,7 @@ button {
   padding: 8px 12px;
   border-radius: 999px;
   color: var(--teal-dark);
-  background: #e1f2ef;
+  background: #def3ff;
   text-align: center;
   font-weight: 700;
   font-size: 13px;
@@ -313,13 +328,13 @@ button {
   padding: 8px;
   border-radius: var(--radius);
   color: var(--muted);
-  background: #eef2f6;
+  background: #eaf6ff;
   font-weight: 700;
 }
 
 .step-tab.active {
   color: #fff;
-  background: var(--teal);
+  background: var(--blue);
 }
 
 .study-content {
@@ -332,7 +347,7 @@ button {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .module-head {
@@ -371,7 +386,7 @@ button {
   margin-bottom: 14px;
   padding: 14px;
   border-radius: var(--radius);
-  background: #f3f8f7;
+  background: #eef9ff;
 }
 
 .scene-art {
@@ -379,7 +394,7 @@ button {
   display: grid;
   place-items: center;
   border-radius: var(--radius);
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .scene-art svg {
@@ -423,7 +438,7 @@ button {
   padding: 0 10px;
   border-radius: 999px;
   color: var(--teal-dark);
-  background: #dff0ed;
+  background: #dff4ff;
   font-size: 13px;
   font-weight: 800;
 }
@@ -441,7 +456,7 @@ button {
   min-height: 112px;
   padding: 13px;
   border-radius: var(--radius);
-  background: #f6f9fb;
+  background: #f7fbff;
   line-height: 1.55;
 }
 
@@ -473,7 +488,7 @@ button {
   place-items: center;
   border-radius: var(--radius);
   color: #fff;
-  background: var(--blue);
+  background: #35aee2;
   font-weight: 900;
 }
 
@@ -482,7 +497,7 @@ button {
   margin-top: 14px;
   padding: 12px;
   border-radius: var(--radius);
-  background: #fff8ee;
+  background: #fff9e8;
 }
 
 .application-strip > span {
@@ -491,8 +506,8 @@ button {
 }
 
 .application-strip strong {
-  color: #7a430d;
-  background: #f7dfbd;
+  color: #876114;
+  background: #ffedb5;
 }
 
 .practice-hint {
@@ -501,7 +516,7 @@ button {
   margin: 12px 0;
   padding: 12px;
   border-radius: var(--radius);
-  background: #eef5f4;
+  background: #eaf8ff;
 }
 
 .practice-hint span {
@@ -524,9 +539,9 @@ button {
 .visual-stage {
   min-height: 390px;
   padding: 12px;
-  border: 1px solid #dfe6ed;
+  border: 1px solid #d7e8f4;
   border-radius: var(--radius);
-  background: #fbfcfd;
+  background: linear-gradient(180deg, #ffffff 0%, #f5fbff 100%);
 }
 
 .visual-stage svg {
@@ -547,7 +562,7 @@ button {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fbfcfd;
+  background: rgba(255, 255, 255, 0.84);
 }
 
 .control-group label,
@@ -566,7 +581,7 @@ input[type="range"] {
 
 .metric-row {
   padding: 9px 0;
-  border-bottom: 1px solid #edf1f5;
+  border-bottom: 1px solid #e6f1f8;
 }
 
 .metric-row:last-child {
@@ -592,12 +607,12 @@ input[type="range"] {
   padding: 0 12px;
   border-radius: 999px;
   color: var(--ink);
-  background: #eef2f6;
+  background: #eaf6ff;
 }
 
 .chip.active {
   color: #fff;
-  background: var(--teal);
+  background: var(--blue);
 }
 
 .result-pill {
@@ -631,7 +646,7 @@ input[type="range"] {
   padding: 12px 12px 12px 42px;
   position: relative;
   border-radius: var(--radius);
-  background: #f6f9fb;
+  background: #f7fbff;
   line-height: 1.55;
 }
 
@@ -659,7 +674,7 @@ input[type="range"] {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .quiz-options {
@@ -673,7 +688,7 @@ input[type="range"] {
   padding: 12px 14px;
   border-radius: var(--radius);
   color: var(--ink);
-  background: #f1f5f8;
+  background: #edf7ff;
   text-align: left;
 }
 
@@ -696,17 +711,17 @@ input[type="range"] {
   min-height: 28px;
   padding: 10px 12px;
   border-radius: var(--radius);
-  background: #f6f9fb;
+  background: #f7fbff;
 }
 
 .feedback.good {
-  color: #1e6a49;
-  background: #e5f4ec;
+  color: #147254;
+  background: #e6f8f1;
 }
 
 .feedback.bad {
-  color: #9b2d24;
-  background: #fbe8e6;
+  color: #a83b31;
+  background: #fff0ed;
 }
 
 .navigator-row {
@@ -721,7 +736,7 @@ input[type="range"] {
 .recap-prompt {
   padding: 14px;
   border-radius: var(--radius);
-  background: #f4f7fa;
+  background: #f0f9ff;
   line-height: 1.55;
 }
 
@@ -752,8 +767,8 @@ input[type="range"] {
 .coach-card {
   padding: 13px;
   border-radius: var(--radius);
-  background: #f7f9fb;
-  border: 1px solid #e5ebf1;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #ddecf6;
 }
 
 .coach-card ul {
@@ -765,7 +780,7 @@ input[type="range"] {
 .formula-row {
   padding: 12px;
   border-radius: var(--radius);
-  background: #eef5f4;
+  background: #eaf8ff;
 }
 
 .formula {
@@ -840,7 +855,7 @@ input[type="range"] {
 }
 
 .svg-line {
-  stroke: #324250;
+  stroke: #24364f;
   stroke-width: 4;
   stroke-linecap: round;
   fill: none;
