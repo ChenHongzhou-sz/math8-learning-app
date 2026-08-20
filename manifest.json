@@ -1,11 +1,11 @@
 {
-  "name": "八上数学互动学习",
+  "name": "八年级数学自学",
   "short_name": "八上数学",
-  "description": "面向 iPad 的八年级上册数学互动学习 App",
+  "description": "面向孩子独立学习的八年级上册数学自学 App",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f6f8fb",
-  "theme_color": "#f6f8fb",
+  "background_color": "#f7f8fb",
+  "theme_color": "#f7f8fb",
   "icons": [
     {
       "src": "icons/icon.svg",

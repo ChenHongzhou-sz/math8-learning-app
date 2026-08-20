@@ -1,28 +1,70 @@
-# 八上数学互动学习 App
+# 八年级数学自学 App
 
-面向 iPad 的八年级上册数学互动学习 Web App。当前样板覆盖第十一章“三角形”，包含学习地图、互动几何、即时练习、家长提示和本地进度。
+面向孩子独立使用的八年级上册数学自学 Web App。
 
-## 当前内容
+线上地址：
 
-- 第 1 课：三角形的边
-- 第 2 课：高、中线、角平分线
-- 第 3 课：三角形的稳定性
-- 第 4 课：三角形内角和
-- 第 5 课：直角三角形与外角
-- 第 6 课：多边形基本概念
-- 第 7 课：多边形内角和、外角和
-- 第 8 课：章节复习与综合
+https://chenhongzhou-sz.github.io/math8-learning-app/
 
-## 部署
+## 当前版本
 
-这是纯静态项目，可部署到 GitHub Pages。仓库启用 Pages 的 GitHub Actions 来源后，`.github/workflows/pages.yml` 会发布根目录。
+本版本按新的产品任务书重新设计，不再以“家长教案”为中心，而是以孩子自己的学习闭环为中心：
+
+- 今天
+- 学习
+- 练习
+- 错题
+- 我的
+
+第 13 章“三角形”已作为第一阶段样板实现：
+
+- 知识
+- 例题
+- 练习
+- 易错
+- 测试
+- 错题记录
+- 掌握度
+- 下一步推荐
+
+## 技术方案
+
+当前项目保持纯静态实现：
+
+- HTML
+- CSS
+- JavaScript
+- GitHub Pages
+- Supabase Auth + `learning_progress` 表同步进度
+
+没有 npm 依赖，也不需要构建步骤。
+
+## 本地查看
+
+直接打开：
+
+```text
+index.html
+```
+
+或使用已有的简单静态服务器：
+
+```bash
+node server.js
+```
 
 ## Supabase
 
-默认使用浏览器本地进度。若要跨设备同步：
+前端公开配置在：
 
-1. 在 Supabase 新建项目。
-2. 在 SQL Editor 执行 `supabase/schema.sql`。
-3. 在 `config.js` 中填入 `supabaseUrl` 和 `supabaseAnonKey`。
+```text
+config.js
+```
 
-`anon public key` 可以放在前端；不要把 `service_role` key 放进仓库或网页。
+数据库脚本在：
+
+```text
+supabase/schema.sql
+```
+
+不要提交或索取 `service_role`、数据库密码等 secret。

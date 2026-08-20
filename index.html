@@ -3,78 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f6f8fb" />
+    <meta name="theme-color" content="#f7f8fb" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="八上数学" />
-    <title>八上数学互动学习</title>
+    <title>八年级数学自学 App</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app-shell">
-      <header class="topbar">
+      <aside class="side-nav" aria-label="主导航">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">△</div>
+          <div class="brand-mark" aria-hidden="true">M</div>
           <div>
-            <p>八年级上册数学</p>
-            <h1>第十一章 三角形</h1>
+            <p>八年级上册</p>
+            <h1>数学自学</h1>
           </div>
         </div>
-        <div class="top-actions">
-          <button class="text-button" id="syncButton" type="button">同步</button>
-          <button class="icon-button" id="resetProgress" type="button" title="重置学习进度" aria-label="重置学习进度">↺</button>
-          <button class="text-button" id="toggleCoach" type="button">家长提示</button>
-        </div>
-      </header>
+        <nav class="nav-list" id="sideNav"></nav>
+        <div class="sync-mini" id="syncMini"></div>
+      </aside>
 
-      <main class="app-grid">
-        <nav class="lesson-rail" aria-label="课时导航">
-          <div class="rail-header">
-            <span>学习地图</span>
-            <strong id="progressText">0/8</strong>
+      <main class="main-area">
+        <header class="topbar">
+          <div>
+            <p id="pageEyebrow">今天</p>
+            <h2 id="pageTitle">继续把数学学明白</h2>
           </div>
-          <div class="progress-track" aria-hidden="true"><span id="overallProgress"></span></div>
-          <div class="lesson-list" id="lessonList"></div>
-        </nav>
-
-        <section class="study-panel" aria-live="polite">
-          <div class="lesson-title-row">
-            <div>
-              <p id="lessonKicker">第 1 课</p>
-              <h2 id="lessonTitle">三角形的边</h2>
-            </div>
-            <div class="lesson-status" id="lessonStatus">学习中</div>
+          <div class="top-actions">
+            <button class="ghost-button" id="syncOpenButton" type="button">云同步</button>
+            <button class="icon-button" id="resetProgress" type="button" title="重置本地进度" aria-label="重置本地进度">↻</button>
           </div>
+        </header>
 
-          <div class="step-tabs" id="stepTabs" role="tablist" aria-label="学习步骤"></div>
-          <div class="study-content" id="studyContent"></div>
-        </section>
-
-        <aside class="coach-panel" id="coachPanel">
-          <div class="coach-heading">
-            <span>家长驾驶舱</span>
-            <button class="icon-button compact" id="closeCoach" type="button" title="收起家长提示" aria-label="收起家长提示">×</button>
-          </div>
-          <div id="coachContent"></div>
-        </aside>
+        <section class="screen" id="screen" aria-live="polite"></section>
       </main>
-    </div>
 
-    <div class="toast" id="toast" role="status"></div>
+      <nav class="bottom-nav" id="bottomNav" aria-label="底部导航"></nav>
+    </div>
 
     <dialog class="sync-dialog" id="syncDialog">
       <form method="dialog" class="sync-card">
-        <div class="module-head">
+        <div class="dialog-head">
           <div>
-            <h3>学习进度同步</h3>
-            <p id="syncStatus">当前使用本地进度。连接 Supabase 后可跨设备同步。</p>
+            <h3>云同步</h3>
+            <p id="syncStatus">登录后可以在不同设备继续学习。</p>
           </div>
           <button class="icon-button compact" value="cancel" type="submit" title="关闭" aria-label="关闭">×</button>
         </div>
         <div class="sync-grid">
           <label>
             邮箱
-            <input id="syncEmail" type="email" autocomplete="email" placeholder="parent@example.com" />
+            <input id="syncEmail" type="email" autocomplete="email" placeholder="student@example.com" />
           </label>
           <label>
             密码
@@ -84,10 +64,13 @@
         <div class="sync-actions">
           <button class="ghost-button" id="signUpButton" type="button">注册</button>
           <button class="primary-button" id="signInButton" type="button">登录并同步</button>
+          <button class="ghost-button" id="syncNowButton" type="button">立即同步</button>
           <button class="ghost-button" id="signOutButton" type="button">退出</button>
         </div>
       </form>
     </dialog>
+
+    <div class="toast" id="toast" role="status"></div>
 
     <script src="config.js"></script>
     <script src="app.js"></script>

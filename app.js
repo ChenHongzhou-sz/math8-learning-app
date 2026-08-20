@@ -1,742 +1,618 @@
-const STEPS = [
-  { id: "discover", label: "观察" },
-  { id: "understand", label: "领悟" },
-  { id: "practice", label: "练习" },
-  { id: "master", label: "通关" }
+const NAV_ITEMS = [
+  { id: "today", label: "今天", icon: "⌂" },
+  { id: "learn", label: "学习", icon: "□" },
+  { id: "practice", label: "练习", icon: "✎" },
+  { id: "mistakes", label: "错题", icon: "×" },
+  { id: "profile", label: "我的", icon: "☆" }
 ];
 
-const LESSONS = [
+const STAGES = [
+  { id: "knowledge", label: "知识" },
+  { id: "example", label: "例题" },
+  { id: "practice", label: "练习" },
+  { id: "misconception", label: "易错" },
+  { id: "test", label: "测试" }
+];
+
+const TRACKS = [
   {
-    id: "edges",
-    no: 1,
-    title: "三角形的边",
-    subtitle: "三根线段什么时候围得成？",
-    objective: "会判断三条线段能否组成三角形，会处理等腰三角形的分类讨论。",
-    interaction: "triangleInequality",
-    discoverTitle: "先试着围三角形",
-    discoverPrompt: "拖动三条边长。观察：哪种情况能围成三角形？哪种情况会摊成一条线？",
-    principles: [
-      "三角形由不在同一直线上的三条线段首尾顺次相接组成。",
-      "判断三条线段能否组成三角形，只要看最长边是否小于另外两边之和。",
-      "相等也不行，因为三条线段会压成一条直线，不能围成封闭的三角形。",
-      "等边三角形是特殊的等腰三角形；等腰题常要分“已知边是腰还是底边”。"
-    ],
-    mistakes: [
-      "只检查一组两边和，漏看最长边。",
-      "把“两边之和大于第三边”误写成“大于或等于”。",
-      "等腰三角形题不分类讨论，直接把给定边当成底边或腰。"
-    ],
-    parentFocus: [
-      "让孩子先说“为什么最长边不能太长”，再讲两点之间线段最短。",
-      "等腰三角形题要追问：这条边有没有可能是腰？有没有可能是底边？"
-    ],
-    parentQuestions: [
-      "如果 6+6=12，为什么还不是三角形？",
-      "为什么判断时只看最长边就够了？"
-    ],
-    mastery: [
-      "用一句话解释三角形三边关系的来源。",
-      "能独立判断 3 组线段是否能组成三角形。",
-      "遇到等腰三角形边长题，会主动分情况。"
-    ],
-    practices: [
+    id: "course",
+    label: "课内学习",
+    desc: "八年级上册主线内容，优先完成这里。",
+    active: true
+  },
+  {
+    id: "extension",
+    label: "能力提高",
+    desc: "适合主线稳定后做拓展题。",
+    active: false
+  },
+  {
+    id: "amc",
+    label: "AMC 8 挑战",
+    desc: "竞赛内容与课内学习分开，不混入主路径。",
+    active: false
+  }
+];
+
+const CHAPTERS = [
+  {
+    id: "g8-c13-triangles",
+    track: "course",
+    number: "13",
+    title: "三角形",
+    desc: "从边、线、角到多边形，把几何证明的第一块地基搭稳。",
+    concepts: ["tri-basic", "tri-sides", "tri-lines", "tri-angle-sum", "tri-exterior", "tri-polygon"]
+  },
+  {
+    id: "g8-c14-congruence",
+    track: "course",
+    number: "14",
+    title: "全等三角形",
+    desc: "下一阶段会重做为可点选对应边角的证明训练。",
+    concepts: []
+  },
+  {
+    id: "g8-c15-symmetry",
+    track: "course",
+    number: "15",
+    title: "轴对称",
+    desc: "后续重点加入拖动点与对称轴的动态演示。",
+    concepts: []
+  },
+  {
+    id: "g8-c16-polynomial",
+    track: "course",
+    number: "16",
+    title: "整式的乘法",
+    desc: "后续用面积模型解释公式，而不是只背公式。",
+    concepts: []
+  },
+  {
+    id: "g8-c17-factorization",
+    track: "course",
+    number: "17",
+    title: "因式分解",
+    desc: "后续和整式乘法互逆，用图形与结构感连接。",
+    concepts: []
+  },
+  {
+    id: "g8-c18-fraction",
+    track: "course",
+    number: "18",
+    title: "分式",
+    desc: "后续重做为概念、运算、方程和应用题闭环。",
+    concepts: []
+  }
+];
+
+const CONCEPTS = [
+  {
+    id: "tri-basic",
+    chapterId: "g8-c13-triangles",
+    number: "13.1",
+    title: "三角形的基本概念",
+    subtitle: "什么样的图形才叫三角形？",
+    minutes: 18,
+    core: "三角形由不在同一直线上的三条线段首尾顺次相接组成。三角形 ABC 记作 △ABC，它有 3 个顶点、3 条边、3 个内角。",
+    memory: "三条线段首尾接，不能躺成一条线。",
+    english: "A triangle is made of three line segments joined end to end, and the three vertices are not collinear.",
+    diagram: "triangle-basic",
+    folds: {
+      why: "如果三个点在同一直线上，三条线段只能压成一条线，围不出内部区域，所以不是三角形。",
+      derivation: "识别三角形时按顺序问三件事：是不是三条线段？是不是首尾相接？三个点是否不在同一直线上？",
+      try: "看图时先标顶点，再读边：△ABC 的边是 AB、BC、CA，角是 ∠A、∠B、∠C。",
+      trap: "不要把有三条线的开放图形、交叉图形或三点共线图形当成三角形。",
+      life: "屋顶架、路标支架、桥梁桁架都常用三角形，因为它的结构稳定。"
+    },
+    example: {
+      title: "判断一个图形是否是三角形",
+      prompt: "图中 A、B、C 三点不在同一直线上，线段 AB、BC、CA 首尾相接。这个图形是不是三角形？",
+      steps: [
+        { title: "看线段数量", text: "有 AB、BC、CA 三条线段。", highlight: "edges" },
+        { title: "看连接方式", text: "三条线段首尾顺次相接，形成封闭图形。", highlight: "closed" },
+        { title: "看是否共线", text: "A、B、C 不在同一直线上，所以能围成三角形。", highlight: "area" }
+      ]
+    },
+    practice: [
       {
+        id: "tri-basic-p1",
+        type: "choice",
+        prompt: "下面哪个说法最准确？",
+        options: ["三条线段就是三角形", "三条线段首尾顺次相接且三个顶点不共线，才是三角形", "三个角合起来就是三角形"],
+        answer: 1,
+        hints: ["三角形必须是封闭图形。", "还要排除三点在同一直线上的情况。"],
+        explanation: "三角形的定义要同时满足三条线段、首尾顺次相接、不在同一直线。"
+      },
+      {
+        id: "tri-basic-p2",
+        type: "choice",
+        prompt: "△ABC 的边不包括哪一个？",
+        options: ["AB", "BC", "AC", "AD"],
+        answer: 3,
+        hints: ["只看 A、B、C 三个顶点之间的线段。", "三角形 ABC 只有三条边。"],
+        explanation: "△ABC 的三条边是 AB、BC、AC，没有 AD。"
+      }
+    ],
+    misconception: [
+      {
+        id: "tri-basic-m1",
+        type: "choice",
+        prompt: "A、B、C 三点在同一直线上，连接 AB、BC、CA 后，可以叫 △ABC 吗？",
+        options: ["可以，因为有三条线段", "不可以，因为三点共线，围不成三角形", "可以，因为有三个点"],
+        answer: 1,
+        hints: ["想象这三个点都在尺子边上。", "三角形要有内部区域。"],
+        explanation: "三点共线时图形被压成线段，不能围成三角形。"
+      }
+    ],
+    test: [
+      {
+        id: "tri-basic-t1",
+        type: "choice",
+        prompt: "如果一个图形可以记作 △PQR，那么它的顶点是哪些？",
+        options: ["P、Q、R", "PQ、QR、PR", "∠P、∠Q、∠R"],
+        answer: 0,
+        hints: ["顶点是点，不是边或角。", "△PQR 的字母就是三个顶点。"],
+        explanation: "△PQR 的顶点是 P、Q、R。"
+      }
+    ]
+  },
+  {
+    id: "tri-sides",
+    chapterId: "g8-c13-triangles",
+    number: "13.2",
+    title: "三角形三边关系",
+    subtitle: "三根线段什么时候围得成？",
+    minutes: 25,
+    core: "三角形任意两边之和大于第三边。等价地，第三边必须大于两边之差，小于两边之和。",
+    memory: "两边之和大于第三边，两边之差小于第三边。",
+    english: "Triangle inequality: the sum of any two sides is greater than the third side.",
+    diagram: "triangle-sides",
+    folds: {
+      why: "两点之间线段最短。如果从 B 到 C 直接走是 BC，那么绕过 A 走 AB+AC 必须更长，才可能形成真正的折线。",
+      derivation: "判断三条线段能否成三角形时，只要找最长边。最长边小于另外两边之和，就能围成；相等会压成直线。",
+      try: "拖动三条边：试一试 3、4、8；6、6、12；5、6、10。观察临界情况。",
+      trap: "相等不行。比如 6+6=12 时，三条线段只能躺成一条直线。",
+      life: "搭帐篷支架、做三角木架时，最长杆太长就无法合拢。"
+    },
+    example: {
+      title: "第三边范围怎么求",
+      prompt: "已知三角形两边长为 5 和 8，第三边为 x，求 x 的范围。",
+      steps: [
+        { title: "先想上限", text: "第三边不能达到两边之和，所以 x < 5+8，即 x < 13。", highlight: "sum" },
+        { title: "再想下限", text: "第三边还要大于两边之差，所以 x > 8-5，即 x > 3。", highlight: "diff" },
+        { title: "合起来", text: "所以 3 < x < 13。如果 x 是整数，可以是 4 到 12。", highlight: "range" }
+      ]
+    },
+    practice: [
+      {
+        id: "tri-sides-p1",
+        type: "choice",
         prompt: "3、4、8 能组成三角形吗？",
         options: ["能，因为有三条线段", "不能，因为 3+4<8", "能，因为 8 最大"],
         answer: 1,
-        feedback: "最长边是 8，另外两边和是 7，7<8，围不起来。"
+        hints: ["先找最长边。", "比较另外两边和与最长边。"],
+        explanation: "最长边是 8，另外两边和是 7，小于 8，所以围不成。"
       },
       {
-        prompt: "5、6、11 能组成三角形吗？",
-        options: ["能", "不能，因为 5+6=11", "不能，因为 11 不是偶数"],
-        answer: 1,
-        feedback: "相等时会压成一条直线，不是三角形。"
+        id: "tri-sides-p2",
+        type: "choice",
+        prompt: "三角形两边为 5 和 8，第三边 x 是整数。x 不可能是哪个？",
+        options: ["4", "9", "13"],
+        answer: 2,
+        hints: ["写出范围 3<x<13。", "注意端点不能取。"],
+        explanation: "第三边范围是 3<x<13，所以整数 13 不可能。"
       },
       {
-        prompt: "等腰三角形两边为 4 和 9，它的周长是多少？",
-        options: ["17", "22", "两种都可以"],
+        id: "tri-sides-p3",
+        type: "choice",
+        prompt: "等腰三角形两边长为 4 和 9，它的周长是多少？",
+        options: ["17", "22", "17 或 22"],
         answer: 1,
-        feedback: "4、4、9 不成立，只有 9、9、4 成立，周长 22。"
+        hints: ["等腰题要分类讨论：4 是腰，或 9 是腰。", "检查三边关系。"],
+        explanation: "4、4、9 不成立；9、9、4 成立，周长为 22。"
+      }
+    ],
+    misconception: [
+      {
+        id: "tri-sides-m1",
+        type: "choice",
+        prompt: "6、6、12 不能组成三角形，最关键的原因是？",
+        options: ["12 太大，不是偶数问题", "6+6=12，会压成直线", "两条边相等一定不行"],
+        answer: 1,
+        hints: ["相等不是大于。", "想象两根 6 从 12 的两端伸出。"],
+        explanation: "两边之和必须大于第三边，相等时图形退化成直线。"
+      },
+      {
+        id: "tri-sides-m2",
+        type: "choice",
+        prompt: "判断 2、9、10 能否成三角形，最快检查什么？",
+        options: ["2+9 是否大于 10", "2+10 是否大于 9", "9+10 是否大于 2"],
+        answer: 0,
+        hints: ["先找最长边 10。", "只要最短两边之和大于最长边，另外两组自然成立。"],
+        explanation: "最长边是 10，检查 2+9>10 即可。"
+      }
+    ],
+    test: [
+      {
+        id: "tri-sides-t1",
+        type: "choice",
+        prompt: "已知三角形两边为 7 和 11，第三边 x 是整数，x 的最小值是？",
+        options: ["3", "4", "5"],
+        answer: 2,
+        hints: ["第三边要大于 11-7。", "x 是整数。"],
+        explanation: "第三边范围是 4<x<18，整数最小是 5。"
+      },
+      {
+        id: "tri-sides-t2",
+        type: "choice",
+        prompt: "下面哪组三条线段能组成三角形？",
+        options: ["2、3、5", "4、6、9", "1、8、10"],
+        answer: 1,
+        hints: ["逐组只看最长边。", "相等也不行。"],
+        explanation: "4+6>9，能组成三角形；2+3=5 不行；1+8<10 不行。"
       }
     ]
   },
   {
-    id: "special-lines",
-    no: 2,
+    id: "tri-lines",
+    chapterId: "g8-c13-triangles",
+    number: "13.3",
     title: "高、中线、角平分线",
-    subtitle: "同样从顶点出发，凭什么名字不同？",
-    objective: "会画、会认、会使用高、中线、角平分线带来的垂直、等长、等角关系。",
-    interaction: "lineExplorer",
-    discoverTitle: "点选一条特殊线",
-    discoverPrompt: "切换“高 / 中线 / 角平分线”，观察同一顶点出发的线段有什么不同依据。",
-    principles: [
-      "高看垂直：从顶点向对边所在直线作垂线。",
-      "中线看中点：从顶点连到对边中点，所以对边被分成相等两段。",
-      "角平分线看等角：从顶点出发，把这个角分成两个相等角。",
-      "钝角三角形的高可能落在三角形外面，因为高要垂直到“对边所在直线”。",
-      "三条中线交于一点，这个点叫三角形的重心。"
-    ],
-    mistakes: [
-      "把中线当成角平分线，以为中点一定带来等角。",
-      "把角平分线当成中线，以为等角一定带来等边。",
-      "画钝角三角形的高时，不敢延长对边所在直线。"
-    ],
-    parentFocus: [
-      "让孩子每画一条线都说依据：垂直、中点、还是等角。",
-      "多用反例提醒：中线不一定垂直，角平分线不一定平分对边。"
-    ],
-    parentQuestions: [
-      "看到 90°，这条线更可能是什么？",
-      "看到对边被分成两段相等，这条线叫什么？"
-    ],
-    mastery: [
-      "能在任意三角形中画指定边上的高。",
-      "能说出中线、角平分线分别带来什么等量关系。",
-      "能区分“线段看起来像”和“数学依据”。"
-    ],
-    practices: [
+    subtitle: "同样从顶点出发，证据不同",
+    minutes: 28,
+    core: "高看垂直，中线看中点，角平分线看等角。三角形三条中线交于一点，这个点叫重心。",
+    memory: "高是 90°，中线分边，角平分线分角。",
+    english: "Altitude gives perpendicularity, median gives midpoint, angle bisector gives equal angles.",
+    diagram: "triangle-lines",
+    folds: {
+      why: "这些线段的名字不是看长得像不像，而是看它带来的数学证据。",
+      derivation: "从顶点 A 到对边 BC：如果 AD⊥BC，AD 是高；如果 D 是 BC 中点，AD 是中线；如果 ∠BAD=∠DAC，AD 是角平分线。",
+      try: "切换图中的高、中线、角平分线，只说它给了你哪个证据。",
+      trap: "中线不一定垂直，角平分线也不一定平分对边。只有特殊三角形中才可能重合。",
+      life: "重心能帮助理解物体平衡；三角形纸片三条中线交点附近可以找到平衡点。"
+    },
+    example: {
+      title: "从条件判断是哪条特殊线",
+      prompt: "在 △ABC 中，D 在 BC 上。如果 BD=DC，那么 AD 是什么线？",
+      steps: [
+        { title: "看条件", text: "BD=DC 说明 D 是 BC 的中点。", highlight: "midpoint" },
+        { title: "套定义", text: "从顶点 A 连到对边 BC 的中点，这条线叫中线。", highlight: "median" },
+        { title: "别多想", text: "题目没有给垂直，也没有给等角，所以不能说它是高或角平分线。", highlight: "avoid" }
+      ]
+    },
+    practice: [
       {
-        prompt: "AD 是 BC 边上的中线，BC=14，则 BD 等于多少？",
+        id: "tri-lines-p1",
+        type: "choice",
+        prompt: "AD 是 BC 边上的中线，BC=14，则 BD 等于？",
         options: ["7", "14", "不能确定"],
         answer: 0,
-        feedback: "中线连到对边中点，所以 BD=DC=7。"
+        hints: ["中线连到对边中点。", "中点把线段分成相等两段。"],
+        explanation: "D 是 BC 的中点，所以 BD=DC=7。"
       },
       {
-        prompt: "AD 平分 ∠A，∠A=68°，则 ∠BAD 等于多少？",
+        id: "tri-lines-p2",
+        type: "choice",
+        prompt: "AD 平分 ∠A，∠A=68°，则 ∠BAD 等于？",
         options: ["34°", "68°", "90°"],
         answer: 0,
-        feedback: "角平分线把角分成两个相等角。"
+        hints: ["角平分线把一个角分成两半。", "68°÷2。"],
+        explanation: "∠BAD=∠DAC=34°。"
+      }
+    ],
+    misconception: [
+      {
+        id: "tri-lines-m1",
+        type: "choice",
+        prompt: "看到 AD 是中线，可以直接推出什么？",
+        options: ["AD⊥BC", "BD=DC", "∠BAD=∠DAC"],
+        answer: 1,
+        hints: ["中线的关键词是中点。", "不要把三种线混在一起。"],
+        explanation: "中线只直接给出对边被平分，即 BD=DC。"
       },
       {
-        prompt: "AD 是 BC 边上的高，最直接得到什么？",
-        options: ["BD=DC", "∠BAD=∠DAC", "AD⊥BC"],
-        answer: 2,
-        feedback: "高的关键词是垂直。"
-      }
-    ]
-  },
-  {
-    id: "stability",
-    no: 3,
-    title: "三角形的稳定性",
-    subtitle: "为什么建筑喜欢三角形？",
-    objective: "会解释三角形稳定性和四边形不稳定性，并能用“分成三角形”分析斜撑。",
-    interaction: "stability",
-    discoverTitle: "推一推木架",
-    discoverPrompt: "拖动变形滑块，观察四边形为什么会变；打开斜撑，看看它如何变成两个三角形。",
-    principles: [
-      "三角形三边长度确定后，形状也被确定，因此具有稳定性。",
-      "四边形即使四条边长度不变，角也能改变，所以没有稳定性。",
-      "四边形加一条对角线后，被分成两个三角形，形状就稳定了。",
-      "n 边形木架要稳定，可从一个顶点加斜撑分成三角形，至少需要 n-3 根。"
-    ],
-    mistakes: [
-      "把四边形不稳定性当成纯缺点，其实伸缩门正是利用它。",
-      "以为随便加一根木条都能稳定，关键是要把图形分成三角形。"
-    ],
-    parentFocus: [
-      "追问孩子：加这根斜撑后，图形里面出现了几个三角形？",
-      "联系生活：屋顶钢架、桥梁、伸缩门，各自利用了什么性质？"
-    ],
-    parentQuestions: [
-      "四边形边长不变，为什么形状还能变？",
-      "五边形至少加几根斜撑可以分成三角形？"
-    ],
-    mastery: [
-      "能说出三角形稳定性的含义。",
-      "能解释斜钉木条的作用。",
-      "能求四边形、五边形、六边形木架至少加几根斜撑。"
-    ],
-    practices: [
-      {
-        prompt: "四边形木架至少加几根斜撑可以稳定？",
-        options: ["1 根", "2 根", "3 根"],
+        id: "tri-lines-m2",
+        type: "choice",
+        prompt: "钝角三角形的高有时落在三角形外面，原因是？",
+        options: ["高要垂直到对边所在直线", "高必须经过中点", "高必须平分角"],
         answer: 0,
-        feedback: "一条对角线把四边形分成两个三角形。"
-      },
+        hints: ["定义里是对边所在直线。", "钝角时可能需要延长对边。"],
+        explanation: "高要求从顶点向对边所在直线作垂线，所以可能落在外部。"
+      }
+    ],
+    test: [
       {
-        prompt: "六边形木架至少加几根斜撑？",
-        options: ["2 根", "3 根", "4 根"],
-        answer: 1,
-        feedback: "n 边形至少需要 n-3 根，六边形是 3 根。"
-      },
-      {
-        prompt: "伸缩门主要利用了什么？",
-        options: ["三角形稳定性", "四边形不稳定性", "多边形内角和"],
-        answer: 1,
-        feedback: "伸缩门需要能变形，利用的是四边形不稳定性。"
+        id: "tri-lines-t1",
+        type: "choice",
+        prompt: "如果 AD⊥BC，那么 AD 最可能是 △ABC 的哪种线？",
+        options: ["BC 边上的高", "BC 边上的中线", "∠A 的角平分线"],
+        answer: 0,
+        hints: ["看到 90°，先想到高。", "高的核心证据是垂直。"],
+        explanation: "从顶点向对边所在直线作垂线，得到高。"
       }
     ]
   },
   {
-    id: "angle-sum",
-    no: 4,
+    id: "tri-angle-sum",
+    chapterId: "g8-c13-triangles",
+    number: "13.4",
     title: "三角形内角和",
     subtitle: "为什么一定是 180°？",
-    objective: "会用平行线证明三角形内角和定理，并能用定理求角。",
-    interaction: "angleSum",
-    discoverTitle: "拖动顶点，看角度总和",
-    discoverPrompt: "拖动 A 点改变三角形形状。再打开证明线，观察如何把三个角放到一个平角上。",
-    principles: [
-      "测量和剪拼能发现规律，但不能证明所有三角形都成立。",
-      "证明三角形内角和时，常过一个顶点作对边的平行线。",
-      "用平行线性质把另外两个角转移到同一条直线上，三个角组成平角。",
-      "平角是 180°，所以三角形三个内角和是 180°。"
-    ],
-    mistakes: [
-      "只背结论，不会说为什么要作平行线。",
-      "在大三角形和小三角形之间混用角。",
-      "把量角器测出来的 180° 当成数学证明。"
-    ],
-    parentFocus: [
-      "让孩子口头复述证明，不要求一开始就写得很正式。",
-      "追问每一步理由：用了平行线的哪个性质？用了平角的哪个定义？"
-    ],
-    parentQuestions: [
-      "为什么测量 100 个三角形也不能代替证明？",
-      "作平行线的目的是什么？"
-    ],
-    mastery: [
-      "能用 4 句话说出三角形内角和证明思路。",
-      "能在角平分线题中选对所在三角形。",
-      "能区分“发现规律”和“证明确认”。"
-    ],
-    practices: [
+    minutes: 30,
+    core: "三角形三个内角的和等于 180°。测量能发现规律，平行线证明能确认所有情况都成立。",
+    memory: "三角形三角和，拼成一个平角。",
+    english: "The sum of the three interior angles of a triangle is 180 degrees.",
+    diagram: "triangle-angle-sum",
+    folds: {
+      why: "量角器会有误差，剪拼也只能说明直观。数学证明要说明任意三角形都成立。",
+      derivation: "过顶点 A 作 BC 的平行线。利用平行线的内错角或同位角相等，把 ∠B、∠C 搬到 A 点附近，三个角组成一个平角。",
+      try: "拖动顶点改变三角形形状，观察三个角怎么变，但总和仍是 180°。",
+      trap: "不要把测量结果当证明；证明题要写出用了平行线和平角。",
+      life: "三角形角度关系是很多几何题的起点，尤其是求角和证明平行。"
+    },
+    example: {
+      title: "已知两角求第三角",
+      prompt: "△ABC 中，∠A=52°，∠B=68°，求 ∠C。",
+      steps: [
+        { title: "找到所在三角形", text: "三个角都在同一个 △ABC 中。", highlight: "triangle" },
+        { title: "用内角和", text: "∠A+∠B+∠C=180°。", highlight: "sum" },
+        { title: "计算", text: "∠C=180°-52°-68°=60°。", highlight: "answer" }
+      ]
+    },
+    practice: [
       {
-        prompt: "三角形两个角为 52°、68°，第三角是多少？",
-        options: ["50°", "60°", "70°"],
+        id: "tri-angle-p1",
+        type: "choice",
+        prompt: "三角形两个角是 40° 和 75°，第三个角是？",
+        options: ["55°", "65°", "75°"],
         answer: 1,
-        feedback: "180°-52°-68°=60°。"
+        hints: ["三角形三个内角和为 180°。", "180-40-75。"],
+        explanation: "第三角为 180°-40°-75°=65°。"
       },
       {
-        prompt: "∠A=50°，AD 平分 ∠A，∠B=60°，则 ∠ADB 是多少？",
-        options: ["85°", "95°", "110°"],
+        id: "tri-angle-p2",
+        type: "choice",
+        prompt: "一个三角形三个角的比是 2:3:4，最大角是多少？",
+        options: ["60°", "80°", "100°"],
         answer: 1,
-        feedback: "∠BAD=25°，∠ADB=180°-60°-25°=95°。"
-      },
+        hints: ["总份数是 9。", "180°÷9=20°。"],
+        explanation: "最大角是 4 份，4×20°=80°。"
+      }
+    ],
+    misconception: [
       {
-        prompt: "证明内角和时，作平行线最主要是为了什么？",
+        id: "tri-angle-m1",
+        type: "choice",
+        prompt: "证明三角形内角和时，过一个顶点作平行线的主要目的是什么？",
         options: ["让图更好看", "把角转移到一个平角上", "让三角形变大"],
         answer: 1,
-        feedback: "平行线让内错角相等，从而把角“搬”到一条直线上。"
+        hints: ["平行线能得到相等角。", "最后要拼成 180°。"],
+        explanation: "作平行线是为了用角相等把三个内角拼到一条直线上。"
+      }
+    ],
+    test: [
+      {
+        id: "tri-angle-t1",
+        type: "choice",
+        prompt: "已知 ∠A=50°，AD 平分 ∠A，∠B=60°，则 △ABD 中 ∠ADB 是？",
+        options: ["70°", "85°", "95°"],
+        answer: 2,
+        hints: ["先求 ∠BAD。", "在 △ABD 中用内角和。"],
+        explanation: "∠BAD=25°，所以 ∠ADB=180°-60°-25°=95°。"
       }
     ]
   },
   {
-    id: "exterior",
-    no: 5,
+    id: "tri-exterior",
+    chapterId: "g8-c13-triangles",
+    number: "13.5",
     title: "直角三角形与外角",
-    subtitle: "外角为什么等于两个远内角之和？",
-    objective: "会用直角三角形锐角互余、三角形外角性质快速求角。",
-    interaction: "exteriorAngle",
-    discoverTitle: "调两个远内角",
-    discoverPrompt: "改变两个不相邻内角，观察外角怎样跟着变化。",
-    principles: [
-      "直角三角形的两个锐角互余，和为 90°。",
-      "如果一个三角形有两个角互余，那么第三个角就是 90°，它是直角三角形。",
-      "三角形外角是一边和另一边延长线组成的角。",
-      "一个外角等于与它不相邻的两个内角的和。",
-      "每个顶点各取一个外角，三角形三个外角和是 360°。"
-    ],
-    mistakes: [
-      "把外角说成等于任意两个内角之和。",
-      "忘记外角与相邻内角互补。",
-      "方位角题里没有先找平行的南北方向线。"
-    ],
-    parentFocus: [
-      "让孩子先找外角的相邻内角，再找两个不相邻内角。",
-      "方位角题让孩子先画方向线，不急着算。"
-    ],
-    parentQuestions: [
-      "外角和哪个内角相邻？和哪两个内角不相邻？",
-      "为什么外角比任意一个远内角都大？"
-    ],
-    mastery: [
-      "能用外角性质一步求角。",
-      "能用互余判断直角三角形。",
-      "能说明外角和相邻内角的关系。"
-    ],
-    practices: [
+    subtitle: "外角等于哪两个角的和？",
+    minutes: 26,
+    core: "直角三角形两个锐角互余。三角形的一个外角等于与它不相邻的两个内角之和。",
+    memory: "直角三角形锐角和 90°；外角看远处两个内角。",
+    english: "An exterior angle of a triangle equals the sum of the two non-adjacent interior angles.",
+    diagram: "triangle-exterior",
+    folds: {
+      why: "外角与相邻内角拼成平角，而相邻内角又等于 180° 减去另外两个内角，所以外角等于两个远内角之和。",
+      derivation: "设外角为 ∠ACD，相邻内角是 ∠ACB。因为 ∠ACD+∠ACB=180°，又 ∠A+∠B+∠ACB=180°，所以 ∠ACD=∠A+∠B。",
+      try: "先指出外角旁边的相邻内角，再指出两个不相邻内角。",
+      trap: "外角不是等于任意两个内角之和，只等于两个不相邻内角之和。",
+      life: "转弯、折线和方向角问题里，外角可以帮助快速看出角度变化。"
+    },
+    example: {
+      title: "用外角一步求角",
+      prompt: "△ABC 中，∠A=45°，∠B=70°，延长 BC 到 D，求外角 ∠ACD。",
+      steps: [
+        { title: "找外角", text: "∠ACD 是 C 点处的外角。", highlight: "exterior" },
+        { title: "找远内角", text: "与它不相邻的两个内角是 ∠A 和 ∠B。", highlight: "remote" },
+        { title: "相加", text: "∠ACD=∠A+∠B=45°+70°=115°。", highlight: "answer" }
+      ]
+    },
+    practice: [
       {
-        prompt: "直角三角形一个锐角是 37°，另一个锐角是多少？",
-        options: ["43°", "53°", "63°"],
+        id: "tri-ext-p1",
+        type: "choice",
+        prompt: "直角三角形一个锐角是 35°，另一个锐角是？",
+        options: ["45°", "55°", "65°"],
         answer: 1,
-        feedback: "两个锐角互余，90°-37°=53°。"
+        hints: ["直角三角形两个锐角互余。", "90°-35°。"],
+        explanation: "另一个锐角为 90°-35°=55°。"
       },
       {
-        prompt: "三角形两个内角为 45°、80°，与第三角相邻的外角是多少？",
-        options: ["115°", "125°", "135°"],
-        answer: 1,
-        feedback: "这个外角等于两个不相邻内角之和：45°+80°=125°。"
-      },
-      {
-        prompt: "三角形一个外角是 128°，一个远内角是 53°，另一个远内角是多少？",
+        id: "tri-ext-p2",
+        type: "choice",
+        prompt: "三角形一个外角是 120°，一个远内角是 45°，另一个远内角是？",
         options: ["65°", "75°", "85°"],
         answer: 1,
-        feedback: "另一个远内角是 128°-53°=75°。"
+        hints: ["外角等于两个远内角之和。", "120°-45°。"],
+        explanation: "另一个远内角为 120°-45°=75°。"
+      }
+    ],
+    misconception: [
+      {
+        id: "tri-ext-m1",
+        type: "choice",
+        prompt: "外角和它相邻的内角之间是什么关系？",
+        options: ["相等", "互补", "互余"],
+        answer: 1,
+        hints: ["它们拼成一条直线。", "平角是多少度？"],
+        explanation: "外角和相邻内角组成平角，所以互补。"
+      }
+    ],
+    test: [
+      {
+        id: "tri-ext-t1",
+        type: "choice",
+        prompt: "如果三角形一个外角是 100°，那么与它相邻的内角是？",
+        options: ["80°", "90°", "100°"],
+        answer: 0,
+        hints: ["相邻内角与外角互补。", "180°-100°。"],
+        explanation: "相邻内角是 180°-100°=80°。"
       }
     ]
   },
   {
-    id: "polygon-basics",
-    no: 6,
-    title: "多边形基本概念",
-    subtitle: "边、角、对角线怎么认？",
-    objective: "会识别多边形、内角、外角、对角线、凸多边形和正多边形。",
-    interaction: "polygonBasics",
-    discoverTitle: "从一个顶点画对角线",
-    discoverPrompt: "改变边数，看从一个顶点能画几条对角线，以及它们把图形分成几个三角形。",
-    principles: [
-      "多边形是在平面内由一些线段首尾顺次相接组成的封闭图形。",
-      "连接不相邻两个顶点的线段叫对角线，相邻顶点连起来的是边。",
-      "凸多边形的任意一条边所在直线，都让整个多边形在同一侧。",
-      "正多边形必须各边都相等、各角也都相等。"
-    ],
-    mistakes: [
-      "把边当成对角线。",
-      "只看到边相等就认为是正多边形，忘记角也要相等。",
-      "没有注意本章讨论的是凸多边形。"
-    ],
-    parentFocus: [
-      "让孩子边画边数：从一个顶点不能连自己和相邻两个点。",
-      "用正方形说明正多边形的两个条件：边相等，角也相等。"
-    ],
-    parentQuestions: [
-      "五边形从一个顶点出发，为什么不是 4 条对角线？",
-      "只要边都相等，就一定是正多边形吗？"
-    ],
-    mastery: [
-      "能画出五边形全部对角线。",
-      "能解释 n 边形从一个顶点可画 n-3 条对角线。",
-      "能说出正多边形的两个条件。"
-    ],
-    practices: [
+    id: "tri-polygon",
+    chapterId: "g8-c13-triangles",
+    number: "13.6",
+    title: "多边形与内角和",
+    subtitle: "公式里的 n-2 从哪里来？",
+    minutes: 32,
+    core: "n 边形从一个顶点出发可画 n-3 条对角线，分成 n-2 个三角形，所以内角和是 (n-2)×180°。多边形外角和恒为 360°。",
+    memory: "多边形切三角形：n-2 个三角形，外角转一圈。",
+    english: "The interior angle sum of an n-gon is (n-2)×180°, and the exterior angle sum is 360°.",
+    diagram: "polygon-sum",
+    folds: {
+      why: "一个多边形的角度问题，常常可以转回三角形。三角形内角和是 180°，所以切成几个三角形就有几个 180°。",
+      derivation: "从一个顶点连向不相邻顶点。不能连自己和相邻两个顶点，所以对角线有 n-3 条，把多边形分成 n-2 个三角形。",
+      try: "试着画五边形和六边形，从一个顶点出发分别切成几个三角形。",
+      trap: "普通多边形不能把内角和平均分。只有正多边形才可以求每个内角。",
+      life: "地砖铺设、标志设计、蜂窝结构都会用到多边形角度和对称。"
+    },
+    example: {
+      title: "求八边形内角和",
+      prompt: "八边形的内角和是多少？",
+      steps: [
+        { title: "确定 n", text: "八边形的 n=8。", highlight: "n" },
+        { title: "切三角形", text: "它可以分成 n-2=6 个三角形。", highlight: "triangles" },
+        { title: "乘 180°", text: "内角和为 6×180°=1080°。", highlight: "answer" }
+      ]
+    },
+    practice: [
       {
+        id: "poly-p1",
+        type: "choice",
         prompt: "五边形从一个顶点出发可以画几条对角线？",
         options: ["1 条", "2 条", "3 条"],
         answer: 1,
-        feedback: "不能连自己，也不能连相邻两个点，所以是 5-3=2 条。"
+        hints: ["从一个顶点不能连自己和相邻两个点。", "n-3。"],
+        explanation: "五边形从一个顶点出发可画 5-3=2 条对角线。"
       },
       {
-        prompt: "正多边形必须满足什么？",
-        options: ["各边相等", "各角相等", "各边相等且各角相等"],
-        answer: 2,
-        feedback: "两个条件缺一不可。"
-      },
-      {
-        prompt: "连接多边形两个相邻顶点的线段叫什么？",
-        options: ["边", "对角线", "外角"],
-        answer: 0,
-        feedback: "对角线连接的是不相邻的两个顶点。"
-      }
-    ]
-  },
-  {
-    id: "polygon-sum",
-    no: 7,
-    title: "多边形内角和、外角和",
-    subtitle: "为什么公式里有 n-2？",
-    objective: "会推导并使用 n 边形内角和公式和多边形外角和。",
-    interaction: "polygonFormula",
-    discoverTitle: "把多边形切成三角形",
-    discoverPrompt: "改变边数，观察它被切成几个三角形，内角和怎样变化。",
-    principles: [
-      "n 边形从一个顶点出发可以画 n-3 条对角线。",
-      "这些对角线把 n 边形分成 n-2 个三角形。",
-      "所以 n 边形内角和是 (n-2)×180°。",
-      "多边形外角和等于 360°，与边数无关。",
-      "正 n 边形每个外角是 360°÷n，每个内角是 180°-每个外角。"
-    ],
-    mistakes: [
-      "把内角和公式写成 n×180°。",
-      "普通多边形不能把内角和平均分，只有正多边形才可以。",
-      "误以为边越多，外角和越大。"
-    ],
-    parentFocus: [
-      "孩子忘公式时，让他重新画对角线切三角形。",
-      "反复强调外角和是走一圈转过的角，总是一周 360°。"
-    ],
-    parentQuestions: [
-      "为什么是 n-2 个三角形？",
-      "正十边形可以用外角先求内角吗？"
-    ],
-    mastery: [
-      "能推导 n 边形内角和公式。",
-      "能由内角和求边数。",
-      "能求正多边形的每个内角和外角。"
-    ],
-    practices: [
-      {
+        id: "poly-p2",
+        type: "choice",
         prompt: "八边形内角和是多少？",
         options: ["900°", "1080°", "1260°"],
         answer: 1,
-        feedback: "(8-2)×180°=1080°。"
+        hints: ["公式是 (n-2)×180°。", "n=8。"],
+        explanation: "(8-2)×180°=1080°。"
       },
       {
-        prompt: "一个多边形内角和等于外角和，它是几边形？",
-        options: ["三边形", "四边形", "五边形"],
-        answer: 1,
-        feedback: "外角和 360°，内角和也 360°，所以是四边形。"
-      },
-      {
+        id: "poly-p3",
+        type: "choice",
         prompt: "正五边形每个内角是多少？",
         options: ["90°", "108°", "120°"],
         answer: 1,
-        feedback: "内角和 540°，平均分成 5 个，每个 108°。"
+        hints: ["正多边形才能平均分。", "五边形内角和 540°。"],
+        explanation: "正五边形每个内角为 540°÷5=108°。"
       }
-    ]
-  },
-  {
-    id: "review",
-    no: 8,
-    title: "章节复习与综合",
-    subtitle: "把边、角、证明连起来",
-    objective: "能综合使用三边关系、特殊线段、内角和、外角、多边形公式。",
-    interaction: "reviewMap",
-    discoverTitle: "本章知识路线",
-    discoverPrompt: "按路线复盘：先边，再线，再角，最后把多边形切成三角形。",
-    principles: [
-      "边的问题先找最长边，等腰题先分类讨论。",
-      "线段问题先辨认：高看垂直，中线看中点，角平分线看等角。",
-      "角度题先找三角形，再找内角和、外角、平行线、角平分线。",
-      "多边形题先看是否正多边形，再决定能不能平均分。",
-      "证明题每一步都要说理由：已知、定义、定理或等量代换。"
     ],
-    mistakes: [
-      "会算但说不出理由。",
-      "图形中没有标清角的位置，导致用错三角形。",
-      "综合题中漏掉分类讨论。"
-    ],
-    parentFocus: [
-      "复习时少让孩子背定义，多让他解释“为什么”。",
-      "错题按错因归类：概念、图形、公式、分类、计算、证明表达。"
-    ],
-    parentQuestions: [
-      "这一步用的是哪个定理？",
-      "如果换一个图形，这个结论还成立吗？"
-    ],
-    mastery: [
-      "能说清本章 6 个核心结论的来源。",
-      "能完成章末综合题并写出理由。",
-      "能把错题归类到具体错因。"
-    ],
-    practices: [
+    misconception: [
       {
-        prompt: "遇到三条线段能否组成三角形，第一步最好做什么？",
-        options: ["先找最长边", "先画外角", "先求面积"],
-        answer: 0,
-        feedback: "判断三边关系时，先找最长边最省力。"
-      },
-      {
-        prompt: "多边形内角和公式的来源是什么？",
-        options: ["把它切成三角形", "量角器测量", "外角相等"],
-        answer: 0,
-        feedback: "从一个顶点画对角线，切成 n-2 个三角形。"
-      },
-      {
-        prompt: "孩子会背“三角形内角和 180°”，但不会证明，说明什么？",
-        options: ["已经完全掌握", "还需要补证明思路", "不用管"],
+        id: "poly-m1",
+        type: "choice",
+        prompt: "一个普通六边形内角和是 720°，能否直接说每个内角都是 120°？",
+        options: ["能", "不能，只有正六边形才平均", "不能，六边形没有内角"],
         answer: 1,
-        feedback: "本章重点之一就是从观察走向证明。"
+        hints: ["普通多边形角不一定相等。", "正多边形要求各边各角都相等。"],
+        explanation: "普通六边形只能确定内角和，不能确定每个内角。"
+      }
+    ],
+    test: [
+      {
+        id: "poly-t1",
+        type: "choice",
+        prompt: "一个多边形内角和为 1260°，它是几边形？",
+        options: ["八边形", "九边形", "十边形"],
+        answer: 1,
+        hints: ["令 (n-2)×180°=1260°。", "1260÷180=7。"],
+        explanation: "n-2=7，所以 n=9。"
       }
     ]
   }
 ];
 
-const LESSON_ENRICHMENT = {
-  edges: {
-    sceneTitle: "三根木条能不能搭成一个架子？",
-    sceneText: "把最长的那根想象成地面，另外两根要从两端伸出来并碰到同一个点。碰得到，才有三角形；刚好碰成一条直线，也不算。",
-    sceneBullets: ["先找最长边", "比较另外两边和", "相等时是压扁，不是三角形"],
-    exploreTasks: [
-      { label: "摆一摆", text: "先点 3,4,8，再点 5,6,10，对比为什么一个封不住，一个能封住。" },
-      { label: "说一说", text: "不用公式解释：为什么最长边不能太长？" },
-      { label: "换一换", text: "把 6,6,12 调成 6,6,11，观察从直线变成三角形的瞬间。" }
-    ],
-    reasoning: [
-      { title: "看见", text: "最长边固定后，另外两边像两只手臂，从两端往中间伸。" },
-      { title: "发现", text: "两只手臂合起来还够不到，图形就断开；刚好够到，只能躺成一条直线。" },
-      { title: "写成数学", text: "最长边 < 另外两边之和。只要检查最长边这一条最省力。" }
-    ],
-    application: ["判断三条线段能否围成三角形", "等腰三角形边长题要分类讨论", "求第三边范围时记住：两边差 < 第三边 < 两边和"],
-    extraPractices: [
-      {
-        prompt: "三角形两边长为 5 和 8，第三边 x 是整数。下面哪个 x 可以？",
-        options: ["3", "12", "13"],
-        answer: 1,
-        feedback: "第三边要大于 8-5=3，小于 8+5=13，所以 12 可以，3 和 13 都不行。",
-        hint: "先写范围：两边差 < 第三边 < 两边和。"
-      },
-      {
-        prompt: "等腰三角形周长 20，底边是 8，每条腰是多少？",
-        options: ["5", "6", "12"],
-        answer: 1,
-        feedback: "两条腰相等，(20-8)÷2=6。",
-        hint: "底边已确定，剩下两条就是相等的腰。"
-      }
-    ]
-  },
-  "special-lines": {
-    sceneTitle: "同一条线，凭什么叫不同名字？",
-    sceneText: "从顶点画到对边，看起来都是一条线。数学不按样子取名，而按它带来的证据取名：垂直、中点、等角。",
-    sceneBullets: ["高：证明垂直", "中线：证明中点", "角平分线：证明等角"],
-    exploreTasks: [
-      { label: "找证据", text: "每切换一条线，只说它带来的一个证据，不急着背定义。" },
-      { label: "反例眼", text: "问自己：中线一定垂直吗？角平分线一定平分对边吗？" },
-      { label: "画钝角", text: "想象三角形变钝时，高为什么可能落在外面。" }
-    ],
-    reasoning: [
-      { title: "高", text: "核心是 90°。它服务于面积、距离和垂直关系。" },
-      { title: "中线", text: "核心是中点。它把对边分成相等两段。" },
-      { title: "角平分线", text: "核心是等角。它把一个角分成两个相等的角。" }
-    ],
-    application: ["看到 90°，优先想到高", "看到 BD=DC，优先想到中线或中点", "看到两个小角相等，优先想到角平分线"],
-    extraPractices: [
-      {
-        prompt: "如果 AD 是 BC 边上的高，最直接能得到什么？",
-        options: ["AD⊥BC", "BD=DC", "∠BAD=∠CAD"],
-        answer: 0,
-        feedback: "高的关键词是垂直，所以 AD⊥BC。",
-        hint: "不要看线的位置，先问它的定义给了什么证据。"
-      },
-      {
-        prompt: "如果 ∠BAD=∠CAD，可以判断 AD 是什么？",
-        options: ["∠A 的角平分线", "BC 边上的中线", "BC 边上的高"],
-        answer: 0,
-        feedback: "把一个角分成两个相等的角，就是角平分线。",
-        hint: "等角对应角平分线。"
-      }
-    ]
-  },
-  stability: {
-    sceneTitle: "为什么门框要加斜撑？",
-    sceneText: "四边形像可以被推歪的框。加一条斜撑后，它被切成两个三角形，形状就被锁住了。",
-    sceneBullets: ["四边形边长不变，角可变", "一条对角线切成两个三角形", "n 边形至少加 n-3 根斜撑"],
-    exploreTasks: [
-      { label: "推一推", text: "先不加斜撑，拖动滑块，看框架怎样歪。" },
-      { label: "锁一锁", text: "打开斜撑，再拖动，观察为什么滑块失效。" },
-      { label: "数一数", text: "五边形、六边形分别需要几根斜撑才能全切成三角形？" }
-    ],
-    reasoning: [
-      { title: "不稳定", text: "四条边长度固定，角还可以变，所以四边形可以变形。" },
-      { title: "稳定", text: "三条边长度固定时，第三个顶点的位置也被固定。" },
-      { title: "会应用", text: "给多边形加斜撑，本质是把它分割成一个个三角形。" }
-    ],
-    application: ["桥梁桁架", "屋顶框架", "伸缩门利用四边形容易变形"],
-    extraPractices: [
-      {
-        prompt: "七边形木架至少加几根斜撑可以分成三角形？",
-        options: ["3 根", "4 根", "5 根"],
-        answer: 1,
-        feedback: "n 边形至少加 n-3 根斜撑，7-3=4。",
-        hint: "从一个顶点向不相邻顶点连线。"
-      },
-      {
-        prompt: "给四边形加一条对角线后，它被分成几个三角形？",
-        options: ["1 个", "2 个", "3 个"],
-        answer: 1,
-        feedback: "一条对角线把四边形切成两个三角形。",
-        hint: "画一条从一个顶点到对面顶点的线。"
-      }
-    ]
-  },
-  "angle-sum": {
-    sceneTitle: "把三个角撕下来，能拼成什么？",
-    sceneText: "量角器能发现三角形内角和接近 180°，但证明要说明所有三角形都这样。平行线的作用，就是把分散的角搬到一条直线上。",
-    sceneBullets: ["测量是发现", "剪拼是感受", "平行线证明是确认"],
-    exploreTasks: [
-      { label: "拖一拖", text: "拖动 A 点，看三个角改变时，总和是否仍然稳定。" },
-      { label: "开证明线", text: "打开证明线，找出被平行线搬过来的两个角。" },
-      { label: "讲四句", text: "用四句话复述证明：作平行线、角相等、拼平角、得 180°。" }
-    ],
-    reasoning: [
-      { title: "为什么要证明", text: "测量会有误差，而且不能测完所有三角形。" },
-      { title: "为什么作平行线", text: "平行线能制造相等角，把 B、C 两个角搬到 A 点附近。" },
-      { title: "为什么是 180°", text: "搬来的两个角和原来的 A 角排在一条直线上，组成平角。" }
-    ],
-    application: ["已知两角求第三角", "角平分线题先锁定所在三角形", "证明题要写理由，不只写算式"],
-    extraPractices: [
-      {
-        prompt: "一个三角形三个角的比是 2:3:4，最大的角是多少？",
-        options: ["60°", "80°", "100°"],
-        answer: 1,
-        feedback: "总份数 9，每份 20°，最大角 4 份是 80°。",
-        hint: "三角形三个内角一共 180°。"
-      },
-      {
-        prompt: "证明三角形内角和时，量 100 个三角形够不够？",
-        options: ["够，因为样本多", "不够，因为测量不能代替证明", "够，只要都接近 180°"],
-        answer: 1,
-        feedback: "测量只能帮助发现规律，证明才说明所有情况都成立。",
-        hint: "本章从直观走向证明，这是重点。"
-      }
-    ]
-  },
-  exterior: {
-    sceneTitle: "外角像一次转弯",
-    sceneText: "走到三角形的一个顶点，如果沿一边继续向外走，转出来的那个角就是外角。它同时和相邻内角互补，又等于两个远内角之和。",
-    sceneBullets: ["先找相邻内角", "再找两个远内角", "外角 = 远内角和"],
-    exploreTasks: [
-      { label: "调角度", text: "改变两个远内角，观察外角怎样跟着变。" },
-      { label: "找邻居", text: "指出外角旁边那个内角，它们加起来是多少？" },
-      { label: "一题两解", text: "同一个外角，试着用互补和远内角和分别求一次。" }
-    ],
-    reasoning: [
-      { title: "互补关系", text: "外角和相邻内角拼成一条直线，所以和为 180°。" },
-      { title: "远内角关系", text: "相邻内角 = 180° - 两个远内角，所以外角 = 两个远内角和。" },
-      { title: "大小判断", text: "外角等于两个正角的和，所以它大于任何一个远内角。" }
-    ],
-    application: ["一步求外角", "由外角反求远内角", "判断角度大小关系"],
-    extraPractices: [
-      {
-        prompt: "三角形一个外角是 120°，一个远内角是 45°，另一个远内角是多少？",
-        options: ["65°", "75°", "85°"],
-        answer: 1,
-        feedback: "外角等于两个远内角之和，120°-45°=75°。",
-        hint: "不要用相邻内角，先找不相邻的两个内角。"
-      },
-      {
-        prompt: "一个外角和它相邻的内角之和是多少？",
-        options: ["90°", "180°", "360°"],
-        answer: 1,
-        feedback: "外角和相邻内角组成平角，所以是 180°。",
-        hint: "它们在同一条直线上。"
-      }
-    ]
-  },
-  "polygon-basic": {
-    sceneTitle: "多边形不是只数边，还要看连接关系",
-    sceneText: "从一个顶点出发，不能连自己，也不能连相邻两个顶点。剩下能连的，才是对角线。",
-    sceneBullets: ["边连接相邻顶点", "对角线连接不相邻顶点", "正多边形要边等且角等"],
-    exploreTasks: [
-      { label: "数禁区", text: "从亮起来的顶点出发，先数不能连的 3 个点。" },
-      { label: "数能连", text: "把边数 n 调大，观察对角线条数为什么是 n-3。" },
-      { label: "辨正形", text: "只边相等还不够，还要每个角也相等。" }
-    ],
-    reasoning: [
-      { title: "边", text: "相邻顶点之间的线段是边，不叫对角线。" },
-      { title: "对角线", text: "连接不相邻两个顶点的线段才是对角线。" },
-      { title: "凸多边形", text: "本章讨论公式时默认凸多边形，凹进去的图形要先看清内角位置。" }
-    ],
-    application: ["从一个顶点数对角线", "判断边、对角线、外角", "辨认正多边形"],
-    extraPractices: [
-      {
-        prompt: "六边形一共有多少条对角线？",
-        options: ["6 条", "9 条", "12 条"],
-        answer: 1,
-        feedback: "每个顶点能画 3 条，共 18 次，但每条被数了两次，所以 18÷2=9。",
-        hint: "从一个顶点是 n-3 条，全图要除以 2。"
-      },
-      {
-        prompt: "只满足各边相等的多边形一定是正多边形吗？",
-        options: ["一定", "不一定，还要各角相等", "不一定，还要边数是偶数"],
-        answer: 1,
-        feedback: "正多边形要求各边相等、各角也相等。",
-        hint: "正多边形有两个条件。"
-      }
-    ]
-  },
-  "polygon-sum": {
-    sceneTitle: "公式里的 n-2 从哪里来？",
-    sceneText: "不是硬背公式。把 n 边形从一个顶点切开，会出现 n-2 个三角形，所以内角和就是 n-2 个 180°。",
-    sceneBullets: ["先切三角形", "再乘 180°", "外角和永远一圈 360°"],
-    exploreTasks: [
-      { label: "切一切", text: "拖动边数，看每多一条边，三角形数量怎样变化。" },
-      { label: "转一圈", text: "把外角想成沿多边形走一圈时每次转弯的角。" },
-      { label: "辨条件", text: "只有正多边形才能把内角和平均分到每个角。" }
-    ],
-    reasoning: [
-      { title: "内角和", text: "n 边形被分成 n-2 个三角形，所以是 (n-2)×180°。" },
-      { title: "外角和", text: "沿多边形绕一圈，方向总共转过 360°，与边数无关。" },
-      { title: "正多边形", text: "每个外角 = 360°÷n，每个内角 = 180° - 每个外角。" }
-    ],
-    application: ["由边数求内角和", "由内角和反求边数", "求正多边形每个内角和外角"],
-    extraPractices: [
-      {
-        prompt: "一个多边形内角和是 1260°，它是几边形？",
-        options: ["八边形", "九边形", "十边形"],
-        answer: 1,
-        feedback: "(n-2)×180°=1260°，n-2=7，所以 n=9。",
-        hint: "先把 1260° 除以 180°。"
-      },
-      {
-        prompt: "正十二边形每个外角是多少？",
-        options: ["30°", "60°", "150°"],
-        answer: 0,
-        feedback: "正 n 边形每个外角是 360°÷n，360°÷12=30°。",
-        hint: "外角比内角更容易先求。"
-      }
-    ]
-  },
-  review: {
-    sceneTitle: "把本章知识变成一张解题路线图",
-    sceneText: "第十一章不是很多零散公式，而是一条路线：边决定能否成形，线给出证据，角用三角形和外角，多边形最后仍回到三角形。",
-    sceneBullets: ["边：先最长边", "线：看证据", "角：找所在三角形", "多边形：切成三角形"],
-    exploreTasks: [
-      { label: "归类", text: "拿一道错题，先判断它主要错在边、线、角、形哪一类。" },
-      { label: "说理由", text: "每一步计算后补一句理由：定义、定理、已知还是等量代换。" },
-      { label: "反问", text: "把图形稍微改变，原结论是否还成立？" }
-    ],
-    reasoning: [
-      { title: "概念线", text: "三角形、多边形、边、角、对角线这些词要说准。" },
-      { title: "计算线", text: "内角和、外角、正多边形角度计算要熟。" },
-      { title: "证明线", text: "能解释为什么，不把测量当证明。" }
-    ],
-    application: ["章末复习", "错题整理", "家长口头追问"],
-    extraPractices: [
-      {
-        prompt: "角度综合题卡住时，第一件事通常是什么？",
-        options: ["找这个角在哪个三角形里", "直接套多边形公式", "先求周长"],
-        answer: 0,
-        feedback: "角度题先找所在三角形，再看内角和、外角或平行线。",
-        hint: "先定位图形，再选定理。"
-      },
-      {
-        prompt: "证明题里只写“所以相等”，最大的问题是什么？",
-        options: ["字太少", "没有写理由", "计算太慢"],
-        answer: 1,
-        feedback: "证明的核心是每一步都有依据：定义、已知、定理或等量代换。",
-        hint: "证明不是答案列表，是理由链。"
-      }
-    ]
-  }
-};
+const ERROR_REASONS = ["概念不会", "公式记错", "方法不会", "计算错误", "看错条件", "粗心"];
+const STORAGE_KEY = "math8_self_learning_state_v3";
+const SESSION_KEY = "math8_self_learning_supabase_session_v1";
+const GLOBAL_ROW_ID = "_global_state_v3";
 
-const STORAGE_KEY = "math8_ch11_learning_state_v1";
-const SESSION_KEY = "math8_ch11_supabase_session_v1";
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
-const $ = (selector) => document.querySelector(selector);
-
-const appState = loadState();
 const appConfig = window.MATH8_APP_CONFIG || {};
 const syncState = {
   session: loadSession(),
   busy: false
 };
-const uiMemory = {
-  triangle: { ab: 7, ac: 7, bc: 5 },
-  lineType: "height",
-  stability: { skew: 38, brace: false },
-  anglePoint: { x: 260, y: 88 },
-  angleProof: false,
-  exterior: { a: 62, b: 48 },
-  polygonN: 5,
-  formulaN: 8
-};
+
+let appState = loadState();
+
+const CHAPTER_BY_ID = Object.fromEntries(CHAPTERS.map((chapter) => [chapter.id, chapter]));
+const CONCEPT_BY_ID = Object.fromEntries(CONCEPTS.map((concept) => [concept.id, concept]));
+applyUrlState();
 
 function loadState() {
   const fallback = {
-    lessonId: "edges",
-    stepId: "discover",
+    section: "today",
+    track: "course",
+    chapterId: "g8-c13-triangles",
+    conceptId: "tri-sides",
+    stage: "knowledge",
     progress: {},
-    quiz: {},
-    coachOpen: window.innerWidth > 1120
+    runs: {},
+    mistakes: [],
+    settings: {
+      language: "zh",
+      startedOn: todayKey()
+    }
   };
   try {
-    return { ...fallback, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return deepMerge(fallback, stored);
   } catch {
     return fallback;
   }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  renderSyncMini();
+}
+
+function applyUrlState() {
+  const params = new URLSearchParams(location.search);
+  const section = params.get("section");
+  const conceptId = params.get("concept");
+  const stage = params.get("stage");
+  if (section && NAV_ITEMS.some((item) => item.id === section)) appState.section = section;
+  if (conceptId && CONCEPTS.some((concept) => concept.id === conceptId)) {
+    appState.conceptId = conceptId;
+    appState.chapterId = CONCEPT_BY_ID?.[conceptId]?.chapterId || appState.chapterId;
+  }
+  if (stage && STAGES.some((item) => item.id === stage)) appState.stage = stage;
 }
 
 function loadSession() {
@@ -751,10 +627,1368 @@ function saveSession(session) {
   syncState.session = session;
   if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   else localStorage.removeItem(SESSION_KEY);
+  renderSyncMini();
 }
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+function deepMerge(base, extra) {
+  const result = { ...base, ...extra };
+  result.progress = { ...(base.progress || {}), ...(extra.progress || {}) };
+  result.runs = { ...(base.runs || {}), ...(extra.runs || {}) };
+  result.settings = { ...(base.settings || {}), ...(extra.settings || {}) };
+  result.mistakes = Array.isArray(extra.mistakes) ? extra.mistakes : base.mistakes;
+  return result;
+}
+
+function render() {
+  ensureValidState();
+  renderShell();
+  if (appState.section === "today") renderToday();
+  if (appState.section === "learn") renderLearn();
+  if (appState.section === "practice") renderPracticeHub();
+  if (appState.section === "mistakes") renderMistakesPage();
+  if (appState.section === "profile") renderProfile();
+  saveState();
+}
+
+function ensureValidState() {
+  if (!CHAPTER_BY_ID[appState.chapterId]) appState.chapterId = "g8-c13-triangles";
+  if (!CONCEPT_BY_ID[appState.conceptId]) appState.conceptId = "tri-sides";
+  if (!STAGES.some((stage) => stage.id === appState.stage)) appState.stage = "knowledge";
+  if (!NAV_ITEMS.some((item) => item.id === appState.section)) appState.section = "today";
+}
+
+function renderShell() {
+  const page = {
+    today: ["今天", "继续把数学学明白"],
+    learn: ["学习", "按知识点一步一步推进"],
+    practice: ["练习", "一题一屏，做完再前进"],
+    mistakes: ["错题", "把不会变成会"],
+    profile: ["我的", "看见自己的掌握情况"]
+  }[appState.section];
+  $("#pageEyebrow").textContent = page[0];
+  $("#pageTitle").textContent = page[1];
+  const navHtml = NAV_ITEMS.map((item) => navButtonHtml(item)).join("");
+  $("#sideNav").innerHTML = navHtml;
+  $("#bottomNav").innerHTML = navHtml;
+  $$(".nav-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.section = button.dataset.section;
+      render();
+    });
+  });
+  renderSyncMini();
+}
+
+function navButtonHtml(item) {
+  return `
+    <button class="nav-button ${appState.section === item.id ? "active" : ""}" data-section="${item.id}" type="button">
+      <span class="nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+    </button>
+  `;
+}
+
+function renderSyncMini() {
+  const target = $("#syncMini");
+  if (!target) return;
+  target.innerHTML = syncState.session?.user?.email
+    ? `<p>已登录</p><strong>${escapeHtml(syncState.session.user.email)}</strong>`
+    : `<p>本地进度</p><strong>可开启云同步</strong>`;
+}
+
+function renderToday() {
+  const target = getContinueTarget();
+  const concept = CONCEPT_BY_ID[target.conceptId];
+  const chapter = CHAPTER_BY_ID[concept.chapterId];
+  const progress = getConceptProgress(concept.id);
+  const activeMistakes = getActiveMistakes();
+  const weakConcepts = getWeakConcepts().slice(0, 4);
+  const tasks = todayTasks(concept);
+
+  $("#screen").innerHTML = `
+    <div class="today-grid">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">继续学习</p>
+          <h3>第${chapter.number}章 ${chapter.title}</h3>
+          <h2>${concept.number} ${concept.title}</h2>
+          <p>${concept.subtitle}</p>
+          <div class="progress-line" aria-label="当前知识点掌握度">
+            <span style="width:${masteryOf(concept.id)}%"></span>
+          </div>
+          <div class="hero-meta">
+            <span>掌握度 ${masteryOf(concept.id)}%</span>
+            <span>${statusLabel(progress.status)}</span>
+          </div>
+          <button class="primary-button" data-open-concept="${concept.id}" data-stage="${target.stage}" type="button">继续学习</button>
+        </div>
+        <div class="hero-visual" aria-hidden="true">${diagramFor(concept, "today")}</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">今日任务</p>
+            <h3>约 ${tasks.minutes} 分钟</h3>
+          </div>
+          <span class="status-pill">${tasks.done}/${tasks.items.length}</span>
+        </div>
+        <div class="task-list">
+          ${tasks.items.map((task) => `
+            <button class="task-row" data-open-concept="${concept.id}" data-stage="${task.stage}" type="button">
+              <span class="task-check ${task.done ? "done" : ""}">${task.done ? "✓" : "○"}</span>
+              <span>${task.label}</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">我的薄弱点</p>
+            <h3>优先补这里</h3>
+          </div>
+        </div>
+        ${weakConcepts.length ? `
+          <div class="weak-list">
+            ${weakConcepts.map((item) => `
+              <button class="weak-card" data-open-concept="${item.id}" data-stage="practice" type="button">
+                <strong>${item.title}</strong>
+                <span>${statusLabel(getConceptProgress(item.id).status)} · ${masteryOf(item.id)}%</span>
+              </button>
+            `).join("")}
+          </div>
+        ` : `<p class="empty-note">目前没有明显薄弱点。继续完成今天的学习任务。</p>`}
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">最近错题</p>
+            <h3>${activeMistakes.length ? "需要复习" : "暂时没有"}</h3>
+          </div>
+          <button class="ghost-button small" data-section-link="mistakes" type="button">去错题</button>
+        </div>
+        ${activeMistakes.length ? `
+          <div class="recent-mistakes">
+            ${activeMistakes.slice(0, 4).map((mistake) => mistakeMiniHtml(mistake)).join("")}
+          </div>
+        ` : `<p class="empty-note">做错的题会自动放到这里，复习做对后会进入已掌握错题。</p>`}
+      </section>
+    </div>
+  `;
+  bindCommonActions();
+}
+
+function renderLearn() {
+  const chapter = CHAPTER_BY_ID[appState.chapterId];
+  const concept = CONCEPT_BY_ID[appState.conceptId];
+  $("#screen").innerHTML = `
+    <div class="learning-layout">
+      <aside class="learning-map">
+        <section class="track-box">
+          <p class="eyebrow">学习路径</p>
+          <div class="track-tabs">
+            ${TRACKS.map((track) => `
+              <button class="track-tab ${appState.track === track.id ? "active" : ""}" data-track="${track.id}" type="button">
+                <strong>${track.label}</strong>
+                <span>${track.active ? "主路径" : "待开放"}</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+        <section class="chapter-list">
+          ${CHAPTERS.filter((item) => item.track === appState.track).map((item) => chapterButtonHtml(item)).join("")}
+        </section>
+      </aside>
+
+      <section class="lesson-workspace">
+        <div class="chapter-summary">
+          <div>
+            <p class="eyebrow">第${chapter.number}章</p>
+            <h3>${chapter.title}</h3>
+            <p>${chapter.desc}</p>
+          </div>
+          <span class="status-pill">${chapterProgress(chapter.id)}%</span>
+        </div>
+        ${chapter.concepts.length ? renderConceptWorkspace(concept) : renderComingSoon(chapter)}
+      </section>
+    </div>
+  `;
+  bindLearnActions();
+  bindCommonActions();
+}
+
+function chapterButtonHtml(chapter) {
+  const active = chapter.id === appState.chapterId;
+  const percent = chapterProgress(chapter.id);
+  return `
+    <button class="chapter-button ${active ? "active" : ""}" data-chapter="${chapter.id}" type="button">
+      <span class="chapter-number">${chapter.number}</span>
+      <span class="chapter-copy">
+        <strong>${chapter.title}</strong>
+        <small>${chapter.concepts.length ? `${percent}% 完成` : "待整理"}</small>
+      </span>
+    </button>
+  `;
+}
+
+function renderConceptWorkspace(concept) {
+  return `
+    <div class="concept-layout">
+      <aside class="concept-list">
+        ${CHAPTER_BY_ID[concept.chapterId].concepts.map((id) => conceptButtonHtml(CONCEPT_BY_ID[id])).join("")}
+      </aside>
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <div>
+            <p class="eyebrow">${concept.number}</p>
+            <h2>${concept.title}</h2>
+            <p>${concept.subtitle}</p>
+          </div>
+          <div class="mastery-badge">
+            <strong>${masteryOf(concept.id)}%</strong>
+            <span>${statusLabel(getConceptProgress(concept.id).status)}</span>
+          </div>
+        </div>
+        <div class="stage-tabs">
+          ${STAGES.map((stage) => stageTabHtml(concept, stage)).join("")}
+        </div>
+        <div class="stage-body">${renderStage(concept, appState.stage)}</div>
+      </article>
+    </div>
+  `;
+}
+
+function conceptButtonHtml(concept) {
+  const progress = getConceptProgress(concept.id);
+  return `
+    <button class="concept-button ${concept.id === appState.conceptId ? "active" : ""}" data-concept="${concept.id}" type="button">
+      <span>${concept.number}</span>
+      <strong>${concept.title}</strong>
+      <small>${statusLabel(progress.status)} · ${masteryOf(concept.id)}%</small>
+    </button>
+  `;
+}
+
+function stageTabHtml(concept, stage) {
+  const progress = getConceptProgress(concept.id);
+  const done = progress.stages?.[stage.id];
+  return `
+    <button class="stage-tab ${appState.stage === stage.id ? "active" : ""}" data-stage-tab="${stage.id}" type="button">
+      <span>${done ? "✓" : ""}</span>${stage.label}
+    </button>
+  `;
+}
+
+function renderStage(concept, stage) {
+  if (stage === "knowledge") return renderKnowledgeStage(concept);
+  if (stage === "example") return renderExampleStage(concept);
+  if (stage === "practice") return renderQuestionStage(concept, "practice", concept.practice);
+  if (stage === "misconception") return renderQuestionStage(concept, "misconception", concept.misconception);
+  if (stage === "test") return renderQuestionStage(concept, "test", concept.test);
+  return "";
+}
+
+function renderKnowledgeStage(concept) {
+  const progress = getConceptProgress(concept.id);
+  return `
+    <section class="knowledge-grid">
+      <div class="knowledge-main">
+        <div class="core-card">
+          <p class="eyebrow">核心结论</p>
+          <h3>${concept.core}</h3>
+        </div>
+        <div class="memory-card">
+          <span>一句话记忆</span>
+          <strong>${concept.memory}</strong>
+          ${appState.settings.language === "bilingual" ? `<small>${concept.english}</small>` : ""}
+        </div>
+        <div class="fold-list">
+          ${foldHtml("为什么？", concept.folds.why, true)}
+          ${foldHtml("查看推导", concept.folds.derivation)}
+          ${foldHtml("动手试试", concept.folds.try)}
+          ${foldHtml("易错提醒", concept.folds.trap)}
+          ${foldHtml("生活中的数学", concept.folds.life)}
+        </div>
+        <button class="primary-button" data-complete-stage="knowledge" type="button">
+          ${progress.stages.knowledge ? "已完成知识学习" : "我理解了，进入例题"}
+        </button>
+      </div>
+      <div class="diagram-panel">
+        ${diagramFor(concept, "knowledge")}
+        ${concept.id === "tri-sides" ? sideLabHtml() : ""}
+      </div>
+    </section>
+  `;
+}
+
+function foldHtml(title, content, open = false) {
+  return `
+    <details class="fold-card" ${open ? "open" : ""}>
+      <summary>${title}</summary>
+      <p>${content}</p>
+    </details>
+  `;
+}
+
+function sideLabHtml() {
+  const lab = getLabState();
+  const longest = Math.max(lab.a, lab.b, lab.c);
+  const rest = lab.a + lab.b + lab.c - longest;
+  const ok = rest > longest;
+  return `
+    <div class="side-lab">
+      <p class="eyebrow">动手验证</p>
+      ${rangeHtml("第一根", "a", lab.a, 2, 14)}
+      ${rangeHtml("第二根", "b", lab.b, 2, 14)}
+      ${rangeHtml("第三根", "c", lab.c, 2, 14)}
+      <div class="lab-result ${ok ? "ok" : "bad"}">
+        <strong>${ok ? "能围成三角形" : rest === longest ? "会压成直线" : "围不成三角形"}</strong>
+        <span>最长边 ${longest}，另外两边和 ${rest}</span>
+      </div>
+    </div>
+  `;
+}
+
+function rangeHtml(label, key, value, min, max) {
+  return `
+    <label class="range-row">
+      <span>${label}</span>
+      <input data-lab-range="${key}" type="range" min="${min}" max="${max}" value="${value}" />
+      <strong>${value}</strong>
+    </label>
+  `;
+}
+
+function renderExampleStage(concept) {
+  const run = getRun(concept.id, "example");
+  const visible = Math.min(run.revealed || 0, concept.example.steps.length);
+  return `
+    <section class="example-grid">
+      <div class="example-card">
+        <p class="eyebrow">分步例题</p>
+        <h3>${concept.example.title}</h3>
+        <p class="question-text">${concept.example.prompt}</p>
+        <div class="think-box">先自己想 30 秒：这题最先应该看什么条件？</div>
+        <div class="step-list">
+          ${concept.example.steps.slice(0, visible).map((step, index) => `
+            <div class="solution-step">
+              <span>${index + 1}</span>
+              <div>
+                <strong>${step.title}</strong>
+                <p>${step.text}</p>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="example-actions">
+          ${visible < concept.example.steps.length
+            ? `<button class="primary-button" data-reveal-step type="button">查看第 ${visible + 1} 步</button>`
+            : `<button class="primary-button" data-complete-stage="example" type="button">例题学完，进入练习</button>`}
+          ${visible > 0 ? `<button class="ghost-button" data-reset-example type="button">重新分步看</button>` : ""}
+        </div>
+      </div>
+      <div class="diagram-panel example-visual">
+        ${diagramFor(concept, concept.example.steps[Math.max(0, visible - 1)]?.highlight || "example")}
+      </div>
+    </section>
+  `;
+}
+
+function renderQuestionStage(concept, stage, sourceQuestions) {
+  const questions = activeQuestions(sourceQuestions);
+  const run = getRun(concept.id, stage);
+  if (run.index >= questions.length) run.index = 0;
+  const done = run.completed?.length || 0;
+  if (questions.length && done >= questions.length) {
+    return completionHtml(concept, stage, questions);
+  }
+  const question = questions[run.index];
+  if (!question) return `<p class="empty-note">这一部分题目正在整理。</p>`;
+  const submitted = run.submitted?.[question.id];
+  const selected = run.answers?.[question.id];
+  const correct = submitted && isCorrect(question, selected);
+  const wrong = submitted && !correct;
+  const hintLevel = run.hints?.[question.id] || 0;
+  const revealed = run.revealed?.[question.id];
+
+  return `
+    <section class="question-screen">
+      <div class="question-card">
+        <div class="question-head">
+          <div>
+            <p class="eyebrow">${stageLabel(stage)}</p>
+            <h3>第 ${run.index + 1} / ${questions.length} 题</h3>
+          </div>
+          <span class="status-pill">${done}/${questions.length}</span>
+        </div>
+        <p class="question-text">${question.prompt}</p>
+        ${answerInputHtml(question, selected, submitted)}
+        ${hintLevel > 0 ? `<div class="hint-card"><strong>提示 ${hintLevel}</strong><p>${question.hints[Math.min(hintLevel, question.hints.length) - 1]}</p></div>` : ""}
+        ${wrong ? wrongFeedbackHtml(question, revealed) : ""}
+        ${correct ? `<div class="feedback good"><strong>正确</strong><p>${question.explanation}</p></div>` : ""}
+        <div class="question-actions">
+          ${!submitted ? `<button class="primary-button" data-submit-answer type="button">提交</button>` : ""}
+          ${wrong && hintLevel < question.hints.length ? `<button class="ghost-button" data-show-hint type="button">提示 ${hintLevel + 1}</button>` : ""}
+          ${wrong && !revealed ? `<button class="ghost-button" data-reveal-answer type="button">查看解析</button>` : ""}
+          ${(correct || revealed) ? `<button class="primary-button" data-next-question type="button">${run.index + 1 === questions.length ? "完成本部分" : "下一题"}</button>` : ""}
+        </div>
+      </div>
+      <div class="diagram-panel question-visual">${diagramFor(concept, stage)}</div>
+    </section>
+  `;
+}
+
+function answerInputHtml(question, selected, submitted) {
+  if (question.type === "choice") {
+    return `
+      <div class="option-list">
+        ${question.options.map((option, index) => {
+          const cls = [
+            selected === index ? "selected" : "",
+            submitted && index === question.answer ? "correct" : "",
+            submitted && selected === index && index !== question.answer ? "wrong" : ""
+          ].join(" ");
+          return `<button class="option-button ${cls}" data-answer="${index}" ${submitted ? "disabled" : ""} type="button">${option}</button>`;
+        }).join("")}
+      </div>
+    `;
+  }
+  return `
+    <input class="answer-input" data-text-answer value="${escapeHtml(selected || "")}" ${submitted ? "disabled" : ""} placeholder="输入答案" />
+  `;
+}
+
+function wrongFeedbackHtml(question, revealed) {
+  return `
+    <div class="feedback bad">
+      <strong>再想一想</strong>
+      <p>${revealed ? question.explanation : "先别急着看完整答案，试着用提示重新判断。也请选一下这次错因。"}</p>
+      <div class="reason-row">
+        ${ERROR_REASONS.map((reason) => `<button class="reason-chip" data-error-reason="${reason}" type="button">${reason}</button>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function completionHtml(concept, stage, questions) {
+  const correct = correctCount(concept.id, stage, questions);
+  const ratio = questions.length ? Math.round(correct / questions.length * 100) : 0;
+  const next = nextStageAfter(stage);
+  const low = stage === "test" && ratio < 80;
+  return `
+    <section class="completion-card">
+      <p class="eyebrow">完成</p>
+      <h3>${stageLabel(stage)}完成：${correct}/${questions.length}</h3>
+      <p>${low ? "这个知识点还有一点不稳定，建议先做强化练习。" : "这一部分已经完成，继续下一步会更顺。"}
+      </p>
+      <div class="completion-actions">
+        ${low ? `<button class="primary-button" data-restart-stage="practice" type="button">做 5 题强化训练</button>` : ""}
+        ${next ? `<button class="primary-button" data-go-stage="${next}" type="button">继续 ${stageLabel(next)}</button>` : nextConceptButtonHtml(concept)}
+        <button class="ghost-button" data-review-stage="${stage}" type="button">重新做本部分</button>
+      </div>
+    </section>
+  `;
+}
+
+function nextConceptButtonHtml(concept) {
+  const chapter = CHAPTER_BY_ID[concept.chapterId];
+  const index = chapter.concepts.indexOf(concept.id);
+  const nextId = chapter.concepts[index + 1];
+  if (!nextId) {
+    return `<button class="primary-button" data-section-link="today" type="button">回到今天</button>`;
+  }
+  const next = CONCEPT_BY_ID[nextId];
+  return `<button class="primary-button" data-open-concept="${next.id}" data-stage="knowledge" type="button">下一步：${next.number}</button>`;
+}
+
+function renderComingSoon(chapter) {
+  return `
+    <section class="coming-card">
+      <p class="eyebrow">待重构</p>
+      <h3>第${chapter.number}章 ${chapter.title}</h3>
+      <p>${chapter.desc}</p>
+      <p>当前先按任务书完成第13章完整样板，确认体验后再复制到本章。</p>
+    </section>
+  `;
+}
+
+function renderPracticeHub() {
+  const weak = getWeakConcepts();
+  $("#screen").innerHTML = `
+    <div class="hub-grid">
+      <section class="panel wide">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">专项训练</p>
+            <h3>先补薄弱，再做新题</h3>
+          </div>
+        </div>
+        <div class="concept-card-grid">
+          ${CONCEPTS.map((concept) => practiceConceptHtml(concept)).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">推荐</p>
+            <h3>${weak.length ? "优先练这些" : "按顺序练习"}</h3>
+          </div>
+        </div>
+        <div class="weak-list">
+          ${(weak.length ? weak : CONCEPTS.slice(0, 3)).map((concept) => `
+            <button class="weak-card" data-open-concept="${concept.id}" data-stage="practice" type="button">
+              <strong>${concept.number} ${concept.title}</strong>
+              <span>${masteryOf(concept.id)}% · ${statusLabel(getConceptProgress(concept.id).status)}</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+    </div>
+  `;
+  bindCommonActions();
+}
+
+function practiceConceptHtml(concept) {
+  return `
+    <article class="concept-practice-card">
+      <p>${concept.number}</p>
+      <h3>${concept.title}</h3>
+      <div class="mini-progress"><span style="width:${masteryOf(concept.id)}%"></span></div>
+      <div class="card-actions">
+        <button class="ghost-button small" data-open-concept="${concept.id}" data-stage="practice" type="button">基础练习</button>
+        <button class="ghost-button small" data-open-concept="${concept.id}" data-stage="misconception" type="button">易错训练</button>
+        <button class="primary-button small" data-open-concept="${concept.id}" data-stage="test" type="button">小测试</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderMistakesPage() {
+  const active = getActiveMistakes();
+  const mastered = appState.mistakes.filter((item) => item.status === "mastered");
+  const current = active[0];
+  $("#screen").innerHTML = `
+    <div class="mistake-layout">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">错题本</p>
+            <h3>${active.length} 道待复习</h3>
+          </div>
+          <span class="status-pill">${mastered.length} 已掌握</span>
+        </div>
+        ${active.length ? `
+          <div class="mistake-list">
+            ${active.map((mistake, index) => mistakeListItemHtml(mistake, index === 0)).join("")}
+          </div>
+        ` : `<p class="empty-note">目前没有待复习错题。继续做练习，系统会自动记录。</p>`}
+      </section>
+      <section class="lesson-card">
+        ${current ? renderMistakeReview(current) : renderMistakeEmpty(mastered)}
+      </section>
+    </div>
+  `;
+  bindMistakeActions();
+  bindCommonActions();
+}
+
+function mistakeListItemHtml(mistake, active) {
+  const concept = CONCEPT_BY_ID[mistake.conceptId];
+  return `
+    <button class="mistake-list-item ${active ? "active" : ""}" data-select-mistake="${mistake.id}" type="button">
+      <strong>${concept?.number || ""} ${concept?.title || "未知知识点"}</strong>
+      <span>${mistake.reason || "未选择错因"} · 错 ${mistake.wrongCount} 次 · ${mistakeStatusLabel(mistake.status)}</span>
+    </button>
+  `;
+}
+
+function mistakeMiniHtml(mistake) {
+  const concept = CONCEPT_BY_ID[mistake.conceptId];
+  return `
+    <button class="mistake-mini" data-section-link="mistakes" type="button">
+      <strong>${concept?.title || "错题"}</strong>
+      <span>${truncate(stripHtml(mistake.prompt), 34)}</span>
+    </button>
+  `;
+}
+
+function renderMistakeReview(mistake) {
+  const question = mistake.question;
+  const run = getMistakeRun(mistake.id);
+  const selected = run.answer;
+  const submitted = run.submitted;
+  const correct = submitted && isCorrect(question, selected);
+  return `
+    <div class="lesson-head">
+      <div>
+        <p class="eyebrow">错题复习</p>
+        <h2>${CONCEPT_BY_ID[mistake.conceptId]?.title || "知识点"}</h2>
+        <p>${mistake.reason || "还没有标记错因"}</p>
+      </div>
+      <div class="mastery-badge">
+        <strong>${mistake.wrongCount}</strong>
+        <span>错误次数</span>
+      </div>
+    </div>
+    <div class="question-card embedded">
+      <p class="question-text">${question.prompt}</p>
+      ${answerInputHtml(question, selected, submitted)}
+      ${submitted ? `
+        <div class="feedback ${correct ? "good" : "bad"}">
+          <strong>${correct ? "复习正确" : "还没稳定"}</strong>
+          <p>${correct ? "这道错题会进入下一轮复习。" : question.explanation}</p>
+        </div>
+      ` : ""}
+      <div class="question-actions">
+        ${!submitted ? `<button class="primary-button" data-submit-mistake="${mistake.id}" type="button">提交复习</button>` : ""}
+        ${submitted ? `<button class="primary-button" data-next-mistake type="button">下一道错题</button>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function renderMistakeEmpty(mastered) {
+  return `
+    <section class="completion-card">
+      <p class="eyebrow">错题清空</p>
+      <h3>暂时没有待复习错题</h3>
+      <p>已掌握错题 ${mastered.length} 道。继续学习时，新的错题会自动进入这里。</p>
+      <button class="primary-button" data-section-link="practice" type="button">去做练习</button>
+    </section>
+  `;
+}
+
+function renderProfile() {
+  const chapter = CHAPTER_BY_ID["g8-c13-triangles"];
+  const mastered = CONCEPTS.filter((concept) => getConceptProgress(concept.id).status === "mastered");
+  const learning = CONCEPTS.filter((concept) => ["learning", "basic"].includes(getConceptProgress(concept.id).status));
+  const review = getWeakConcepts();
+  const totalMastery = Math.round(CONCEPTS.reduce((sum, concept) => sum + masteryOf(concept.id), 0) / CONCEPTS.length);
+  const activeMistakes = getActiveMistakes();
+  $("#screen").innerHTML = `
+    <div class="profile-grid">
+      <section class="profile-hero">
+        <p class="eyebrow">我的数学</p>
+        <h3>本周已学习 ${studyDays()} 天</h3>
+        <div class="profile-current">
+          <span>当前：第${chapter.number}章 ${chapter.title}</span>
+          <strong>${totalMastery}%</strong>
+        </div>
+        <div class="progress-line large"><span style="width:${totalMastery}%"></span></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3>已掌握</h3><span class="status-pill">${mastered.length}</span></div>
+        ${profileList(mastered, "还没有完全掌握的知识点。")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3>学习中</h3><span class="status-pill">${learning.length}</span></div>
+        ${profileList(learning, "当前没有学习中的知识点。")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3>需要复习</h3><span class="status-pill">${review.length}</span></div>
+        ${profileList(review, "现在没有明显需要复习的知识点。")}
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3>学习记录</h3></div>
+        <div class="metric-grid">
+          <div><span>最近练习正确率</span><strong>${overallAccuracy()}%</strong></div>
+          <div><span>待复习错题</span><strong>${activeMistakes.length}</strong></div>
+          <div><span>已完成知识点</span><strong>${mastered.length}/${CONCEPTS.length}</strong></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>设置</h3>
+            <p>默认中文学习，可切换中英双语。</p>
+          </div>
+        </div>
+        <div class="segmented">
+          <button class="${appState.settings.language === "zh" ? "active" : ""}" data-language="zh" type="button">中文</button>
+          <button class="${appState.settings.language === "bilingual" ? "active" : ""}" data-language="bilingual" type="button">中英双语</button>
+        </div>
+        <button class="ghost-button full" id="profileSyncButton" type="button">打开云同步</button>
+      </section>
+    </div>
+  `;
+  bindProfileActions();
+  bindCommonActions();
+}
+
+function profileList(items, empty) {
+  if (!items.length) return `<p class="empty-note">${empty}</p>`;
+  return `
+    <div class="profile-list">
+      ${items.map((concept) => `
+        <button data-open-concept="${concept.id}" data-stage="knowledge" type="button">
+          <strong>${concept.number} ${concept.title}</strong>
+          <span>${masteryOf(concept.id)}%</span>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function bindLearnActions() {
+  $$("[data-track]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const track = TRACKS.find((item) => item.id === button.dataset.track);
+      appState.track = button.dataset.track;
+      const chapter = CHAPTERS.find((item) => item.track === appState.track);
+      if (chapter) {
+        appState.chapterId = chapter.id;
+        if (chapter.concepts[0]) appState.conceptId = chapter.concepts[0];
+      }
+      if (track && !track.active) showToast("能力提高和 AMC 8 会与课内学习分开整理");
+      render();
+    });
+  });
+  $$("[data-chapter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const chapter = CHAPTER_BY_ID[button.dataset.chapter];
+      appState.chapterId = chapter.id;
+      if (chapter.concepts[0]) {
+        appState.conceptId = chapter.concepts[0];
+        appState.stage = "knowledge";
+      }
+      render();
+    });
+  });
+  $$("[data-concept]").forEach((button) => {
+    button.addEventListener("click", () => openConcept(button.dataset.concept, "knowledge"));
+  });
+  $$("[data-stage-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.stage = button.dataset.stageTab;
+      visitCurrentConcept();
+      render();
+    });
+  });
+  bindStageActions();
+}
+
+function bindStageActions() {
+  $$("[data-complete-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      markStageComplete(appState.conceptId, button.dataset.completeStage);
+      const next = nextStageAfter(button.dataset.completeStage);
+      if (next) appState.stage = next;
+      visitCurrentConcept();
+      render();
+    });
+  });
+  $$("[data-lab-range]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const lab = getLabState();
+      lab[input.dataset.labRange] = Number(input.value);
+      render();
+    });
+  });
+  const reveal = $("[data-reveal-step]");
+  if (reveal) {
+    reveal.addEventListener("click", () => {
+      const run = getRun(appState.conceptId, "example");
+      run.revealed = Math.min((run.revealed || 0) + 1, CONCEPT_BY_ID[appState.conceptId].example.steps.length);
+      render();
+    });
+  }
+  const reset = $("[data-reset-example]");
+  if (reset) {
+    reset.addEventListener("click", () => {
+      getRun(appState.conceptId, "example").revealed = 0;
+      render();
+    });
+  }
+  bindQuestionActions();
+}
+
+function bindQuestionActions() {
+  $$("[data-answer]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const run = getRun(appState.conceptId, appState.stage);
+      const question = currentQuestion(appState.conceptId, appState.stage);
+      run.answers[question.id] = Number(button.dataset.answer);
+      render();
+    });
+  });
+  const submit = $("[data-submit-answer]");
+  if (submit) {
+    submit.addEventListener("click", () => submitCurrentAnswer());
+  }
+  const hint = $("[data-show-hint]");
+  if (hint) {
+    hint.addEventListener("click", () => {
+      const run = getRun(appState.conceptId, appState.stage);
+      const question = currentQuestion(appState.conceptId, appState.stage);
+      run.hints[question.id] = (run.hints[question.id] || 0) + 1;
+      render();
+    });
+  }
+  const reveal = $("[data-reveal-answer]");
+  if (reveal) {
+    reveal.addEventListener("click", () => {
+      const run = getRun(appState.conceptId, appState.stage);
+      const question = currentQuestion(appState.conceptId, appState.stage);
+      run.revealed[question.id] = true;
+      render();
+    });
+  }
+  const next = $("[data-next-question]");
+  if (next) {
+    next.addEventListener("click", () => goNextQuestion());
+  }
+  $$("[data-error-reason]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const question = currentQuestion(appState.conceptId, appState.stage);
+      setMistakeReason(question.id, button.dataset.errorReason);
+      showToast("错因已记录");
+      render();
+    });
+  });
+  $$("[data-go-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.stage = button.dataset.goStage;
+      render();
+    });
+  });
+  $$("[data-restart-stage], [data-review-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const stage = button.dataset.restartStage || button.dataset.reviewStage;
+      appState.stage = stage;
+      resetRun(appState.conceptId, stage);
+      render();
+    });
+  });
+}
+
+function bindCommonActions() {
+  $$("[data-open-concept]").forEach((button) => {
+    button.addEventListener("click", () => openConcept(button.dataset.openConcept, button.dataset.stage || "knowledge"));
+  });
+  $$("[data-section-link]").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.section = button.dataset.sectionLink;
+      render();
+    });
+  });
+}
+
+function bindMistakeActions() {
+  $$("[data-select-mistake]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.selectMistake;
+      const index = appState.mistakes.findIndex((item) => item.id === id);
+      if (index > 0) {
+        const [item] = appState.mistakes.splice(index, 1);
+        appState.mistakes.unshift(item);
+      }
+      render();
+    });
+  });
+  $$("[data-answer]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mistake = getActiveMistakes()[0];
+      const run = getMistakeRun(mistake.id);
+      run.answer = Number(button.dataset.answer);
+      render();
+    });
+  });
+  $$("[data-submit-mistake]").forEach((button) => {
+    button.addEventListener("click", () => submitMistakeReview(button.dataset.submitMistake));
+  });
+  const next = $("[data-next-mistake]");
+  if (next) next.addEventListener("click", () => render());
+}
+
+function bindProfileActions() {
+  $$("[data-language]").forEach((button) => {
+    button.addEventListener("click", () => {
+      appState.settings.language = button.dataset.language;
+      render();
+    });
+  });
+  const sync = $("#profileSyncButton");
+  if (sync) sync.addEventListener("click", openSyncDialog);
+}
+
+function openConcept(conceptId, stage = "knowledge") {
+  const concept = CONCEPT_BY_ID[conceptId];
+  if (!concept) return;
+  appState.section = "learn";
+  appState.track = "course";
+  appState.chapterId = concept.chapterId;
+  appState.conceptId = concept.id;
+  appState.stage = stage;
+  visitCurrentConcept();
+  render();
+}
+
+function visitCurrentConcept() {
+  const progress = getConceptProgress(appState.conceptId);
+  progress.lastVisitedAt = new Date().toISOString();
+  if (progress.status === "not-started") progress.status = "learning";
+  recomputeConceptProgress(appState.conceptId);
+}
+
+function submitCurrentAnswer() {
+  const concept = CONCEPT_BY_ID[appState.conceptId];
+  const question = currentQuestion(concept.id, appState.stage);
+  const run = getRun(concept.id, appState.stage);
+  const answer = run.answers[question.id];
+  if (answer === undefined || answer === "") {
+    showToast("先选择一个答案");
+    return;
+  }
+  run.submitted[question.id] = true;
+  run.attempts[question.id] = (run.attempts[question.id] || 0) + 1;
+  const progress = getConceptProgress(concept.id);
+  progress.attempts += 1;
+  if (isCorrect(question, answer)) {
+    progress.correct += 1;
+    addUnique(run.correct, question.id);
+  } else {
+    recordMistake(question, answer, concept.id, appState.stage);
+  }
+  recomputeConceptProgress(concept.id);
+  render();
+}
+
+function goNextQuestion() {
+  const concept = CONCEPT_BY_ID[appState.conceptId];
+  const questions = activeQuestions(concept[appState.stage]);
+  const run = getRun(concept.id, appState.stage);
+  const question = questions[run.index];
+  addUnique(run.completed, question.id);
+  if (run.completed.length >= questions.length) {
+    markStageComplete(concept.id, appState.stage);
+  } else {
+    run.index = Math.min(run.index + 1, questions.length - 1);
+  }
+  render();
+}
+
+function submitMistakeReview(mistakeId) {
+  const mistake = appState.mistakes.find((item) => item.id === mistakeId);
+  if (!mistake) return;
+  const run = getMistakeRun(mistake.id);
+  if (run.answer === undefined) {
+    showToast("先选择一个答案");
+    return;
+  }
+  run.submitted = true;
+  if (isCorrect(mistake.question, run.answer)) {
+    mistake.reviewCount += 1;
+    mistake.status = mistake.reviewCount >= 2 ? "mastered" : "reviewing";
+  } else {
+    mistake.wrongCount += 1;
+    mistake.status = "learning";
+    mistake.lastWrongAt = new Date().toISOString();
+  }
+  recomputeConceptProgress(mistake.conceptId);
+  render();
+}
+
+function getRun(conceptId, stage) {
+  const key = `${conceptId}:${stage}`;
+  if (!appState.runs[key]) {
+    appState.runs[key] = {
+      index: 0,
+      revealed: 0,
+      answers: {},
+      submitted: {},
+      hints: {},
+      correct: [],
+      completed: [],
+      attempts: {},
+      revealedAnswer: {}
+    };
+  }
+  return appState.runs[key];
+}
+
+function getMistakeRun(mistakeId) {
+  const key = `mistake:${mistakeId}`;
+  if (!appState.runs[key]) appState.runs[key] = { answer: undefined, submitted: false };
+  return appState.runs[key];
+}
+
+function resetRun(conceptId, stage) {
+  delete appState.runs[`${conceptId}:${stage}`];
+}
+
+function currentQuestion(conceptId, stage) {
+  const concept = CONCEPT_BY_ID[conceptId];
+  const questions = activeQuestions(concept[stage]);
+  const run = getRun(conceptId, stage);
+  return questions[run.index];
+}
+
+function activeQuestions(questions = []) {
+  return questions.filter((question) => question.status !== "disabled");
+}
+
+function isCorrect(question, answer) {
+  if (question.type === "choice") return Number(answer) === question.answer;
+  return normalize(answer) === normalize(question.answer);
+}
+
+function correctCount(conceptId, stage, questions) {
+  const run = getRun(conceptId, stage);
+  return questions.reduce((sum, question) => sum + (run.correct.includes(question.id) ? 1 : 0), 0);
+}
+
+function recordMistake(question, answer, conceptId, stage) {
+  const existing = appState.mistakes.find((item) => item.questionId === question.id && item.status !== "mastered");
+  const readableAnswer = question.type === "choice" ? question.options[answer] : answer;
+  const correctAnswer = question.type === "choice" ? question.options[question.answer] : question.answer;
+  if (existing) {
+    existing.userAnswer = readableAnswer;
+    existing.wrongCount += 1;
+    existing.status = existing.status === "new" ? "learning" : existing.status;
+    existing.lastWrongAt = new Date().toISOString();
+    return;
+  }
+  appState.mistakes.unshift({
+    id: `${question.id}-${Date.now()}`,
+    questionId: question.id,
+    chapterId: CONCEPT_BY_ID[conceptId].chapterId,
+    conceptId,
+    sourceStage: stage,
+    prompt: question.prompt,
+    userAnswer: readableAnswer,
+    correctAnswer,
+    wrongCount: 1,
+    lastWrongAt: new Date().toISOString(),
+    reviewCount: 0,
+    status: "new",
+    reason: "",
+    question
+  });
+}
+
+function setMistakeReason(questionId, reason) {
+  const mistake = appState.mistakes.find((item) => item.questionId === questionId && item.status !== "mastered");
+  if (mistake) mistake.reason = reason;
+}
+
+function getConceptProgress(conceptId) {
+  if (!appState.progress[conceptId]) {
+    appState.progress[conceptId] = {
+      stages: {},
+      attempts: 0,
+      correct: 0,
+      mastery: 0,
+      status: "not-started",
+      lastVisitedAt: null
+    };
+  }
+  if (!appState.progress[conceptId].stages) appState.progress[conceptId].stages = {};
+  return appState.progress[conceptId];
+}
+
+function markStageComplete(conceptId, stage) {
+  const progress = getConceptProgress(conceptId);
+  progress.stages[stage] = true;
+  progress.lastVisitedAt = new Date().toISOString();
+  recomputeConceptProgress(conceptId);
+}
+
+function recomputeConceptProgress(conceptId) {
+  const progress = getConceptProgress(conceptId);
+  const completedStages = STAGES.filter((stage) => progress.stages[stage.id]).length;
+  if (!progress.lastVisitedAt && completedStages === 0 && progress.attempts === 0) {
+    progress.mastery = 0;
+    progress.status = "not-started";
+    return;
+  }
+  const practiceScore = ["practice", "misconception", "test"].reduce((sum, stage) => {
+    const concept = CONCEPT_BY_ID[conceptId];
+    const questions = activeQuestions(concept[stage]);
+    if (!questions.length) return sum;
+    return sum + correctCount(conceptId, stage, questions) / questions.length;
+  }, 0);
+  const stageScore = completedStages / STAGES.length * 45;
+  const questionScore = practiceScore / 3 * 45;
+  const activeMistakes = getActiveMistakes().filter((item) => item.conceptId === conceptId).length;
+  const penalty = Math.min(18, activeMistakes * 6);
+  progress.mastery = Math.max(0, Math.min(100, Math.round(stageScore + questionScore + 10 - penalty)));
+  if (activeMistakes > 0 && progress.mastery < 85) progress.status = "review";
+  else if (progress.mastery >= 90 && completedStages === STAGES.length) progress.status = "mastered";
+  else if (progress.mastery >= 70) progress.status = "basic";
+  else progress.status = "learning";
+}
+
+function masteryOf(conceptId) {
+  recomputeConceptProgress(conceptId);
+  return getConceptProgress(conceptId).mastery || 0;
+}
+
+function chapterProgress(chapterId) {
+  const chapter = CHAPTER_BY_ID[chapterId];
+  if (!chapter.concepts.length) return 0;
+  return Math.round(chapter.concepts.reduce((sum, id) => sum + masteryOf(id), 0) / chapter.concepts.length);
+}
+
+function getActiveMistakes() {
+  return appState.mistakes.filter((item) => item.status !== "mastered");
+}
+
+function getWeakConcepts() {
+  return CONCEPTS
+    .filter((concept) => {
+      const progress = getConceptProgress(concept.id);
+      return progress.status === "review" || (progress.lastVisitedAt && progress.mastery < 75);
+    })
+    .sort((a, b) => masteryOf(a.id) - masteryOf(b.id));
+}
+
+function getContinueTarget() {
+  const chapter = CHAPTER_BY_ID["g8-c13-triangles"];
+  for (const conceptId of chapter.concepts) {
+    const progress = getConceptProgress(conceptId);
+    const incomplete = STAGES.find((stage) => !progress.stages[stage.id]);
+    if (incomplete) return { conceptId, stage: incomplete.id };
+  }
+  return { conceptId: chapter.concepts[0], stage: "knowledge" };
+}
+
+function todayTasks(concept) {
+  const progress = getConceptProgress(concept.id);
+  const items = [
+    { label: "知识学习", stage: "knowledge", done: Boolean(progress.stages.knowledge) },
+    { label: "例题 1 道", stage: "example", done: Boolean(progress.stages.example) },
+    { label: `基础训练 ${activeQuestions(concept.practice).length} 题`, stage: "practice", done: Boolean(progress.stages.practice) },
+    { label: `易错题 ${activeQuestions(concept.misconception).length} 题`, stage: "misconception", done: Boolean(progress.stages.misconception) },
+    { label: `小测试 ${activeQuestions(concept.test).length} 题`, stage: "test", done: Boolean(progress.stages.test) }
+  ];
+  return {
+    minutes: concept.minutes + 10,
+    done: items.filter((item) => item.done).length,
+    items
+  };
+}
+
+function nextStageAfter(stage) {
+  const index = STAGES.findIndex((item) => item.id === stage);
+  return STAGES[index + 1]?.id || null;
+}
+
+function statusLabel(status) {
+  return {
+    "not-started": "未学习",
+    learning: "学习中",
+    basic: "基本掌握",
+    mastered: "已掌握",
+    review: "需要复习"
+  }[status] || "学习中";
+}
+
+function stageLabel(stage) {
+  return STAGES.find((item) => item.id === stage)?.label || stage;
+}
+
+function mistakeStatusLabel(status) {
+  return {
+    new: "新错题",
+    learning: "再练中",
+    reviewing: "复习中",
+    mastered: "已掌握"
+  }[status] || "错题";
+}
+
+function getLabState() {
+  if (!appState.settings.sideLab) appState.settings.sideLab = { a: 5, b: 7, c: 10 };
+  return appState.settings.sideLab;
+}
+
+function diagramFor(concept, mode) {
+  const id = typeof concept === "string" ? concept : concept.diagram;
+  if (id === "triangle-basic") return triangleBasicSvg(mode);
+  if (id === "triangle-sides") return triangleSidesSvg(mode);
+  if (id === "triangle-lines") return triangleLinesSvg(mode);
+  if (id === "triangle-angle-sum") return triangleAngleSumSvg(mode);
+  if (id === "triangle-exterior") return triangleExteriorSvg(mode);
+  if (id === "polygon-sum") return polygonSumSvg(mode);
+  return "";
+}
+
+function svgWrap(content, label = "数学图形") {
+  return `<svg class="math-diagram" viewBox="0 0 520 360" role="img" aria-label="${label}">${content}</svg>`;
+}
+
+function triangleBasicSvg(mode) {
+  const fill = mode === "area" ? "#dff0ed" : "#eef5f8";
+  return svgWrap(`
+    <polygon points="260,56 96,292 440,292" fill="${fill}" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <circle cx="260" cy="56" r="10" fill="#1d7a73"></circle>
+    <circle cx="96" cy="292" r="10" fill="#1d7a73"></circle>
+    <circle cx="440" cy="292" r="10" fill="#1d7a73"></circle>
+    <text x="260" y="36" text-anchor="middle" class="svg-label">A</text>
+    <text x="72" y="324" class="svg-label">B</text>
+    <text x="450" y="324" class="svg-label">C</text>
+    <text x="250" y="320" text-anchor="middle" class="svg-note">三条边首尾相接，围成内部区域</text>
+  `);
+}
+
+function triangleSidesSvg(mode) {
+  const lab = getLabState();
+  const longest = Math.max(lab.a, lab.b, lab.c);
+  const rest = lab.a + lab.b + lab.c - longest;
+  const ok = rest > longest;
+  if (!ok) {
+    return svgWrap(`
+      <line x1="70" y1="110" x2="${70 + lab.a * 24}" y2="110" stroke="#3b6ea8" stroke-width="8" stroke-linecap="round"></line>
+      <line x1="70" y1="180" x2="${70 + lab.b * 24}" y2="180" stroke="#d6802f" stroke-width="8" stroke-linecap="round"></line>
+      <line x1="70" y1="250" x2="${70 + lab.c * 24}" y2="250" stroke="#d94f45" stroke-width="8" stroke-linecap="round"></line>
+      <text x="70" y="88" class="svg-label">${lab.a}</text>
+      <text x="70" y="158" class="svg-label">${lab.b}</text>
+      <text x="70" y="228" class="svg-label">${lab.c}</text>
+      <text x="70" y="326" class="svg-note">${rest === longest ? "相等时压成直线，不是三角形" : "另外两边够不到最长边，围不成"}</text>
+    `);
+  }
+  const bc = lab.c;
+  const ab = lab.a;
+  const ac = lab.b;
+  const scale = Math.min(30, 320 / Math.max(ab, ac, bc));
+  const base = bc * scale;
+  const bx = (520 - base) / 2;
+  const by = 286;
+  const cx = bx + base;
+  const rawX = (ab * ab + bc * bc - ac * ac) / (2 * bc);
+  const h = Math.sqrt(Math.max(0, ab * ab - rawX * rawX));
+  const ax = bx + rawX * scale;
+  const ay = by - h * scale;
+  return svgWrap(`
+    <polygon points="${ax},${ay} ${bx},${by} ${cx},${by}" fill="#eaf5f4" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#3b6ea8" stroke-width="8" stroke-linecap="round"></line>
+    <line x1="${ax}" y1="${ay}" x2="${cx}" y2="${by}" stroke="#d6802f" stroke-width="8" stroke-linecap="round"></line>
+    <line x1="${bx}" y1="${by}" x2="${cx}" y2="${by}" stroke="#1d7a73" stroke-width="8" stroke-linecap="round"></line>
+    <text x="${ax}" y="${ay - 20}" text-anchor="middle" class="svg-label">A</text>
+    <text x="${bx - 24}" y="${by + 30}" class="svg-label">B</text>
+    <text x="${cx + 14}" y="${by + 30}" class="svg-label">C</text>
+    <text x="72" y="58" class="svg-note">最长边 ${longest} < 另外两边和 ${rest}</text>
+  `);
+}
+
+function triangleLinesSvg(mode) {
+  const A = { x: 260, y: 58 };
+  const B = { x: 90, y: 296 };
+  const C = { x: 446, y: 296 };
+  const D = mode === "midpoint" || mode === "median" ? { x: 268, y: 296 } : { x: 260, y: 296 };
+  const mark = mode === "midpoint" || mode === "median"
+    ? `<line x1="180" y1="308" x2="192" y2="324" stroke="#d6802f" stroke-width="4"></line><line x1="342" y1="324" x2="354" y2="308" stroke="#d6802f" stroke-width="4"></line>`
+    : mode === "avoid"
+      ? `<text x="78" y="52" class="svg-note">没有垂直或等角条件时，不要乱推出</text>`
+      : `<path d="M260 270 h26 v26" fill="none" stroke="#d6802f" stroke-width="4"></path>`;
+  return svgWrap(`
+    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eef5f8" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <line x1="${A.x}" y1="${A.y}" x2="${D.x}" y2="${D.y}" stroke="${mode === "avoid" ? "#d94f45" : "#1d7a73"}" stroke-width="7" stroke-linecap="round"></line>
+    ${mark}
+    <text x="260" y="36" text-anchor="middle" class="svg-label">A</text>
+    <text x="66" y="328" class="svg-label">B</text>
+    <text x="456" y="328" class="svg-label">C</text>
+    <text x="${D.x + 14}" y="${D.y - 14}" class="svg-label">D</text>
+  `);
+}
+
+function triangleAngleSumSvg(mode) {
+  const proof = mode === "sum" || mode === "answer" || mode === "knowledge";
+  return svgWrap(`
+    ${proof ? `<line x1="64" y1="82" x2="456" y2="82" stroke="#d6802f" stroke-width="5" stroke-dasharray="9 9"></line>` : ""}
+    <polygon points="260,82 92,292 440,292" fill="#eef5f8" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <path d="M226 82 Q260 118 294 82" fill="none" stroke="#d94f45" stroke-width="5"></path>
+    <path d="M120 260 Q142 286 176 292" fill="none" stroke="#3b6ea8" stroke-width="5"></path>
+    <path d="M408 292 Q426 266 404 240" fill="none" stroke="#1d7a73" stroke-width="5"></path>
+    <text x="260" y="58" text-anchor="middle" class="svg-label">A</text>
+    <text x="66" y="326" class="svg-label">B</text>
+    <text x="450" y="326" class="svg-label">C</text>
+    <text x="84" y="42" class="svg-note">${proof ? "平行线把三个角拼成平角" : "∠A+∠B+∠C=180°"}</text>
+  `);
+}
+
+function triangleExteriorSvg(mode) {
+  return svgWrap(`
+    <polygon points="92,292 238,72 392,292" fill="#eef5f8" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <line x1="392" y1="292" x2="470" y2="292" stroke="#d94f45" stroke-width="7" stroke-linecap="round"></line>
+    <path d="M350 254 Q408 220 456 270" fill="none" stroke="#d94f45" stroke-width="5"></path>
+    <path d="M116 262 Q142 292 184 292" fill="none" stroke="#3b6ea8" stroke-width="5"></path>
+    <path d="M222 104 Q238 132 256 104" fill="none" stroke="#1d7a73" stroke-width="5"></path>
+    <text x="72" y="324" class="svg-label">A</text>
+    <text x="238" y="50" text-anchor="middle" class="svg-label">B</text>
+    <text x="400" y="324" class="svg-label">C</text>
+    <text x="430" y="246" class="svg-note">外角</text>
+    <text x="74" y="48" class="svg-note">外角 = 两个远内角之和</text>
+  `);
+}
+
+function polygonSumSvg(mode) {
+  const points = [
+    [260, 48],
+    [398, 116],
+    [432, 252],
+    [318, 320],
+    [176, 300],
+    [78, 180]
+  ];
+  return svgWrap(`
+    <polygon points="${points.map((p) => p.join(",")).join(" ")}" fill="#eef5f8" stroke="#263746" stroke-width="6" stroke-linejoin="round"></polygon>
+    <line x1="260" y1="48" x2="432" y2="252" stroke="#1d7a73" stroke-width="5"></line>
+    <line x1="260" y1="48" x2="318" y2="320" stroke="#1d7a73" stroke-width="5"></line>
+    <line x1="260" y1="48" x2="176" y2="300" stroke="#1d7a73" stroke-width="5"></line>
+    <text x="74" y="50" class="svg-note">n 边形切成 n-2 个三角形</text>
+    <text x="92" y="332" class="svg-note">内角和 = (n-2)×180°</text>
+  `);
+}
+
+function addUnique(list, value) {
+  if (!list.includes(value)) list.push(value);
+}
+
+function normalize(value) {
+  return String(value || "").replace(/\s+/g, "").toLowerCase();
+}
+
+function stripHtml(value) {
+  const div = document.createElement("div");
+  div.innerHTML = value;
+  return div.textContent || div.innerText || "";
+}
+
+function truncate(value, length) {
+  return value.length > length ? `${value.slice(0, length)}...` : value;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function todayKey(date = new Date()) {
+  return date.toISOString().slice(0, 10);
+}
+
+function studyDays() {
+  const started = appState.settings.startedOn || todayKey();
+  const elapsed = Math.floor((Date.now() - new Date(started).getTime()) / 86400000) + 1;
+  return Math.max(1, Math.min(elapsed, 7));
+}
+
+function overallAccuracy() {
+  const totals = CONCEPTS.reduce((acc, concept) => {
+    const p = getConceptProgress(concept.id);
+    acc.correct += p.correct || 0;
+    acc.attempts += p.attempts || 0;
+    return acc;
+  }, { correct: 0, attempts: 0 });
+  if (!totals.attempts) return 0;
+  return Math.round(totals.correct / totals.attempts * 100);
 }
 
 function supabaseEnabled() {
@@ -762,15 +1996,13 @@ function supabaseEnabled() {
 }
 
 async function supabaseFetch(path, options = {}) {
-  if (!supabaseEnabled()) throw new Error("还没有配置 Supabase URL 和 anon key。");
+  if (!supabaseEnabled()) throw new Error("还没有配置 Supabase。");
   const headers = {
     apikey: appConfig.supabaseAnonKey,
     "Content-Type": "application/json",
     ...(options.headers || {})
   };
-  if (syncState.session?.access_token) {
-    headers.Authorization = `Bearer ${syncState.session.access_token}`;
-  }
+  if (syncState.session?.access_token) headers.Authorization = `Bearer ${syncState.session.access_token}`;
   const response = await fetch(`${appConfig.supabaseUrl}${path}`, {
     ...options,
     headers
@@ -812,23 +2044,43 @@ async function signOut() {
 function progressRowsForUpload() {
   const userId = syncState.session?.user?.id;
   if (!userId) return [];
-  return LESSONS.map((lesson) => {
-    const progress = appState.progress[lesson.id] || {};
+  const rows = CONCEPTS.map((concept) => {
+    const progress = getConceptProgress(concept.id);
     return {
       user_id: userId,
-      lesson_id: lesson.id,
-      step_id: lesson.id === appState.lessonId ? appState.stepId : null,
-      mastered: Boolean(progress.mastered),
-      correct_count: Number(progress.correct || 0),
-      recap: progress.recap || null,
-      payload: progress
+      lesson_id: concept.id,
+      step_id: appState.conceptId === concept.id ? appState.stage : null,
+      mastered: progress.status === "mastered",
+      correct_count: progress.correct || 0,
+      recap: statusLabel(progress.status),
+      payload: {
+        progress,
+        runs: Object.fromEntries(Object.entries(appState.runs).filter(([key]) => key.startsWith(`${concept.id}:`)))
+      }
     };
   });
+  rows.push({
+    user_id: userId,
+    lesson_id: GLOBAL_ROW_ID,
+    step_id: appState.section,
+    mastered: false,
+    correct_count: getActiveMistakes().length,
+    recap: "global state",
+    payload: {
+      mistakes: appState.mistakes,
+      settings: appState.settings,
+      section: appState.section,
+      chapterId: appState.chapterId,
+      conceptId: appState.conceptId,
+      stage: appState.stage
+    }
+  });
+  return rows;
 }
 
 async function uploadProgress() {
   const rows = progressRowsForUpload();
-  if (!rows.length) throw new Error("请先登录 Supabase。");
+  if (!rows.length) throw new Error("请先登录。");
   await supabaseFetch("/rest/v1/learning_progress?on_conflict=user_id,lesson_id", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
@@ -837,1026 +2089,30 @@ async function uploadProgress() {
 }
 
 async function downloadProgress() {
-  if (!syncState.session?.access_token) throw new Error("请先登录 Supabase。");
-  const rows = await supabaseFetch("/rest/v1/learning_progress?select=lesson_id,step_id,mastered,correct_count,recap,payload,updated_at");
+  if (!syncState.session?.access_token) throw new Error("请先登录。");
+  const rows = await supabaseFetch("/rest/v1/learning_progress?select=lesson_id,step_id,payload,updated_at");
   rows.forEach((row) => {
-    appState.progress[row.lesson_id] = {
-      ...(appState.progress[row.lesson_id] || {}),
-      ...(row.payload || {}),
-      mastered: row.mastered,
-      correct: row.correct_count,
-      recap: row.recap || row.payload?.recap || ""
-    };
+    if (row.lesson_id === GLOBAL_ROW_ID) {
+      if (Array.isArray(row.payload?.mistakes)) appState.mistakes = row.payload.mistakes;
+      if (row.payload?.settings) appState.settings = { ...appState.settings, ...row.payload.settings };
+      return;
+    }
+    if (CONCEPT_BY_ID[row.lesson_id] && row.payload?.progress) {
+      appState.progress[row.lesson_id] = {
+        ...getConceptProgress(row.lesson_id),
+        ...row.payload.progress
+      };
+    }
+    if (row.payload?.runs) {
+      appState.runs = { ...appState.runs, ...row.payload.runs };
+    }
   });
-  saveState();
 }
 
 async function syncProgress() {
   await uploadProgress();
   await downloadProgress();
-}
-
-function currentLesson() {
-  return LESSONS.find((lesson) => lesson.id === appState.lessonId) || LESSONS[0];
-}
-
-function currentStepIndex() {
-  return Math.max(0, STEPS.findIndex((step) => step.id === appState.stepId));
-}
-
-function render() {
-  renderLessonList();
-  renderStepTabs();
-  renderStudyPanel();
-  renderCoach();
   saveState();
-}
-
-function renderLessonList() {
-  const completed = LESSONS.filter((lesson) => appState.progress[lesson.id]?.mastered).length;
-  $("#progressText").textContent = `${completed}/${LESSONS.length}`;
-  $("#overallProgress").style.width = `${(completed / LESSONS.length) * 100}%`;
-
-  $("#lessonList").innerHTML = LESSONS.map((lesson) => {
-    const done = appState.progress[lesson.id]?.mastered;
-    const active = lesson.id === appState.lessonId;
-    return `
-      <button class="lesson-button ${active ? "active" : ""} ${done ? "done" : ""}" data-lesson="${lesson.id}" type="button">
-        <span class="lesson-number">${lesson.no}</span>
-        <span class="lesson-copy">
-          <strong>${lesson.title}</strong>
-          <span>${lesson.subtitle}</span>
-        </span>
-        <span class="lesson-check">${done ? "✓" : ""}</span>
-      </button>
-    `;
-  }).join("");
-
-  document.querySelectorAll("[data-lesson]").forEach((button) => {
-    button.addEventListener("click", () => {
-      appState.lessonId = button.dataset.lesson;
-      appState.stepId = "discover";
-      render();
-    });
-  });
-}
-
-function renderStepTabs() {
-  $("#stepTabs").innerHTML = STEPS.map((step) => `
-    <button class="step-tab ${step.id === appState.stepId ? "active" : ""}" data-step="${step.id}" type="button" role="tab">
-      ${step.label}
-    </button>
-  `).join("");
-
-  document.querySelectorAll("[data-step]").forEach((button) => {
-    button.addEventListener("click", () => {
-      appState.stepId = button.dataset.step;
-      render();
-    });
-  });
-}
-
-function renderStudyPanel() {
-  const lesson = currentLesson();
-  $("#lessonKicker").textContent = `第 ${lesson.no} 课`;
-  $("#lessonTitle").textContent = lesson.title;
-  $("#lessonStatus").textContent = appState.progress[lesson.id]?.mastered ? "已通关" : "学习中";
-
-  if (appState.stepId === "discover") renderDiscover(lesson);
-  if (appState.stepId === "understand") renderUnderstand(lesson);
-  if (appState.stepId === "practice") renderPractice(lesson);
-  if (appState.stepId === "master") renderMaster(lesson);
-}
-
-function renderDiscover(lesson) {
-  $("#studyContent").innerHTML = `
-    <article class="module">
-      <div class="module-head">
-        <div>
-          <h3>${lesson.discoverTitle}</h3>
-          <p>${lesson.discoverPrompt}</p>
-        </div>
-        <span class="result-pill">动手发现</span>
-      </div>
-      ${sceneHtml(lesson)}
-      <div id="interactiveMount"></div>
-      ${exploreTasksHtml(lesson)}
-      ${navigatorHtml()}
-    </article>
-  `;
-  mountInteraction(lesson);
-  bindNavigator();
-}
-
-function renderUnderstand(lesson) {
-  $("#studyContent").innerHTML = `
-    <article class="module">
-      <div class="module-head">
-        <div>
-          <h3>把发现变成数学语言</h3>
-          <p>${lesson.objective}</p>
-        </div>
-        <span class="result-pill">原理</span>
-      </div>
-      <ul class="principle-list">${lesson.principles.map((item) => `<li>${item}</li>`).join("")}</ul>
-    </article>
-    ${reasoningHtml(lesson)}
-    <article class="module">
-      <div class="module-head">
-        <div>
-          <h3>常见误区</h3>
-          <p>错题不只改答案，要知道自己错在哪一类。</p>
-        </div>
-      </div>
-      <ul class="mistake-list">${lesson.mistakes.map((item) => `<li>${item}</li>`).join("")}</ul>
-      ${navigatorHtml()}
-    </article>
-  `;
-  bindNavigator();
-}
-
-function renderPractice(lesson) {
-  const practices = lessonPractices(lesson);
-  const quiz = quizState(lesson);
-  if (quiz.index >= practices.length) quiz.index = 0;
-  const item = practices[quiz.index];
-  const checked = quiz.checked[quiz.index];
-  const selected = quiz.selected[quiz.index];
-
-  $("#studyContent").innerHTML = `
-    <article class="quiz-card">
-      <div class="module-head">
-        <div>
-          <h3>第 ${quiz.index + 1} 题 / ${practices.length}</h3>
-          <p>${item.prompt}</p>
-        </div>
-        <span class="result-pill">即时反馈</span>
-      </div>
-      ${practiceHintHtml(item)}
-      <div class="quiz-options">
-        ${item.options.map((option, index) => {
-          let cls = selected === index ? "selected" : "";
-          if (checked && index === item.answer) cls = "correct";
-          if (checked && selected === index && index !== item.answer) cls = "wrong";
-          return `<button class="option-button ${cls}" data-option="${index}" type="button">${option}</button>`;
-        }).join("")}
-      </div>
-      <div class="feedback ${checked ? (selected === item.answer ? "good" : "bad") : ""}">
-        ${checked ? item.feedback : "先选一个答案。做错也没关系，重点是看提示。"}
-      </div>
-      <div class="quiz-actions">
-        <button class="ghost-button" id="prevQuestion" type="button">上一题</button>
-        <button class="primary-button" id="checkQuestion" type="button">${checked ? "再检查" : "检查答案"}</button>
-        <button class="ghost-button" id="nextQuestion" type="button">下一题</button>
-      </div>
-      ${navigatorHtml()}
-    </article>
-  `;
-
-  document.querySelectorAll("[data-option]").forEach((button) => {
-    button.addEventListener("click", () => {
-      quiz.selected[quiz.index] = Number(button.dataset.option);
-      quiz.checked[quiz.index] = false;
-      render();
-    });
-  });
-
-  $("#checkQuestion").addEventListener("click", () => {
-    if (quiz.selected[quiz.index] === undefined) {
-      showToast("先选一个答案");
-      return;
-    }
-    quiz.checked[quiz.index] = true;
-    if (quiz.selected[quiz.index] === item.answer) {
-      appState.progress[lesson.id] = {
-        ...appState.progress[lesson.id],
-        correct: Math.max(appState.progress[lesson.id]?.correct || 0, countCorrect(lesson))
-      };
-    }
-    render();
-  });
-
-  $("#prevQuestion").addEventListener("click", () => {
-    quiz.index = (quiz.index - 1 + practices.length) % practices.length;
-    render();
-  });
-
-  $("#nextQuestion").addEventListener("click", () => {
-    quiz.index = (quiz.index + 1) % practices.length;
-    render();
-  });
-
-  bindNavigator();
-}
-
-function renderMaster(lesson) {
-  const correct = countCorrect(lesson);
-  const practices = lessonPractices(lesson);
-  $("#studyContent").innerHTML = `
-    <article class="module">
-      <div class="module-head">
-        <div>
-          <h3>通关前，自己讲一遍</h3>
-          <p>会做题还不够。能说出“为什么”，才是真的掌握。</p>
-        </div>
-        <span class="result-pill">${correct}/${practices.length} 题正确</span>
-      </div>
-      ${applicationHtml(lesson)}
-      <div class="recap-box">
-        ${lesson.mastery.map((item) => `<div class="recap-prompt">${item}</div>`).join("")}
-        <textarea class="recap-input" id="recapInput" placeholder="把最重要的结论用自己的话写下来。可以很短，但要说清楚理由。">${appState.progress[lesson.id]?.recap || ""}</textarea>
-        <button class="primary-button" id="markMastered" type="button">我会了，标记通关</button>
-      </div>
-      ${navigatorHtml()}
-    </article>
-  `;
-
-  $("#recapInput").addEventListener("input", (event) => {
-    appState.progress[lesson.id] = {
-      ...appState.progress[lesson.id],
-      recap: event.target.value
-    };
-    saveState();
-  });
-
-  $("#markMastered").addEventListener("click", () => {
-    appState.progress[lesson.id] = {
-      ...appState.progress[lesson.id],
-      mastered: true,
-      masteredAt: new Date().toISOString()
-    };
-    showToast(`${lesson.title} 已通关`);
-    render();
-  });
-
-  bindNavigator();
-}
-
-function lessonDetail(lesson) {
-  return LESSON_ENRICHMENT[lesson.id] || {};
-}
-
-function lessonPractices(lesson) {
-  const detail = lessonDetail(lesson);
-  return [...lesson.practices, ...(detail.extraPractices || [])];
-}
-
-function sceneHtml(lesson) {
-  const detail = lessonDetail(lesson);
-  if (!detail.sceneTitle) return "";
-  return `
-    <section class="scene-card">
-      <div class="scene-art" aria-hidden="true">${sceneSvg(lesson.id)}</div>
-      <div class="scene-copy">
-        <p class="eyebrow">生活情境</p>
-        <h4>${detail.sceneTitle}</h4>
-        <p>${detail.sceneText}</p>
-        <div class="scene-bullets">
-          ${(detail.sceneBullets || []).map((item) => `<span>${item}</span>`).join("")}
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-function sceneSvg(id) {
-  if (id === "edges") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <path d="M35 118 L110 32 L185 118" fill="#e7f3f1" stroke="#324250" stroke-width="8" stroke-linejoin="round"></path>
-        <line x1="35" y1="118" x2="185" y2="118" stroke="#2563a9" stroke-width="8" stroke-linecap="round"></line>
-        <line x1="28" y1="132" x2="88" y2="132" stroke="#b35f12" stroke-width="6" stroke-linecap="round"></line>
-        <line x1="98" y1="132" x2="198" y2="132" stroke="#d94f45" stroke-width="6" stroke-linecap="round"></line>
-      </svg>
-    `;
-  }
-  if (id === "special-lines") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="110,24 38,124 184,124" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
-        <line x1="110" y1="24" x2="110" y2="124" stroke="#16756f" stroke-width="6"></line>
-        <line x1="110" y1="24" x2="78" y2="124" stroke="#b35f12" stroke-width="5"></line>
-        <line x1="110" y1="24" x2="142" y2="124" stroke="#2563a9" stroke-width="5"></line>
-      </svg>
-    `;
-  }
-  if (id === "stability") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="52,32 172,40 188,122 36,116" fill="#f4f7fa" stroke="#324250" stroke-width="8" stroke-linejoin="round"></polygon>
-        <line x1="52" y1="32" x2="188" y2="122" stroke="#16756f" stroke-width="8" stroke-linecap="round"></line>
-        <text x="52" y="142" fill="#16756f" font-size="17" font-weight="800">切成三角形</text>
-      </svg>
-    `;
-  }
-  if (id === "angle-sum") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="108,30 42,120 184,120" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
-        <line x1="30" y1="42" x2="190" y2="42" stroke="#b35f12" stroke-width="5" stroke-dasharray="8 7"></line>
-        <path d="M62 42 Q86 20 110 42 Q134 64 158 42" fill="none" stroke="#d94f45" stroke-width="5"></path>
-        <text x="71" y="141" fill="#324250" font-size="18" font-weight="800">拼成平角</text>
-      </svg>
-    `;
-  }
-  if (id === "exterior") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="44,120 108,34 164,120" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
-        <line x1="164" y1="120" x2="204" y2="120" stroke="#d94f45" stroke-width="7" stroke-linecap="round"></line>
-        <path d="M144 102 Q174 86 199 112" fill="none" stroke="#d94f45" stroke-width="5"></path>
-        <text x="128" y="92" fill="#d94f45" font-size="18" font-weight="800">外角</text>
-      </svg>
-    `;
-  }
-  if (id === "polygon-basic") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="110,20 178,58 162,124 58,124 42,58" fill="#f4f7fa" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
-        <line x1="110" y1="20" x2="162" y2="124" stroke="#16756f" stroke-width="5"></line>
-        <line x1="110" y1="20" x2="58" y2="124" stroke="#16756f" stroke-width="5"></line>
-        <circle cx="110" cy="20" r="9" fill="#16756f"></circle>
-      </svg>
-    `;
-  }
-  if (id === "polygon-sum") {
-    return `
-      <svg viewBox="0 0 220 150">
-        <polygon points="110,18 172,48 184,110 132,134 68,134 36,82" fill="#eef5f4" stroke="#324250" stroke-width="7" stroke-linejoin="round"></polygon>
-        <line x1="110" y1="18" x2="184" y2="110" stroke="#16756f" stroke-width="5"></line>
-        <line x1="110" y1="18" x2="132" y2="134" stroke="#16756f" stroke-width="5"></line>
-        <line x1="110" y1="18" x2="68" y2="134" stroke="#16756f" stroke-width="5"></line>
-      </svg>
-    `;
-  }
-  return `
-    <svg viewBox="0 0 220 150">
-      <path d="M30 112 C66 62 102 64 132 92 S178 122 198 48" fill="none" stroke="#16756f" stroke-width="8" stroke-linecap="round"></path>
-      <circle cx="48" cy="100" r="16" fill="#e7f3f1" stroke="#324250" stroke-width="5"></circle>
-      <circle cx="112" cy="82" r="16" fill="#fff7e8" stroke="#324250" stroke-width="5"></circle>
-      <circle cx="178" cy="60" r="16" fill="#eaf1fb" stroke="#324250" stroke-width="5"></circle>
-    </svg>
-  `;
-}
-
-function exploreTasksHtml(lesson) {
-  const tasks = lessonDetail(lesson).exploreTasks || [];
-  if (!tasks.length) return "";
-  return `
-    <section class="task-grid" aria-label="动手任务">
-      ${tasks.map((task) => `
-        <div class="task-card">
-          <strong>${task.label}</strong>
-          <p>${task.text}</p>
-        </div>
-      `).join("")}
-    </section>
-  `;
-}
-
-function reasoningHtml(lesson) {
-  const detail = lessonDetail(lesson);
-  const steps = detail.reasoning || [];
-  if (!steps.length) return "";
-  return `
-    <article class="module">
-      <div class="module-head">
-        <div>
-          <h3>从图形到原理</h3>
-          <p>先看到现象，再把它变成能做题的语言。</p>
-        </div>
-        <span class="result-pill">会解释</span>
-      </div>
-      <div class="reasoning-steps">
-        ${steps.map((step, index) => `
-          <div class="reason-step">
-            <span>${index + 1}</span>
-            <strong>${step.title}</strong>
-            <p>${step.text}</p>
-          </div>
-        `).join("")}
-      </div>
-      ${applicationHtml(lesson)}
-    </article>
-  `;
-}
-
-function applicationHtml(lesson) {
-  const items = lessonDetail(lesson).application || [];
-  if (!items.length) return "";
-  return `
-    <div class="application-strip">
-      <span>会用在</span>
-      ${items.map((item) => `<strong>${item}</strong>`).join("")}
-    </div>
-  `;
-}
-
-function practiceHintHtml(item) {
-  if (!item.hint) return "";
-  return `
-    <div class="practice-hint">
-      <span>解题抓手</span>
-      <strong>${item.hint}</strong>
-    </div>
-  `;
-}
-
-function navigatorHtml() {
-  return `
-    <div class="navigator-row">
-      <button class="ghost-button" id="prevStep" type="button">上一步</button>
-      <button class="primary-button" id="nextStep" type="button">下一步</button>
-    </div>
-  `;
-}
-
-function bindNavigator() {
-  const prev = $("#prevStep");
-  const next = $("#nextStep");
-  if (prev) prev.addEventListener("click", () => {
-    const index = currentStepIndex();
-    if (index > 0) appState.stepId = STEPS[index - 1].id;
-    render();
-  });
-  if (next) next.addEventListener("click", () => {
-    const index = currentStepIndex();
-    if (index < STEPS.length - 1) appState.stepId = STEPS[index + 1].id;
-    else goNextLesson();
-    render();
-  });
-}
-
-function goNextLesson() {
-  const index = LESSONS.findIndex((lesson) => lesson.id === appState.lessonId);
-  const next = LESSONS[(index + 1) % LESSONS.length];
-  appState.lessonId = next.id;
-  appState.stepId = "discover";
-}
-
-function quizState(lesson) {
-  if (!appState.quiz[lesson.id]) {
-    appState.quiz[lesson.id] = { index: 0, selected: {}, checked: {} };
-  }
-  return appState.quiz[lesson.id];
-}
-
-function countCorrect(lesson) {
-  const quiz = quizState(lesson);
-  return lessonPractices(lesson).reduce((sum, item, index) => {
-    return sum + (quiz.checked[index] && quiz.selected[index] === item.answer ? 1 : 0);
-  }, 0);
-}
-
-function renderCoach() {
-  const lesson = currentLesson();
-  const detail = lessonDetail(lesson);
-  $("#coachPanel").classList.toggle("open", appState.coachOpen);
-  $("#coachContent").innerHTML = `
-    <div class="coach-content">
-      <section class="coach-card">
-        <h3>本课目标</h3>
-        <p>${lesson.objective}</p>
-      </section>
-      ${detail.exploreTasks?.length ? `
-        <section class="coach-card">
-          <h3>观察孩子</h3>
-          <ul>${detail.exploreTasks.map((item) => `<li>${item.text}</li>`).join("")}</ul>
-        </section>
-      ` : ""}
-      <section class="coach-card">
-        <h3>今天重点看</h3>
-        <ul>${lesson.parentFocus.map((item) => `<li>${item}</li>`).join("")}</ul>
-      </section>
-      <section class="coach-card">
-        <h3>追问孩子</h3>
-        <ul>${lesson.parentQuestions.map((item) => `<li>${item}</li>`).join("")}</ul>
-      </section>
-      <section class="coach-card">
-        <h3>掌握标准</h3>
-        <ul>${lesson.mastery.map((item) => `<li>${item}</li>`).join("")}</ul>
-      </section>
-    </div>
-  `;
-}
-
-function mountInteraction(lesson) {
-  const mount = $("#interactiveMount");
-  if (lesson.interaction === "triangleInequality") renderTriangleInequality(mount);
-  if (lesson.interaction === "lineExplorer") renderLineExplorer(mount);
-  if (lesson.interaction === "stability") renderStability(mount);
-  if (lesson.interaction === "angleSum") renderAngleSum(mount);
-  if (lesson.interaction === "exteriorAngle") renderExteriorAngle(mount);
-  if (lesson.interaction === "polygonBasics") renderPolygonBasics(mount);
-  if (lesson.interaction === "polygonFormula") renderPolygonFormula(mount);
-  if (lesson.interaction === "reviewMap") renderReviewMap(mount);
-}
-
-function renderTriangleInequality(mount) {
-  const s = uiMemory.triangle;
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="triangleSvg" viewBox="0 0 520 340" aria-label="三角形边长互动图"></svg></div>
-      <div class="control-panel">
-        ${rangeControl("AB", "ab", s.ab, 2, 12)}
-        ${rangeControl("AC", "ac", s.ac, 2, 12)}
-        ${rangeControl("BC", "bc", s.bc, 2, 12)}
-        <div class="control-group">
-          <div class="control-label"><span>试试这些</span></div>
-          <div class="chip-row">
-            <button class="chip" data-preset="3,4,8" type="button">3,4,8</button>
-            <button class="chip" data-preset="6,6,12" type="button">6,6,12</button>
-            <button class="chip" data-preset="5,6,10" type="button">5,6,10</button>
-          </div>
-        </div>
-        <div class="control-group" id="triangleMetrics"></div>
-      </div>
-    </div>
-  `;
-
-  mount.querySelectorAll("input[type='range']").forEach((input) => {
-    input.addEventListener("input", () => {
-      s[input.dataset.key] = Number(input.value);
-      renderTriangleInequality(mount);
-    });
-  });
-
-  mount.querySelectorAll("[data-preset]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const [ab, ac, bc] = button.dataset.preset.split(",").map(Number);
-      Object.assign(s, { ab, ac, bc });
-      renderTriangleInequality(mount);
-    });
-  });
-
-  updateTriangleSvg();
-}
-
-function updateTriangleSvg() {
-  const svg = $("#triangleSvg");
-  const metrics = $("#triangleMetrics");
-  const { ab, ac, bc } = uiMemory.triangle;
-  const longest = Math.max(ab, ac, bc);
-  const rest = ab + ac + bc - longest;
-  const valid = rest > longest;
-  const boundary = rest === longest;
-  const pill = valid ? `<span class="result-pill">能围成</span>` : `<span class="result-pill warn">${boundary ? "压成直线" : "围不成"}</span>`;
-
-  metrics.innerHTML = `
-    <div class="metric-row"><span>最长边</span><strong>${longest}</strong></div>
-    <div class="metric-row"><span>另外两边和</span><strong>${rest}</strong></div>
-    <div class="metric-row"><span>判断</span>${pill}</div>
-    <p class="small-note">最长边必须小于另外两边之和。</p>
-  `;
-
-  if (!valid) {
-    const scale = 24;
-    const start = 68;
-    svg.innerHTML = `
-      <line class="svg-line" x1="${start}" y1="118" x2="${start + ab * scale}" y2="118"></line>
-      <line class="svg-help" x1="${start}" y1="182" x2="${start + ac * scale}" y2="182"></line>
-      <line class="svg-accent" x1="${start}" y1="246" x2="${start + bc * scale}" y2="246"></line>
-      <text class="svg-label" x="${start}" y="92">AB=${ab}</text>
-      <text class="svg-label" x="${start}" y="156">AC=${ac}</text>
-      <text class="svg-label" x="${start}" y="220">BC=${bc}</text>
-      <text x="68" y="310" fill="#d94f45" font-size="18" font-weight="800">最长边太长时，三条线段不能封闭成三角形。</text>
-    `;
-    return;
-  }
-
-  const scale = Math.min(34, 330 / Math.max(ab, ac, bc));
-  const base = bc * scale;
-  const bx = (520 - base) / 2;
-  const by = 270;
-  const cx = bx + base;
-  const rawX = (ab * ab + bc * bc - ac * ac) / (2 * bc);
-  const height = Math.sqrt(Math.max(0, ab * ab - rawX * rawX));
-  const ax = bx + rawX * scale;
-  const ay = by - height * scale;
-
-  svg.innerHTML = `
-    <polygon points="${ax},${ay} ${bx},${by} ${cx},${by}" fill="#e7f3f1" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    <circle class="svg-point" cx="${ax}" cy="${ay}" r="8"></circle>
-    <circle class="svg-point" cx="${bx}" cy="${by}" r="8"></circle>
-    <circle class="svg-point" cx="${cx}" cy="${by}" r="8"></circle>
-    <text class="svg-label" x="${ax - 8}" y="${ay - 16}">A</text>
-    <text class="svg-label" x="${bx - 28}" y="${by + 30}">B</text>
-    <text class="svg-label" x="${cx + 12}" y="${by + 30}">C</text>
-    <text x="${(ax + bx) / 2 - 38}" y="${(ay + by) / 2}" fill="#16756f" font-size="18" font-weight="800">AB=${ab}</text>
-    <text x="${(ax + cx) / 2 + 8}" y="${(ay + by) / 2}" fill="#b35f12" font-size="18" font-weight="800">AC=${ac}</text>
-    <text x="${(bx + cx) / 2 - 28}" y="${by + 42}" fill="#2563a9" font-size="18" font-weight="800">BC=${bc}</text>
-  `;
-}
-
-function renderLineExplorer(mount) {
-  const labels = { height: "高", median: "中线", bisector: "角平分线" };
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="lineSvg" viewBox="0 0 520 340" aria-label="高、中线、角平分线互动图"></svg></div>
-      <div class="control-panel">
-        <div class="control-group">
-          <div class="control-label"><span>选择线段</span></div>
-          <div class="chip-row">
-            ${Object.entries(labels).map(([key, label]) => `<button class="chip ${uiMemory.lineType === key ? "active" : ""}" data-line="${key}" type="button">${label}</button>`).join("")}
-          </div>
-        </div>
-        <div class="control-group" id="lineExplain"></div>
-      </div>
-    </div>
-  `;
-
-  mount.querySelectorAll("[data-line]").forEach((button) => {
-    button.addEventListener("click", () => {
-      uiMemory.lineType = button.dataset.line;
-      renderLineExplorer(mount);
-    });
-  });
-  updateLineSvg();
-}
-
-function updateLineSvg() {
-  const svg = $("#lineSvg");
-  const explain = $("#lineExplain");
-  const A = { x: 250, y: 58 };
-  const B = { x: 82, y: 282 };
-  const C = { x: 448, y: 282 };
-  let D = { x: 250, y: 282 };
-  let text = "高看垂直：AD 垂直 BC。";
-  let marks = `<path d="M250 260 h22 v22" fill="none" stroke="#b35f12" stroke-width="3"></path>`;
-
-  if (uiMemory.lineType === "median") {
-    D = { x: (B.x + C.x) / 2, y: (B.y + C.y) / 2 };
-    text = "中线看中点：D 是 BC 的中点，BD=DC。";
-    marks = `
-      <line x1="${B.x + 76}" y1="${B.y + 12}" x2="${B.x + 90}" y2="${B.y + 28}" stroke="#b35f12" stroke-width="3"></line>
-      <line x1="${C.x - 90}" y1="${C.y + 28}" x2="${C.x - 76}" y2="${C.y + 12}" stroke="#b35f12" stroke-width="3"></line>
-    `;
-  }
-
-  if (uiMemory.lineType === "bisector") {
-    const ab = distance(A, B);
-    const ac = distance(A, C);
-    D = {
-      x: (ac * B.x + ab * C.x) / (ab + ac),
-      y: (ac * B.y + ab * C.y) / (ab + ac)
-    };
-    text = "角平分线看等角：∠BAD=∠DAC。";
-    marks = `
-      <path d="M225 90 Q250 112 275 90" fill="none" stroke="#b35f12" stroke-width="3"></path>
-      <path d="M213 108 Q250 142 286 108" fill="none" stroke="#b35f12" stroke-width="3"></path>
-    `;
-  }
-
-  svg.innerHTML = `
-    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    <line class="svg-help" x1="${A.x}" y1="${A.y}" x2="${D.x}" y2="${D.y}"></line>
-    ${marks}
-    ${pointLabel(A, "A", -4, -18)}
-    ${pointLabel(B, "B", -28, 30)}
-    ${pointLabel(C, "C", 14, 30)}
-    ${pointLabel(D, "D", 8, -12)}
-  `;
-  explain.innerHTML = `
-    <div class="metric-row"><span>当前线段</span><strong>${{ height: "高", median: "中线", bisector: "角平分线" }[uiMemory.lineType]}</strong></div>
-    <p class="small-note">${text}</p>
-  `;
-}
-
-function renderStability(mount) {
-  const s = uiMemory.stability;
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="stabilitySvg" viewBox="0 0 520 340" aria-label="三角形稳定性互动图"></svg></div>
-      <div class="control-panel">
-        <div class="control-group">
-          <label>推动木架 <span>${s.skew}</span></label>
-          <input data-skew type="range" min="0" max="80" value="${s.skew}">
-        </div>
-        <div class="control-group">
-          <button class="primary-button" id="toggleBrace" type="button">${s.brace ? "移除斜撑" : "加一根斜撑"}</button>
-          <p class="small-note">${s.brace ? "斜撑把四边形分成两个三角形，形状稳定。" : "没有斜撑时，四边形可以被推歪。"}</p>
-        </div>
-      </div>
-    </div>
-  `;
-  $("[data-skew]").addEventListener("input", (event) => {
-    s.skew = Number(event.target.value);
-    renderStability(mount);
-  });
-  $("#toggleBrace").addEventListener("click", () => {
-    s.brace = !s.brace;
-    renderStability(mount);
-  });
-  updateStabilitySvg();
-}
-
-function updateStabilitySvg() {
-  const { skew, brace } = uiMemory.stability;
-  const dx = brace ? 0 : skew - 40;
-  const A = { x: 136 + dx, y: 78 };
-  const B = { x: 388 + dx, y: 78 };
-  const C = { x: 438 - dx, y: 260 };
-  const D = { x: 156 - dx, y: 260 };
-  $("#stabilitySvg").innerHTML = `
-    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y} ${D.x},${D.y}" fill="#f4f7fa" stroke="#324250" stroke-width="8" stroke-linejoin="round"></polygon>
-    ${brace ? `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#16756f" stroke-width="8" stroke-linecap="round"></line>` : ""}
-    <text x="68" y="318" fill="${brace ? "#2f855a" : "#d94f45"}" font-size="18" font-weight="800">${brace ? "斜撑出现：四边形被分成两个三角形" : "没有斜撑：边长不变，角还能变"}</text>
-  `;
-}
-
-function renderAngleSum(mount) {
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="angleSvg" viewBox="0 0 520 340" aria-label="三角形内角和互动图"></svg></div>
-      <div class="control-panel">
-        <div class="control-group" id="angleMetrics"></div>
-        <div class="control-group">
-          <button class="primary-button" id="toggleProof" type="button">${uiMemory.angleProof ? "隐藏证明线" : "显示证明线"}</button>
-          <p class="small-note">拖动 A 点。证明线与 BC 平行，用来把角搬到一条直线上。</p>
-        </div>
-      </div>
-    </div>
-  `;
-  $("#toggleProof").addEventListener("click", () => {
-    uiMemory.angleProof = !uiMemory.angleProof;
-    renderAngleSum(mount);
-  });
-  updateAngleSvg();
-}
-
-function updateAngleSvg() {
-  const svg = $("#angleSvg");
-  const metrics = $("#angleMetrics");
-  const A = uiMemory.anglePoint;
-  const B = { x: 86, y: 276 };
-  const C = { x: 442, y: 276 };
-  const angleA = angleAt(B, A, C);
-  const angleB = angleAt(A, B, C);
-  const angleC = angleAt(A, C, B);
-  const sum = angleA + angleB + angleC;
-  const proofLine = uiMemory.angleProof ? `
-    <line x1="60" y1="${A.y}" x2="468" y2="${A.y}" stroke="#b35f12" stroke-width="4" stroke-dasharray="8 9"></line>
-    <path d="M${A.x - 64} ${A.y} q34 30 76 0" fill="none" stroke="#b35f12" stroke-width="4"></path>
-    <text x="68" y="44" fill="#b35f12" font-size="17" font-weight="800">过 A 作 BC 的平行线，三个角组成一个平角。</text>
-  ` : "";
-
-  svg.innerHTML = `
-    ${proofLine}
-    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    <circle id="dragA" class="svg-point" cx="${A.x}" cy="${A.y}" r="13"></circle>
-    <circle class="svg-point" cx="${B.x}" cy="${B.y}" r="8"></circle>
-    <circle class="svg-point" cx="${C.x}" cy="${C.y}" r="8"></circle>
-    ${pointLabel(A, "A", -4, -20)}
-    ${pointLabel(B, "B", -28, 30)}
-    ${pointLabel(C, "C", 14, 30)}
-    <text x="${A.x + 18}" y="${A.y + 24}" fill="#16756f" font-size="17" font-weight="800">${round(angleA)}°</text>
-    <text x="${B.x + 24}" y="${B.y - 12}" fill="#2563a9" font-size="17" font-weight="800">${round(angleB)}°</text>
-    <text x="${C.x - 66}" y="${C.y - 12}" fill="#b35f12" font-size="17" font-weight="800">${round(angleC)}°</text>
-  `;
-
-  metrics.innerHTML = `
-    <div class="metric-row"><span>∠A</span><strong>${round(angleA)}°</strong></div>
-    <div class="metric-row"><span>∠B</span><strong>${round(angleB)}°</strong></div>
-    <div class="metric-row"><span>∠C</span><strong>${round(angleC)}°</strong></div>
-    <div class="metric-row"><span>总和</span><strong>${round(sum)}°</strong></div>
-  `;
-
-  const handle = $("#dragA");
-  handle.addEventListener("pointerdown", (event) => {
-    handle.setPointerCapture(event.pointerId);
-    handle.dataset.dragging = "true";
-  });
-  handle.addEventListener("pointermove", (event) => {
-    if (handle.dataset.dragging !== "true") return;
-    const pt = svg.createSVGPoint();
-    pt.x = event.clientX;
-    pt.y = event.clientY;
-    const local = pt.matrixTransform(svg.getScreenCTM().inverse());
-    uiMemory.anglePoint.x = clamp(local.x, 130, 390);
-    uiMemory.anglePoint.y = clamp(local.y, 56, 210);
-    updateAngleSvg();
-  });
-  handle.addEventListener("pointerup", () => {
-    handle.dataset.dragging = "false";
-  });
-}
-
-function renderExteriorAngle(mount) {
-  const s = uiMemory.exterior;
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="exteriorSvg" viewBox="0 0 520 340" aria-label="三角形外角互动图"></svg></div>
-      <div class="control-panel">
-        ${rangeControl("远内角 A", "a", s.a, 20, 120)}
-        ${rangeControl("远内角 B", "b", s.b, 20, 120)}
-        <div class="control-group" id="exteriorMetrics"></div>
-      </div>
-    </div>
-  `;
-  mount.querySelectorAll("input[type='range']").forEach((input) => {
-    input.addEventListener("input", () => {
-      s[input.dataset.key] = Number(input.value);
-      if (s.a + s.b >= 170) s[input.dataset.key] = Number(input.value) - 10;
-      renderExteriorAngle(mount);
-    });
-  });
-  updateExteriorSvg();
-}
-
-function updateExteriorSvg() {
-  const { a, b } = uiMemory.exterior;
-  const third = 180 - a - b;
-  const exterior = a + b;
-  const A = { x: 98, y: 260 };
-  const C = { x: 386, y: 260 };
-  const B = { x: 230, y: 92 };
-  $("#exteriorSvg").innerHTML = `
-    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    <line x1="${C.x}" y1="${C.y}" x2="472" y2="${C.y}" stroke="#d94f45" stroke-width="4" stroke-linecap="round"></line>
-    <path d="M${C.x - 58} ${C.y - 5} q28 -36 75 -22" fill="none" stroke="#d94f45" stroke-width="4"></path>
-    ${pointLabel(A, "A", -26, 30)}
-    ${pointLabel(B, "B", -4, -18)}
-    ${pointLabel(C, "C", 14, 30)}
-    <text x="90" y="232" fill="#2563a9" font-size="18" font-weight="800">${a}°</text>
-    <text x="240" y="120" fill="#16756f" font-size="18" font-weight="800">${b}°</text>
-    <text x="332" y="236" fill="#324250" font-size="18" font-weight="800">${third}°</text>
-    <text x="392" y="214" fill="#d94f45" font-size="18" font-weight="800">外角 ${exterior}°</text>
-  `;
-  $("#exteriorMetrics").innerHTML = `
-    <div class="metric-row"><span>远内角和</span><strong>${a}+${b}=${exterior}°</strong></div>
-    <div class="metric-row"><span>相邻内角</span><strong>${third}°</strong></div>
-    <div class="metric-row"><span>外角</span><strong>${exterior}°</strong></div>
-    <p class="small-note">外角 = 两个不相邻内角之和，也和相邻内角互补。</p>
-  `;
-}
-
-function renderPolygonBasics(mount) {
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="polygonBasicSvg" viewBox="0 0 520 340" aria-label="多边形对角线互动图"></svg></div>
-      <div class="control-panel">
-        <div class="control-group">
-          <label>边数 n <span>${uiMemory.polygonN}</span></label>
-          <input id="polygonN" type="range" min="4" max="9" value="${uiMemory.polygonN}">
-        </div>
-        <div class="control-group" id="polygonBasicMetrics"></div>
-      </div>
-    </div>
-  `;
-  $("#polygonN").addEventListener("input", (event) => {
-    uiMemory.polygonN = Number(event.target.value);
-    renderPolygonBasics(mount);
-  });
-  updatePolygonBasicSvg();
-}
-
-function updatePolygonBasicSvg() {
-  const n = uiMemory.polygonN;
-  const points = regularPolygon(n, 250, 172, 118);
-  const diagonals = [];
-  for (let i = 2; i <= n - 2; i++) {
-    diagonals.push(`<line x1="${points[0].x}" y1="${points[0].y}" x2="${points[i].x}" y2="${points[i].y}" stroke="#16756f" stroke-width="4" stroke-linecap="round"></line>`);
-  }
-  $("#polygonBasicSvg").innerHTML = `
-    <polygon points="${points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="#f4f7fa" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    ${diagonals.join("")}
-    ${points.map((p, i) => `<circle class="svg-point" cx="${p.x}" cy="${p.y}" r="${i === 0 ? 10 : 7}"></circle>`).join("")}
-    <text x="54" y="312" fill="#16756f" font-size="18" font-weight="800">从一个顶点出发：${n - 3} 条对角线，分成 ${n - 2} 个三角形。</text>
-  `;
-  $("#polygonBasicMetrics").innerHTML = `
-    <div class="metric-row"><span>多边形</span><strong>${n} 边形</strong></div>
-    <div class="metric-row"><span>对角线</span><strong>n-3=${n - 3}</strong></div>
-    <div class="metric-row"><span>三角形</span><strong>n-2=${n - 2}</strong></div>
-    <p class="small-note">不能连自己，也不能连相邻两个顶点，所以从一个顶点少 3 个点。</p>
-  `;
-}
-
-function renderPolygonFormula(mount) {
-  mount.innerHTML = `
-    <div class="interaction-grid">
-      <div class="visual-stage"><svg id="polygonFormulaSvg" viewBox="0 0 520 340" aria-label="多边形内角和互动图"></svg></div>
-      <div class="control-panel">
-        <div class="control-group">
-          <label>边数 n <span>${uiMemory.formulaN}</span></label>
-          <input id="formulaN" type="range" min="3" max="12" value="${uiMemory.formulaN}">
-        </div>
-        <div class="control-group" id="polygonFormulaMetrics"></div>
-      </div>
-    </div>
-  `;
-  $("#formulaN").addEventListener("input", (event) => {
-    uiMemory.formulaN = Number(event.target.value);
-    renderPolygonFormula(mount);
-  });
-  updatePolygonFormulaSvg();
-}
-
-function updatePolygonFormulaSvg() {
-  const n = uiMemory.formulaN;
-  const points = regularPolygon(n, 250, 164, 112);
-  const diagonals = [];
-  for (let i = 2; i <= n - 2; i++) {
-    diagonals.push(`<line x1="${points[0].x}" y1="${points[0].y}" x2="${points[i].x}" y2="${points[i].y}" stroke="#16756f" stroke-width="3" stroke-linecap="round"></line>`);
-  }
-  const inner = (n - 2) * 180;
-  const eachExterior = round(360 / n);
-  const eachInterior = round(180 - 360 / n);
-  $("#polygonFormulaSvg").innerHTML = `
-    <polygon points="${points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="#eef5f4" stroke="#324250" stroke-width="4" stroke-linejoin="round"></polygon>
-    ${diagonals.join("")}
-    ${points.map((p, i) => `<circle class="svg-point" cx="${p.x}" cy="${p.y}" r="${i === 0 ? 10 : 6}"></circle>`).join("")}
-    <text x="58" y="298" fill="#324250" font-size="18" font-weight="800">${n} 边形 → ${n - 2} 个三角形 → ${inner}°</text>
-  `;
-  $("#polygonFormulaMetrics").innerHTML = `
-    <div class="formula-row"><span>内角和</span><span class="formula">(${n}-2)×180°=${inner}°</span></div>
-    <div class="metric-row"><span>外角和</span><strong>360°</strong></div>
-    <div class="metric-row"><span>正 ${n} 边形每个外角</span><strong>${eachExterior}°</strong></div>
-    <div class="metric-row"><span>正 ${n} 边形每个内角</span><strong>${eachInterior}°</strong></div>
-  `;
-}
-
-function renderReviewMap(mount) {
-  mount.innerHTML = `
-    <div class="visual-stage">
-      <svg viewBox="0 0 760 360" aria-label="第十一章知识路线图">
-        ${roadNode(90, 72, "边", "三边关系")}
-        ${roadNode(270, 72, "线", "高 / 中线 / 角平分线")}
-        ${roadNode(450, 72, "角", "内角和 / 外角")}
-        ${roadNode(630, 72, "形", "多边形公式")}
-        <path d="M150 72 H210 M330 72 H390 M510 72 H570" stroke="#16756f" stroke-width="6" stroke-linecap="round"></path>
-        <path d="M90 150 C130 240 250 250 310 172 C365 104 454 168 430 246 C405 326 572 324 630 170" fill="none" stroke="#d9a33a" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 10"></path>
-        <text x="72" y="322" fill="#324250" font-size="22" font-weight="800">复习口令：先找边，再认线；角度题找三角形，多边形切成三角形。</text>
-      </svg>
-    </div>
-  `;
-}
-
-function rangeControl(label, key, value, min, max) {
-  return `
-    <div class="control-group">
-      <label>${label} <span>${value}</span></label>
-      <input data-key="${key}" type="range" min="${min}" max="${max}" step="1" value="${value}">
-    </div>
-  `;
-}
-
-function pointLabel(point, label, dx, dy) {
-  return `
-    <circle class="svg-point" cx="${point.x}" cy="${point.y}" r="8"></circle>
-    <text class="svg-label" x="${point.x + dx}" y="${point.y + dy}">${label}</text>
-  `;
-}
-
-function roadNode(x, y, title, subtitle) {
-  return `
-    <rect x="${x - 68}" y="${y - 46}" width="136" height="92" rx="8" fill="#ffffff" stroke="#d9e0e7" stroke-width="2"></rect>
-    <text x="${x}" y="${y - 4}" text-anchor="middle" fill="#16756f" font-size="30" font-weight="900">${title}</text>
-    <text x="${x}" y="${y + 28}" text-anchor="middle" fill="#687381" font-size="15" font-weight="700">${subtitle}</text>
-  `;
-}
-
-function regularPolygon(n, cx, cy, radius) {
-  const points = [];
-  for (let i = 0; i < n; i++) {
-    const angle = -Math.PI / 2 + (Math.PI * 2 * i) / n;
-    points.push({
-      x: round(cx + Math.cos(angle) * radius),
-      y: round(cy + Math.sin(angle) * radius)
-    });
-  }
-  return points;
-}
-
-function distance(a, b) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
-}
-
-function angleAt(p1, vertex, p2) {
-  const v1 = { x: p1.x - vertex.x, y: p1.y - vertex.y };
-  const v2 = { x: p2.x - vertex.x, y: p2.y - vertex.y };
-  const dot = v1.x * v2.x + v1.y * v2.y;
-  const len = Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y);
-  return Math.acos(clamp(dot / len, -1, 1)) * 180 / Math.PI;
-}
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function round(value) {
-  return Math.round(value * 10) / 10;
-}
-
-function showToast(message) {
-  const toast = $("#toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
-}
-
-function setSyncStatus(message) {
-  $("#syncStatus").textContent = message;
 }
 
 function syncCredentials() {
@@ -1864,6 +2120,10 @@ function syncCredentials() {
     email: $("#syncEmail").value.trim(),
     password: $("#syncPassword").value
   };
+}
+
+function setSyncStatus(message) {
+  $("#syncStatus").textContent = message;
 }
 
 async function runSyncAction(label, action) {
@@ -1883,36 +2143,34 @@ async function runSyncAction(label, action) {
 
 function openSyncDialog() {
   if (!supabaseEnabled()) {
-    setSyncStatus("还没有配置 Supabase。请先在 config.js 填入 Project URL 和 anon public key。");
+    setSyncStatus("还没有配置 Supabase。");
   } else if (syncState.session?.user?.email) {
-    setSyncStatus(`已登录：${syncState.session.user.email}。可以把本地进度同步到 Supabase。`);
+    setSyncStatus(`已登录：${syncState.session.user.email}。可以同步当前学习进度。`);
   } else {
-    setSyncStatus("已配置 Supabase。请注册或登录后同步学习进度。");
+    setSyncStatus("登录后可以把学习进度同步到云端。");
   }
   const dialog = $("#syncDialog");
   if (dialog.showModal) dialog.showModal();
   else dialog.setAttribute("open", "open");
 }
 
-$("#toggleCoach").addEventListener("click", () => {
-  appState.coachOpen = !appState.coachOpen;
-  render();
-});
+function showToast(message) {
+  const toast = $("#toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+}
 
-$("#closeCoach").addEventListener("click", () => {
-  appState.coachOpen = false;
-  render();
-});
+$("#syncOpenButton").addEventListener("click", openSyncDialog);
 
 $("#resetProgress").addEventListener("click", () => {
-  if (!confirm("确定要重置本地学习进度吗？")) return;
+  if (!confirm("确定要重置本地学习进度吗？云端数据不会自动删除。")) return;
   localStorage.removeItem(STORAGE_KEY);
-  Object.assign(appState, loadState());
-  showToast("进度已重置");
+  appState = loadState();
+  showToast("本地进度已重置");
   render();
 });
-
-$("#syncButton").addEventListener("click", openSyncDialog);
 
 $("#signUpButton").addEventListener("click", () => {
   const { email, password } = syncCredentials();
@@ -1925,10 +2183,9 @@ $("#signUpButton").addEventListener("click", () => {
     if (data?.access_token) {
       await syncProgress();
       setSyncStatus("注册成功，学习进度已同步。");
-      showToast("注册并同步成功");
+      showToast("同步完成");
     } else {
-      setSyncStatus("注册请求已提交。如果 Supabase 开启了邮箱确认，请先到邮箱确认后再登录。");
-      showToast("请查看邮箱确认");
+      setSyncStatus("注册请求已提交。如果开启邮箱确认，请先去邮箱确认。");
     }
   });
 });
@@ -1947,10 +2204,18 @@ $("#signInButton").addEventListener("click", () => {
   });
 });
 
+$("#syncNowButton").addEventListener("click", () => {
+  runSyncAction("同步", async () => {
+    await syncProgress();
+    setSyncStatus("同步完成。");
+    showToast("同步完成");
+  });
+});
+
 $("#signOutButton").addEventListener("click", () => {
   runSyncAction("退出", async () => {
     await signOut();
-    setSyncStatus("已退出 Supabase，同步功能暂停，本地进度仍保留。");
+    setSyncStatus("已退出，当前设备仍保留本地进度。");
     showToast("已退出");
   });
 });
